@@ -1,0 +1,488 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		620781DE7336F4A748F2B17B /* Pods_NewtManager.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22A1C0FEAE5AF77CC589BD13 /* Pods_NewtManager.framework */; };
+		A92CC7461DB52083002124EF /* UploadProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92CC7451DB52083002124EF /* UploadProgressViewController.swift */; };
+		A946D0CB1DB309D300D731B2 /* ImageBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A946D0CA1DB309D300D731B2 /* ImageBankViewController.swift */; };
+		A946D0D91DB31E0400D731B2 /* firmware in Resources */ = {isa = PBXBuildFile; fileRef = A946D0D81DB31E0400D731B2 /* firmware */; };
+		A94B02A21DB4570200593514 /* CommandQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94B02A11DB4570200593514 /* CommandQueue.swift */; };
+		A950EB021DB00351005FC305 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB011DB00351005FC305 /* AppDelegate.swift */; };
+		A950EB071DB00351005FC305 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A950EB051DB00351005FC305 /* Main.storyboard */; };
+		A950EB091DB00351005FC305 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A950EB081DB00351005FC305 /* Assets.xcassets */; };
+		A950EB0C1DB00351005FC305 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A950EB0A1DB00351005FC305 /* LaunchScreen.storyboard */; };
+		A950EB171DB006A5005FC305 /* LogHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB141DB006A5005FC305 /* LogHelper.swift */; };
+		A950EB1C1DB01424005FC305 /* ScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB1B1DB01424005FC305 /* ScannerViewController.swift */; };
+		A950EB201DB04C6F005FC305 /* MainNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB1F1DB04C6F005FC305 /* MainNavigationViewController.swift */; };
+		A950EB221DB0534D005FC305 /* TasksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB211DB0534D005FC305 /* TasksViewController.swift */; };
+		A9A5EC561DB1253700566005 /* Synchronize.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A5EC551DB1253700566005 /* Synchronize.swift */; };
+		A9A5EC5B1DB1256300566005 /* BleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A5EC581DB1256300566005 /* BleManager.swift */; };
+		A9A5EC5C1DB1256300566005 /* BlePeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A5EC591DB1256300566005 /* BlePeripheral.swift */; };
+		A9A5EC5D1DB1256300566005 /* BlePeripheral+Newt.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A5EC5A1DB1256300566005 /* BlePeripheral+Newt.swift */; };
+		A9EB79D11DB2FD9A00635A6D /* ImagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EB79D01DB2FD9A00635A6D /* ImagesViewController.swift */; };
+		A9FACDA51DB2724C00061E70 /* DataConversions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FACDA41DB2724C00061E70 /* DataConversions.swift */; };
+		A9FACDA91DB2AE0F00061E70 /* DeviceTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FACDA81DB2AE0F00061E70 /* DeviceTabBarViewController.swift */; };
+		A9FACDAB1DB2AE3000061E70 /* NewtViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FACDAA1DB2AE3000061E70 /* NewtViewController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		22A1C0FEAE5AF77CC589BD13 /* Pods_NewtManager.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NewtManager.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		248D6317AE0B051C55E9F7D9 /* Pods-NewtManager.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NewtManager.release.xcconfig"; path = "Pods/Target Support Files/Pods-NewtManager/Pods-NewtManager.release.xcconfig"; sourceTree = "<group>"; };
+		2F6D5EE2A6A578F5257A3873 /* Pods-NewtManager.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NewtManager.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NewtManager/Pods-NewtManager.debug.xcconfig"; sourceTree = "<group>"; };
+		A92CC7451DB52083002124EF /* UploadProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadProgressViewController.swift; sourceTree = "<group>"; };
+		A946D0CA1DB309D300D731B2 /* ImageBankViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageBankViewController.swift; sourceTree = "<group>"; };
+		A946D0D81DB31E0400D731B2 /* firmware */ = {isa = PBXFileReference; lastKnownFileType = folder; path = firmware; sourceTree = "<group>"; };
+		A94B02A11DB4570200593514 /* CommandQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandQueue.swift; sourceTree = "<group>"; };
+		A950EAFE1DB00351005FC305 /* NewtManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewtManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A950EB011DB00351005FC305 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A950EB061DB00351005FC305 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		A950EB081DB00351005FC305 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A950EB0B1DB00351005FC305 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		A950EB0D1DB00351005FC305 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A950EB141DB006A5005FC305 /* LogHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogHelper.swift; sourceTree = "<group>"; };
+		A950EB1B1DB01424005FC305 /* ScannerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScannerViewController.swift; sourceTree = "<group>"; };
+		A950EB1F1DB04C6F005FC305 /* MainNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainNavigationViewController.swift; sourceTree = "<group>"; };
+		A950EB211DB0534D005FC305 /* TasksViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksViewController.swift; sourceTree = "<group>"; };
+		A9A5EC551DB1253700566005 /* Synchronize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Synchronize.swift; sourceTree = "<group>"; };
+		A9A5EC581DB1256300566005 /* BleManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BleManager.swift; sourceTree = "<group>"; };
+		A9A5EC591DB1256300566005 /* BlePeripheral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlePeripheral.swift; sourceTree = "<group>"; };
+		A9A5EC5A1DB1256300566005 /* BlePeripheral+Newt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "BlePeripheral+Newt.swift"; sourceTree = "<group>"; };
+		A9EB79D01DB2FD9A00635A6D /* ImagesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagesViewController.swift; sourceTree = "<group>"; };
+		A9FACDA41DB2724C00061E70 /* DataConversions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataConversions.swift; sourceTree = "<group>"; };
+		A9FACDA81DB2AE0F00061E70 /* DeviceTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceTabBarViewController.swift; sourceTree = "<group>"; };
+		A9FACDAA1DB2AE3000061E70 /* NewtViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewtViewController.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A950EAFB1DB00350005FC305 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				620781DE7336F4A748F2B17B /* Pods_NewtManager.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A946D0D21DB31DFB00D731B2 /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				A946D0D81DB31E0400D731B2 /* firmware */,
+			);
+			path = resources;
+			sourceTree = "<group>";
+		};
+		A950EAF51DB00350005FC305 = {
+			isa = PBXGroup;
+			children = (
+				A950EB001DB00351005FC305 /* NewtManager */,
+				A950EAFF1DB00351005FC305 /* Products */,
+				ADB974C6F23A53247635E87F /* Pods */,
+				EAEB288223EC5EFC6AA7B752 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		A950EAFF1DB00351005FC305 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A950EAFE1DB00351005FC305 /* NewtManager.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A950EB001DB00351005FC305 /* NewtManager */ = {
+			isa = PBXGroup;
+			children = (
+				A950EB011DB00351005FC305 /* AppDelegate.swift */,
+				A950EB081DB00351005FC305 /* Assets.xcassets */,
+				A950EB0A1DB00351005FC305 /* LaunchScreen.storyboard */,
+				A950EB051DB00351005FC305 /* Main.storyboard */,
+				A950EB0D1DB00351005FC305 /* Info.plist */,
+				A946D0D21DB31DFB00D731B2 /* resources */,
+				A950EB151DB006A5005FC305 /* viewcontrollers */,
+				A9A5EC571DB1256300566005 /* ble */,
+				A950EB131DB006A5005FC305 /* utils */,
+			);
+			path = NewtManager;
+			sourceTree = "<group>";
+		};
+		A950EB131DB006A5005FC305 /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				A950EB141DB006A5005FC305 /* LogHelper.swift */,
+				A9A5EC551DB1253700566005 /* Synchronize.swift */,
+				A9FACDA41DB2724C00061E70 /* DataConversions.swift */,
+				A94B02A11DB4570200593514 /* CommandQueue.swift */,
+			);
+			path = utils;
+			sourceTree = "<group>";
+		};
+		A950EB151DB006A5005FC305 /* viewcontrollers */ = {
+			isa = PBXGroup;
+			children = (
+				A950EB1F1DB04C6F005FC305 /* MainNavigationViewController.swift */,
+				A950EB1B1DB01424005FC305 /* ScannerViewController.swift */,
+				A9FACDA81DB2AE0F00061E70 /* DeviceTabBarViewController.swift */,
+				A9FACDAA1DB2AE3000061E70 /* NewtViewController.swift */,
+				A950EB211DB0534D005FC305 /* TasksViewController.swift */,
+				A9EB79D01DB2FD9A00635A6D /* ImagesViewController.swift */,
+				A946D0CA1DB309D300D731B2 /* ImageBankViewController.swift */,
+				A92CC7451DB52083002124EF /* UploadProgressViewController.swift */,
+			);
+			path = viewcontrollers;
+			sourceTree = "<group>";
+		};
+		A9A5EC571DB1256300566005 /* ble */ = {
+			isa = PBXGroup;
+			children = (
+				A9A5EC581DB1256300566005 /* BleManager.swift */,
+				A9A5EC591DB1256300566005 /* BlePeripheral.swift */,
+				A9A5EC5A1DB1256300566005 /* BlePeripheral+Newt.swift */,
+			);
+			path = ble;
+			sourceTree = "<group>";
+		};
+		ADB974C6F23A53247635E87F /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				2F6D5EE2A6A578F5257A3873 /* Pods-NewtManager.debug.xcconfig */,
+				248D6317AE0B051C55E9F7D9 /* Pods-NewtManager.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		EAEB288223EC5EFC6AA7B752 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				22A1C0FEAE5AF77CC589BD13 /* Pods_NewtManager.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A950EAFD1DB00350005FC305 /* NewtManager */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A950EB101DB00351005FC305 /* Build configuration list for PBXNativeTarget "NewtManager" */;
+			buildPhases = (
+				205CDB9FA82C50CF66BC4F7F /* [CP] Check Pods Manifest.lock */,
+				A950EAFA1DB00350005FC305 /* Sources */,
+				A950EAFB1DB00350005FC305 /* Frameworks */,
+				A950EAFC1DB00350005FC305 /* Resources */,
+				D3AF3F1163F9E2972DECC358 /* [CP] Embed Pods Frameworks */,
+				75838A2578EDEA4524A98AC2 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NewtManager;
+			productName = NewtManager;
+			productReference = A950EAFE1DB00351005FC305 /* NewtManager.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A950EAF61DB00350005FC305 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0810;
+				LastUpgradeCheck = 0810;
+				ORGANIZATIONNAME = Adafruit;
+				TargetAttributes = {
+					A950EAFD1DB00350005FC305 = {
+						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = 2X94RM7457;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
+					};
+				};
+			};
+			buildConfigurationList = A950EAF91DB00350005FC305 /* Build configuration list for PBXProject "NewtManager" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A950EAF51DB00350005FC305;
+			productRefGroup = A950EAFF1DB00351005FC305 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A950EAFD1DB00350005FC305 /* NewtManager */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A950EAFC1DB00350005FC305 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A950EB0C1DB00351005FC305 /* LaunchScreen.storyboard in Resources */,
+				A946D0D91DB31E0400D731B2 /* firmware in Resources */,
+				A950EB091DB00351005FC305 /* Assets.xcassets in Resources */,
+				A950EB071DB00351005FC305 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		205CDB9FA82C50CF66BC4F7F /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		75838A2578EDEA4524A98AC2 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-NewtManager/Pods-NewtManager-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D3AF3F1163F9E2972DECC358 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-NewtManager/Pods-NewtManager-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A950EAFA1DB00350005FC305 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A946D0CB1DB309D300D731B2 /* ImageBankViewController.swift in Sources */,
+				A950EB221DB0534D005FC305 /* TasksViewController.swift in Sources */,
+				A9FACDA91DB2AE0F00061E70 /* DeviceTabBarViewController.swift in Sources */,
+				A950EB201DB04C6F005FC305 /* MainNavigationViewController.swift in Sources */,
+				A9A5EC5C1DB1256300566005 /* BlePeripheral.swift in Sources */,
+				A9FACDA51DB2724C00061E70 /* DataConversions.swift in Sources */,
+				A950EB171DB006A5005FC305 /* LogHelper.swift in Sources */,
+				A950EB021DB00351005FC305 /* AppDelegate.swift in Sources */,
+				A94B02A21DB4570200593514 /* CommandQueue.swift in Sources */,
+				A9A5EC5B1DB1256300566005 /* BleManager.swift in Sources */,
+				A9FACDAB1DB2AE3000061E70 /* NewtViewController.swift in Sources */,
+				A9EB79D11DB2FD9A00635A6D /* ImagesViewController.swift in Sources */,
+				A9A5EC5D1DB1256300566005 /* BlePeripheral+Newt.swift in Sources */,
+				A9A5EC561DB1253700566005 /* Synchronize.swift in Sources */,
+				A92CC7461DB52083002124EF /* UploadProgressViewController.swift in Sources */,
+				A950EB1C1DB01424005FC305 /* ScannerViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		A950EB051DB00351005FC305 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A950EB061DB00351005FC305 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		A950EB0A1DB00351005FC305 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A950EB0B1DB00351005FC305 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		A950EB0E1DB00351005FC305 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A950EB0F1DB00351005FC305 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A950EB111DB00351005FC305 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2F6D5EE2A6A578F5257A3873 /* Pods-NewtManager.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 2X94RM7457;
+				INFOPLIST_FILE = NewtManager/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.adafruit.NewtManager;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		A950EB121DB00351005FC305 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 248D6317AE0B051C55E9F7D9 /* Pods-NewtManager.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 2X94RM7457;
+				INFOPLIST_FILE = NewtManager/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.adafruit.NewtManager;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A950EAF91DB00350005FC305 /* Build configuration list for PBXProject "NewtManager" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A950EB0E1DB00351005FC305 /* Debug */,
+				A950EB0F1DB00351005FC305 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A950EB101DB00351005FC305 /* Build configuration list for PBXNativeTarget "NewtManager" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A950EB111DB00351005FC305 /* Debug */,
+				A950EB121DB00351005FC305 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A950EAF61DB00350005FC305 /* Project object */;
+}
