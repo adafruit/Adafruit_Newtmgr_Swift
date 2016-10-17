@@ -74,6 +74,7 @@ extension BlePeripheral {
         case receivedResultNotOk(String)
         case internalError
         case updateImageInvalid
+        case imageInvalid
         
         var description: String {
             switch self {
@@ -86,6 +87,7 @@ extension BlePeripheral {
             case .receivedResultNotOk(let message): return "Received incorrect result: \(message)"
             case .internalError: return "Internal error"
             case .updateImageInvalid: return "Upload image is invalid"
+            case .imageInvalid: return "Image invalid"
             }
         }
     }
@@ -124,7 +126,7 @@ extension BlePeripheral {
         }
     }
     
-    private enum OpDfu: UInt8 {
+    private enum GroupImage: UInt8 {
         case List       = 0
         case Upload     = 1
         case Boot       = 2
@@ -146,14 +148,6 @@ extension BlePeripheral {
         case Mpstats        = 3
         case DatetimeStr    = 4
         case Reset          = 5
-        
-        var code: UInt8 {
-            return rawValue
-        }
-    }
-    
-    private enum GroupImage: UInt8 {
-        case List         = 0
         
         var code: UInt8 {
             return rawValue
@@ -196,23 +190,13 @@ extension BlePeripheral {
         var data: Data
         
         init?(op: OpCode, flags: Flags, len: UInt16, group: Group, seq:UInt8, id: UInt8, data: Data = Data()) {
-            
-            self.op    = OpCode.Write
-            self.flags = Flags.Default
-            self.len   = 0
-            self.group = Group.Default
-            self.seq   = 0
-            self.id    = 0
-            self.data  = data
-            
-            // Back to the passed values
             self.op    = op
             self.flags = flags
             self.len   = len
             self.group = group
             self.seq   = seq
-            self.data  = data
             self.id    = id
+            self.data  = data
         }
         
         func encode(data: Data?) -> Data {
@@ -225,7 +209,8 @@ extension BlePeripheral {
                 var id   : UInt8
             }
             
-            var archivedNmgrPacket = ArchivedPacket(op: op.code, flags: flags.code, len: len.byteSwapped, group: group.code.byteSwapped, seq: seq, id: id)
+            let dataLen = UInt16(data?.count ?? 0)
+            var archivedNmgrPacket = ArchivedPacket(op: op.code, flags: flags.code, len: dataLen.byteSwapped, group: group.code.byteSwapped, seq: seq, id: id)
             
             let packetSize = MemoryLayout.size(ofValue: archivedNmgrPacket)
             var packet = Data(capacity: packetSize)
@@ -241,8 +226,9 @@ extension BlePeripheral {
     enum NmgrCommand {
         case list
         case taskStats
+        case boot
         case upload(imageData: Data)
-        case activate
+        case activate(imageData: Data)
         case reset
     }
     
@@ -267,11 +253,14 @@ extension BlePeripheral {
             case .taskStats:
                 packet = Packet(op: OpCode.Read, flags: Flags.Default,  len: 0, group: Group.Default, seq: 0, id: GroupDefault.Taskstats.code)!
                 
+            case .boot:
+                packet = Packet(op: OpCode.Read, flags: Flags.Default,  len: 0, group: Group.Default, seq: 0, id: GroupImage.Boot.code)!
+                
             case .upload:
                 packet = NmgrRequest.uploadPacket
                 
             case .activate:
-                packet = Packet(op: OpCode.Write, flags: Flags.Default, len: 0, group: Group.Image, seq: 0, id: OpDfu.Boot2.code)!
+                packet = Packet(op: OpCode.Write, flags: Flags.Default, len: 0, group: Group.Image, seq: 0, id: GroupImage.Boot2.code)!
                 
             case .reset:
                 packet = Packet(op: OpCode.Write, flags: Flags.Default, len: 0, group: Group.Default, seq: 0, id: GroupDefault.Reset.code)!
@@ -280,24 +269,27 @@ extension BlePeripheral {
             return packet
         }
         
-        static let uploadPacket = Packet(op: OpCode.Write, flags: Flags.Default, len: 0, group: Group.Image, seq: 0, id: OpDfu.Upload.code)!
+        static let uploadPacket = Packet(op: OpCode.Write, flags: Flags.Default, len: 0, group: Group.Image, seq: 0, id: GroupImage.Upload.code)!
+        
         
         var description: String {
             switch command {
             case .list:
-                return "List (OpCode = \(OpCode.Read.rawValue) Group = \(Group.Image.rawValue) Id = \(OpDfu.List.code))"
+                return "List"
             case .taskStats:
-                return "TaskStats (OpCode = \(OpCode.Read.rawValue) Group = \(Group.Default.rawValue) Id = \(GroupDefault.Taskstats.code))"
+                return "TaskStats"
+            case .boot:
+                return "Boot"
             case .upload:
-                return "Upload (OpCode = \(OpCode.Write.rawValue) Group = \(Group.Image.rawValue) Id = \(OpDfu.Upload.code))"
+                return "Upload"
             case .activate:
-                return "Activate (OpCode = \(OpCode.Write.rawValue) Group = \(Group.Image.rawValue) Id = \(OpDfu.Boot2.code))"
+                return "Activate"
             case .reset:
-                return "Reset (OpCode = \(OpCode.Write.rawValue) Group = \(Group.Default.rawValue) Id = \(GroupDefault.Reset.code))"
+                return "Reset"
             }
         }
-        
     }
+
     
     private struct NmgrResponse {
         var packet: Packet
@@ -377,19 +369,16 @@ extension BlePeripheral {
     }
     
     
-    // MARK: - Commands
-    
+    // MARK: - Send Request
     func newtRequest(with command: NmgrCommand, progress: NewtRequestProgressHandler? = nil, completion: NewtRequestCompletionHandler?) {
         
         let request = NmgrRequest(command: command, progress: progress, completion: completion)
         newtRequestsQueue.append(request)
     }
-    
 
-    // MARK: - Command Execute and Receive Data
-
+   
+    // MARK: - Execute Request
     private func newtExecuteRequest(request: NmgrRequest) {
-        
         guard  let newtCharacteristic = newtCharacteristic, let newtCharacteristicWriteType = newtCharacteristicWriteType else {
             DLog("Command Error: Peripheral not configured. Use setup()")
             request.completion?(nil, NewtError.invalidCharacteristic)
@@ -397,15 +386,22 @@ extension BlePeripheral {
             return
         }
         
+        var data: Data?
         switch request.command {
         case .upload(let imageData):
-            newtUpload(imageData: imageData, progress: request.progress, completion: request.completion)
+            data = newtUpload(imageData: imageData, progress: request.progress, completion: request.completion)
+            
+        case .activate(let imageData):
+            data = newtActivate(imageData: imageData, packet: request.packet)
             
         default:
-            let data = request.packet.encode(data: nil)
-            DLog("Command:\(request.description) [\(hexDescription(data: data))]")
+            data = request.packet.encode(data: nil)
+        }
+        
+        if let writeData = data {
+            DLog("Command: \(request.description) [\(hexDescription(data: writeData))]")
             
-            write(data: data, for: newtCharacteristic, type: newtCharacteristicWriteType) { [weak self] error in
+            write(data: writeData, for: newtCharacteristic, type: newtCharacteristicWriteType) { [weak self] error in
                 if error != nil {
                     DLog("Error: \(error!)")
                     request.completion?(nil, error)
@@ -415,8 +411,112 @@ extension BlePeripheral {
         }
     }
 
-    private func newtReceivedData(data: Data?, error: Error?) {
+    // MARK: Activate
+    private func newtActivate(imageData: Data, packet: Packet) -> Data {
+        let (_, buildId) = BlePeripheral.readInfo(imageData: imageData)
         
+        let buildIdBase64 = buildId.base64EncodedString(options: [])
+        let dataDictionary: [String: Any] = [ "test": buildIdBase64]
+        let encodedData = encodeJson(dataDictionary: dataDictionary)
+        
+        let requestPacketData = packet.encode(data: encodedData)
+        return requestPacketData
+    }
+    
+    // MARK: Upload
+    private func newtUpload(imageData: Data, progress: NewtRequestProgressHandler?, completion: NewtRequestCompletionHandler?) -> Data? {
+        guard imageData.count >= 32 else {
+            completion?(nil, NewtError.updateImageInvalid)
+            newtRequestsQueue.next()
+            return nil
+        }
+        
+        // Start uploading the first packet (it will continue uploading packets step by step each time a notification is received)
+        return newtUploadPacket(from: imageData, offset: 0, progress: progress, completion: completion)
+    }
+ 
+    private func newtUploadPacket(from imageData: Data, offset dataOffset: Int, progress: NewtRequestProgressHandler?, completion: NewtRequestCompletionHandler?) -> Data? {
+  
+        // Update progress
+        if let progress = progress {
+            let currentProgress = Float(dataOffset) / Float(imageData.count)
+            progress(currentProgress)
+        }
+        
+        var packetData: Data? = nil
+        if imageData.count - dataOffset <= 0 {      // Finished
+            completion?(nil, nil)
+            newtRequestsQueue.next()
+        }
+        else {                                      // Create packet data
+            packetData = createUploadPacket(with: imageData, packetOffset: dataOffset)
+        }
+ 
+        return packetData
+    }
+    
+    private func createUploadPacket(with firmwareData: Data, packetOffset: Int) -> Data{
+        
+        // Calculate bytes to send
+        let kMaxPacketSize = 76
+        
+        let firmwareSize = firmwareData.count
+        let remainingBytes = firmwareSize - packetOffset
+        
+        var bytesToSend: Int
+        if remainingBytes >= kMaxPacketSize {
+            bytesToSend = kMaxPacketSize
+        }
+        else {
+            bytesToSend = remainingBytes % kMaxPacketSize
+        }
+        
+        // Create data to send
+        let packetData = firmwareData.subdata(in: packetOffset..<packetOffset+bytesToSend)
+
+        // Encode packetData
+        let packetDataBase64 = packetData.base64EncodedString(options: [])
+        var dataDictionary: [String: Any] = ["off": packetOffset, "data": packetDataBase64]
+        if packetOffset == 0 {
+            dataDictionary["len"] = firmwareSize
+        }
+        let encodedData = encodeJson(dataDictionary: dataDictionary)
+        
+        /*
+        if let encodedData = encodedData {
+            DLog("payload: \(hexDescription(data: encodedData))")
+        }*/
+        
+        // Create request packet
+        //let requestPacket = NmgrRequest.uploadPacket
+        //requestPacket.len = UInt16(encodedData?.count ?? 0)
+        let requestPacketData = NmgrRequest.uploadPacket.encode(data: encodedData)
+        
+        return requestPacketData
+    }
+
+    private func encodeJson(dataDictionary: Dictionary<String, Any>) -> Data? {
+        let json = JSON(dataDictionary)
+        
+        #if DEBUG
+            let payload = json.rawString(.utf8, options: [])
+            DLog("JSON payload: \(payload != nil ? payload!: "<empty>")")
+        #endif
+        
+        var encodedData: Data?
+        do {
+            encodedData = try json.rawData(options: [])
+        }
+        catch {
+            DLog("Error encoding packet: \(error)")
+        }
+        
+        return encodedData
+    }
+    
+    
+    // MARK: - Receive Response
+    private func newtReceivedData(data: Data?, error: Error?) {
         guard let data = data, error == nil else {
             DLog("Error reading newt data: \(error)")
             responseError(error: error)
@@ -449,123 +549,26 @@ extension BlePeripheral {
             case .taskStats:
                 parseResponseTaskStats(json)
                 
+            case .boot:
+                parseResponseBoot(json)
+                
             case .upload(let imageData):
                 parseResponseUploadImage(json, imageData: imageData)
                 
-            default:
-                DLog("Not implemented")
+            case .activate:
+                DLog("Activate not implemented")
+                
+            case .reset:
+                DLog("Reset not implemented")
             }
         }
         else {
             DLog("Error: newtReadData with no command")
         }
-        
-    }
-   
-    private func newtUpload(imageData: Data, progress: NewtRequestProgressHandler?, completion: NewtRequestCompletionHandler?) {
-
-        guard imageData.count >= 32 else {
-            completion?(nil, NewtError.updateImageInvalid)
-            newtRequestsQueue.next()
-            return
-        }
-        
-        // Start uploading the first packet (it will continue uploading packets step by step each time a notification is received)
-        newtUploadPacket(from: imageData, offset: 0, progress: progress, completion: completion)
-
-    }
- 
-    private func newtUploadPacket(from imageData: Data, offset dataOffset: Int, progress: NewtRequestProgressHandler?, completion: NewtRequestCompletionHandler?) {
-        guard let newtCharacteristic = newtCharacteristic, let newtCharacteristicWriteType = newtCharacteristicWriteType else {
-            DLog("Command Error: Peripheral not configured. Use setup()")
-            completion?(nil, NewtError.invalidCharacteristic)
-            newtRequestsQueue.next()
-            return
-        }
-        
-        // Update progress
-        if let progress = progress {
-            let currentProgress = Float(dataOffset) / Float(imageData.count)
-            progress(currentProgress)
-        }
-
-        // Create packet data
-        let (packetData, dataSize) = createDfuPacket(with: imageData, packetOffset: dataOffset)
-        
-        
-        if dataSize == 0 {
-            //  Finished
-            completion?(nil, nil)
-            newtRequestsQueue.next()
-        }
-        else {
-            // Write
-            // DLog("peripheral.writeValue(0x\(writeData)")
-            write(data: packetData, for: newtCharacteristic, type: newtCharacteristicWriteType)  { [weak self] error in
-                if error != nil {
-                    completion?(nil, error)
-                    self?.newtRequestsQueue.next()
-                }
-            }
-        }        
     }
     
-    private func createDfuPacket(with firmwareData: Data, packetOffset: Int) -> (Data, Int) {
-        let kMaxPacketSize = 76
-        
-        let firmwareSize = firmwareData.count
-        let remainingBytes = firmwareSize - packetOffset
-        
-        var bytesToSend: Int
-        if remainingBytes >= kMaxPacketSize {
-            bytesToSend = kMaxPacketSize
-        }
-        else {
-            bytesToSend = remainingBytes % kMaxPacketSize
-        }
-        
-        let packetData = firmwareData.subdata(in: packetOffset..<packetOffset+bytesToSend)
-        let encodedData = encodeData(data: packetData, packetOffset: packetOffset, firmwareSize: firmwareSize)
-        
-        /*
-        if let encodedData = encodedData {
-            DLog("payload: \(hexDescription(data: encodedData))")
-        }*/
-        
-        var requestPacket = NmgrRequest.uploadPacket
-        requestPacket.len = UInt16(encodedData?.count ?? 0)
-        let requestPacketData = requestPacket.encode(data: encodedData)
-        
-        return (requestPacketData, bytesToSend)
-    }
     
-    private func encodeData(data: Data, packetOffset: Int, firmwareSize: Int) -> Data? {
-        let initPktDatabase64Encoded = data.base64EncodedString(options: [])
-        
-        var dataDictionary: [String: Any] = ["off": packetOffset, "data": initPktDatabase64Encoded]
-        if packetOffset == 0 {
-            dataDictionary["len"] = firmwareSize
-        }
-        
-        let json = JSON(dataDictionary)
-        
-        #if DEBUG
-            let payload = json.rawString(.utf8, options: [])
-            DLog("JSON payload: \(payload != nil ? payload!: "<empty>")")
-        #endif
-        
-        var encodedData: Data?
-        do {
-            encodedData = try json.rawData(options: [])
-        }
-        catch {
-            DLog("Error encoding packet: \(error)")
-        }
-        
-        return encodedData
-    }
-    
-    // MARK - Response
+    // MARK: List
     private func parseResponseList(_ json: JSON) {
         defer {
             newtRequestsQueue.next()
@@ -577,6 +580,71 @@ extension BlePeripheral {
         completionHandler?(images, nil)
     }
     
+
+    // MARK: TaskStats
+    private func parseResponseTaskStats(_ json: JSON) {
+        defer {
+            newtRequestsQueue.next()
+        }
+        
+        let completionHandler = newtRequestsQueue.first()?.completion
+        guard verifyResponseCode(json, completionHandler: completionHandler) else {
+            return
+        }
+        
+        let tasksJson = json["tasks"].arrayValue.map({$0.stringValue})
+        
+        completionHandler?(tasksJson, nil)
+    }
+    
+    // MARK: Boot
+    private func parseResponseBoot(_ json: JSON) {
+        defer {
+            newtRequestsQueue.next()
+        }
+        
+        let completionHandler = newtRequestsQueue.first()?.completion
+        guard verifyResponseCode(json, completionHandler: completionHandler) else {
+            return
+        }
+        
+        let tasksJson = json["boot"].arrayValue.map({$0.stringValue})
+        
+        completionHandler?(tasksJson, nil)
+    }
+
+    
+    // MARK: Upload Image
+    private func parseResponseUploadImage(_ json: JSON, imageData: Data) {
+        
+        let request = newtRequestsQueue.first()
+        
+        guard verifyResponseCode(json, completionHandler: request?.completion) else {
+            newtRequestsQueue.next()
+            return
+        }
+
+        guard let newtCharacteristic = newtCharacteristic, let newtCharacteristicWriteType = newtCharacteristicWriteType else {
+            DLog("Command Error: characteristic no longer valid")
+            request?.completion?(nil, NewtError.invalidCharacteristic)
+            newtRequestsQueue.next()
+            return
+        }
+        
+        let offset = json["off"].intValue
+        if let writeData = newtUploadPacket(from: imageData, offset: offset, progress: request?.progress, completion: request?.completion) {
+            
+            write(data: writeData, for: newtCharacteristic, type: newtCharacteristicWriteType) { [weak self] error in
+                if error != nil {
+                    DLog("Error: \(error!)")
+                    request?.completion?(nil, error)
+                    self?.newtRequestsQueue.next()
+                }
+            }
+        }
+    }
+    
+    // MARK: Utils
     private func verifyResponseCode(_ json: JSON, completionHandler: NewtRequestCompletionHandler?) -> Bool {
         
         guard let returnCodeRaw = json["rc"].uInt16 else {
@@ -600,34 +668,6 @@ extension BlePeripheral {
         return true
     }
     
-    private func parseResponseTaskStats(_ json: JSON) {
-        defer {
-            newtRequestsQueue.next()
-        }
-        
-        let completionHandler = newtRequestsQueue.first()?.completion
-        guard verifyResponseCode(json, completionHandler: completionHandler) else {
-            return
-        }
-        
-        let tasksJson = json["tasks"].arrayValue.map({$0.stringValue})
-        
-        completionHandler?(tasksJson, nil)
-    }
-    
-    private func parseResponseUploadImage(_ json: JSON, imageData: Data) {
-        
-        let request = newtRequestsQueue.first()
-        
-        guard verifyResponseCode(json, completionHandler: request?.completion) else {
-            newtRequestsQueue.next()
-            return
-        }
-        
-        let offset = json["off"].intValue
-        newtUploadPacket(from: imageData, offset: offset, progress: request?.progress, completion: request?.completion)
-    }
-    
     private func responseError(error: Error?) {
         defer {
             newtRequestsQueue.next()
@@ -636,6 +676,169 @@ extension BlePeripheral {
         let completionHandler = newtRequestsQueue.first()?.completion
         completionHandler?(nil, error)
     }
+    
+    
+    // MARK: - Image Structures and functions
+    private struct NewtImageHeader {
+        static let kHeaderSize: UInt16    = 32
+        static let kMagic: UInt32         = 0x96f3b83c
+        static let kMagicNone: UInt32     = 0xffffffff
+        static let kHashSize: UInt32      = 32
+        static let kTlvSize: UInt32       = 4
+    }
+    
+    private enum imgFlags : UInt32 {
+        case SHA256                 = 0x00000002    // Image contains hash TLV
+        case PKCS15_RSA2048_SHA256  = 0x00000004    // PKCS15 w/RSA and SHA
+        case ECDSA224_SHA256        = 0x00000008    // ECDSA256 over SHA256
+        
+        var code:UInt32 {
+            return rawValue
+        }
+    }
+    
+    
+    // Image trailer TLV types.
+    
+    private enum imgTlvType : UInt8 {
+        case SHA256   = 1 // SHA256 of image hdr and body
+        case RSA2048  = 2 // RSA2048 of hash output
+        case ECDSA224 = 3 // ECDSA of hash output
+        
+        var code:UInt8 {
+            return rawValue
+        }
+    }
+    
+    struct imgVersion {
+        var major: UInt8
+        var minor: UInt8
+        var revision: UInt16
+        var buildNum: UInt32
+        
+        init() {
+            self.major      = 0
+            self.minor      = 0
+            self.revision   = 0
+            self.buildNum   = 0
+        }
+        
+        var description: String {
+            return String.init(format: "%d.%d.%d", major, minor, revision)
+        }
+    }
+    
+    // Image header.  All fields are in little endian byte order.
+    private struct imgHeader {
+        var magic:UInt32
+        var tlvSize:UInt16  // Trailing TLVs
+        var keyId:UInt8
+        //uint8_t  _pad1;
+        var hdrSize:UInt16
+        //uint16_t _pad2;
+        var imgSize:UInt32  // Does not include header.
+        var flags:UInt32
+        var ver: imgVersion
+        //uint32_t _pad3;
+        
+        init?(magic:UInt32, tlvSize:UInt16,
+              keyId:UInt8, hdrSize:UInt16,
+              imgSize:UInt32, flags:UInt32,
+              ver:imgVersion) {
+            
+            self.magic    = magic
+            self.tlvSize  = tlvSize // Trailing TLVs
+            self.keyId    = keyId
+            //uint8_t  _pad1;
+            self.hdrSize  = hdrSize
+            //uint16_t _pad2;
+            self.imgSize  = imgSize // Does not include header.
+            self.flags     = flags
+            self.ver = ver
+        }
+        
+        init(imdata: Data) {
+            magic = imdata.scanValue(start: 0, length: 4)
+            tlvSize = imdata.scanValue(start: 4, length: 2)
+            keyId = imdata.scanValue(start: 6, length: 1)
+            //uint8_t  _pad1
+            hdrSize = imdata.scanValue(start: 8, length: 2)
+            //uint16_t _pad2;
+            imgSize = imdata.scanValue(start: 12, length: 4)
+            flags = imdata.scanValue(start: 16, length: 4)
+            ver = imgVersion()
+            ver.major = imdata.scanValue(start: 21, length: 1)
+            ver.minor = imdata.scanValue(start: 22, length: 1)
+            ver.revision = imdata.scanValue(start: 23, length: 2)
+            ver.buildNum = imdata.scanValue(start: 25, length: 4)
+        }
+    }
+    
+    // Image trailer TLV format. All fields in little endian.
+    private struct imgTlv {
+        var type: UInt8
+        //uint8_t  _pad;
+        var len: UInt16
+        
+        init?(type: UInt8, len: UInt16) {
+            self.type = type
+            self.len  = len
+        }
+        
+        init(imdata: Data) {
+            type = imdata.scanValue(start: 0, length: 1)
+            len = imdata.scanValue(start: 2, length: 2)
+        }
+    }
+    
+    static func readInfo(imageData data: Data) -> (vesion: imgVersion, hash: Data) {
+        var hdr: imgHeader
+        var tlv: imgTlv
+        var ver = imgVersion()
+        var hash = Data()
+        var error: Error?
+        
+        hdr = imgHeader(imdata: data)
+        
+        if hdr.magic == NewtImageHeader.kMagic {
+            ver = hdr.ver
+        }
+        else if (hdr.magic == 0xffffffff) {
+            error = NewtError.imageInvalid
+        }
+        else {
+            error = NewtError.imageInvalid
+        }
+        
+        if error == nil {
+            // Build ID is in a TLV after the image.
+            var dataOff = UInt32(hdr.hdrSize) + UInt32(hdr.imgSize)
+            let dataEnd = dataOff + UInt32(hdr.tlvSize)
+            
+            while (dataOff + NewtImageHeader.kTlvSize  <= dataEnd) {
+                let imdata = data.subdata(in: Int(dataOff)..<Int(dataOff)+Int(NewtImageHeader.kTlvSize))
+                tlv = imgTlv(imdata: imdata)
+                if (tlv.type == 0xff && tlv.len == 0xffff) {
+                    break;
+                }
+                
+                if (tlv.type != imgTlvType.SHA256.code || UInt32(tlv.len) != NewtImageHeader.kHashSize) {
+                    dataOff += NewtImageHeader.kTlvSize + UInt32(tlv.len)
+                    continue
+                }
+                
+                dataOff += NewtImageHeader.kTlvSize
+                if (dataOff + NewtImageHeader.kHashSize > dataEnd) {
+                    return (ver, Data())
+                }
+                
+                hash = data.subdata(in: Int(dataOff)..<Int(dataOff)+Int(NewtImageHeader.kHashSize))
+            }
+        }
+        
+        return (ver, hash)
+    }
+
 }
 
 // MARK: - Data Scan

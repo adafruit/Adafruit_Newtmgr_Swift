@@ -8,16 +8,27 @@
 
 import UIKit
 
+protocol UploadProgressViewControllerDelegate: class {
+    func onUploadCancel()
+}
+
 class UploadProgressViewController: UIViewController {
 
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var progressLabel: UILabel!
+    @IBOutlet weak var dialogView: UIView!
     
+    weak var delegate: UploadProgressViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        // UI
+        dialogView.layer.cornerRadius = 8
+        dialogView.layer.masksToBounds = true
+        
+        // Initial state
+        set(progress: 0)
     }
 
     override func didReceiveMemoryWarning() {
@@ -27,7 +38,7 @@ class UploadProgressViewController: UIViewController {
     
     func set(progress: Float) {
         progressView.progress = progress
-        progressLabel.text = String.init(format: "%0.1f%%", progress / 100)
+        progressLabel.text = String(format: "%.1f%%", progress * 100.0)
     }
 
     /*
@@ -40,4 +51,7 @@ class UploadProgressViewController: UIViewController {
     }
     */
 
+    @IBAction func onClickCancel(_ sender: Any) {
+        delegate?.onUploadCancel()
+    }
 }

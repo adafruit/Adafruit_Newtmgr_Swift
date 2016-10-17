@@ -10,6 +10,9 @@ import UIKit
 
 class ImageBankViewController: NewtViewController {
 
+    // Config
+    private static let kInternalFirmwareSubdirectory = "/firmware"
+    
     // UI
     @IBOutlet weak var baseTableView: UITableView!
 
@@ -18,7 +21,13 @@ class ImageBankViewController: NewtViewController {
     var currentImageVersion: String!
 
     // Data
-    fileprivate var firmwareFileNames: [String]?
+    fileprivate struct ImageInfo {
+        var name: String
+        var version: String
+        var hash: Data
+    }
+    
+    fileprivate var images: [ImageInfo]?
     private var uploadProgressViewController: UploadProgressViewController?
     
     override func viewDidLoad() {
@@ -60,18 +69,60 @@ class ImageBankViewController: NewtViewController {
     }*/
     
     private func refreshImages() {
-        let docsPath = Bundle.main.resourcePath! + "/firmware"
+        
+        // Image internal firmware files
+        let docsPath = Bundle.main.resourcePath! + ImageBankViewController.kInternalFirmwareSubdirectory
         let fileManager = FileManager.default
         
         do {
-            firmwareFileNames = try fileManager.contentsOfDirectory(atPath: docsPath)
-            DLog("Firmware files: \(firmwareFileNames!.joined(separator: ", "))")
+            let firmwareFileNames = try fileManager.contentsOfDirectory(atPath: docsPath)
+            DLog("Firmware files: \(firmwareFileNames.joined(separator: ", "))")
+
+            // Extract firmware file info
+            images = [ImageInfo]()
+            for firmwareFileName in firmwareFileNames {
+                if let data = dataFrom(fileName: firmwareFileName, subdirectory: ImageBankViewController.kInternalFirmwareSubdirectory) {
+                    let (version, hash) = BlePeripheral.readInfo(imageData: data)
+                    DLog("Firmware: \(firmwareFileName): v\(version.major).\(version.minor).\(version.revision).\(version.buildNum) hash: \(hash)")
+                    let imageInfo = ImageInfo(name: firmwareFileName, version: version.description, hash: hash)
+                    images!.append(imageInfo)
+                }
+            }
+            
         } catch {
-            firmwareFileNames = nil
-            print(error)
+            images = nil
+            DLog("Error reading images: \(error)")
         }
         
+        
+        // Update UI
         updateUI()
+    }
+    
+    private func urlFrom(fileName: String, subdirectory: String) -> URL? {
+        let name = fileName as NSString
+        let fileUrl = Bundle.main.url(forResource: name.deletingPathExtension, withExtension: name.pathExtension, subdirectory: subdirectory)
+
+        return fileUrl
+    }
+    
+    private func dataFrom(fileName: String, subdirectory: String) -> Data? {
+        // Get Url
+        guard let fileUrl = urlFrom(fileName: fileName, subdirectory: subdirectory) else {
+            DLog("Error reading file path")
+            return nil
+        }
+        
+        // Read data
+        var data: Data?
+        do {
+            data = try Data(contentsOf: fileUrl)
+            
+        } catch {
+            DLog("Error reading file: \(error)")
+        }
+
+        return data
     }
     
     // MARK: - UI
@@ -87,23 +138,7 @@ class ImageBankViewController: NewtViewController {
     
     fileprivate func uploadImage(name imageName: String) {
         
-        // Get Url
-        let filename = imageName as NSString
-        guard let fileUrl = Bundle.main.url(forResource: filename.deletingPathExtension, withExtension: filename.pathExtension, subdirectory: "firmware")else {
-            DLog("Error reading file path")
-            return
-        }
-        
-        // Read data
-        var data: Data?
-        do {
-            data = try Data(contentsOf: fileUrl)
-            
-        } catch {
-            DLog("Error reading file: \(error)")
-        }
-        
-        guard let imageData = data else {
+        guard let imageData = dataFrom(fileName: imageName, subdirectory: ImageBankViewController.kInternalFirmwareSubdirectory) else {
             let alertController = UIAlertController(title: "Error", message: "Error reading image file", preferredStyle: .alert)
             let okAction = UIAlertAction(title: "Ok", style: .default, handler: { alertAction in
             })
@@ -114,6 +149,7 @@ class ImageBankViewController: NewtViewController {
         
         // Create upload dialog
         uploadProgressViewController = (storyboard?.instantiateViewController(withIdentifier: "UploadProgressViewController") as! UploadProgressViewController)
+        uploadProgressViewController?.delegate = self
         present(uploadProgressViewController!, animated: true) { [unowned self] in
             self.sendUploadRequest(imageData: imageData)
         }
@@ -126,15 +162,15 @@ class ImageBankViewController: NewtViewController {
                 self?.uploadProgressViewController?.set(progress: progress)
             }
 
-        }) { [weak self] (result, error) in
-            
-            self?.uploadProgressViewController?.dismiss(animated: true) { [weak self] in
-                self?.uploadProgressViewController = nil
-                
-                guard error == nil else {
-                    DLog("upload error: \(error!)")
+        }) { (result, error) in
+
+            DispatchQueue.main.async { [weak self]  in
+                self?.uploadProgressViewController?.dismiss(animated: true) { [weak self] in
+                    self?.uploadProgressViewController = nil
                     
-                    DispatchQueue.main.async { [weak self]  in
+                    guard error == nil else {
+                        DLog("upload error: \(error!)")
+                        
                         let message: String?
                         if let newtError = error as? BlePeripheral.NewtError {
                             message = newtError.description
@@ -148,22 +184,20 @@ class ImageBankViewController: NewtViewController {
                         })
                         alertController.addAction(okAction)
                         self?.present(alertController, animated: true, completion: nil)
+                        return
                     }
-                    return
+                    
+                    DLog("Upload finished successfully")
+                    
+                    let message = "Image has been succesfully uploaded"
+                    let alertController = UIAlertController(title: "Uploap Finishsed", message: message, preferredStyle: .alert)
+                    let okAction = UIAlertAction(title: "Ok", style: .default, handler: { alertAction in
+                    })
+                    alertController.addAction(okAction)
+                    self?.present(alertController, animated: true, completion: nil)
                 }
-                
-                DLog("Upload finished successfully")
-                
-                let message = "Image has been succesfully uploaded"
-                let alertController = UIAlertController(title: "Uploap Finishsed", message: message, preferredStyle: .alert)
-                let okAction = UIAlertAction(title: "Ok", style: .default, handler: { alertAction in
-                })
-                alertController.addAction(okAction)
-                self?.present(alertController, animated: true, completion: nil)
-                
             }
         }
-
     }
 }
 
@@ -195,7 +229,7 @@ extension ImageBankViewController: UITableViewDataSource {
         case 0:
             count = 1
         case 1:
-            count = firmwareFileNames?.count ?? 0
+            count = images?.count ?? 0
         default:
             count = 0
         }
@@ -234,15 +268,17 @@ extension ImageBankViewController: UITableViewDataSource {
             text = "Current Image"
             detailText = currentImageVersion
             isSelectable = false
+            cell.accessoryType = .none
         case 1:
-            text = firmwareFileNames![indexPath.row]
-            detailText = "x.x.x"
+            let image = images![indexPath.row]
+            text = image.name
+            detailText = image.version
+            cell.accessoryType = .detailDisclosureButton
         default:
             break
         }
         
         cell.selectionStyle = isSelectable ? .gray:.none
-        cell.accessoryType = .none
         cell.textLabel!.text = text
         cell.detailTextLabel!.text = detailText
     }
@@ -257,12 +293,19 @@ extension ImageBankViewController: UITableViewDelegate {
         case 0:
             break
         case 1:
-            let imageName = firmwareFileNames![indexPath.row]
-            uploadImage(name: imageName)
+            let image = images![indexPath.row]
+            uploadImage(name: image.name)
         default:
             break
         }
         
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+}
+
+extension ImageBankViewController: UploadProgressViewControllerDelegate {
+    func onUploadCancel() {
+        DLog("Upload cancelled")
+        
     }
 }
