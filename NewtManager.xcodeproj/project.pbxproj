@@ -49,6 +49,7 @@
 		A950EB211DB0534D005FC305 /* TasksViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksViewController.swift; sourceTree = "<group>"; };
 		A95CE57A1DB68252008C234E /* CommandsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandsViewController.swift; sourceTree = "<group>"; };
 		A95CE57C1DB6887E008C234E /* AlertUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertUtils.swift; sourceTree = "<group>"; };
+		A95CE57E1DB6BB48008C234E /* NewtManager.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NewtManager.entitlements; sourceTree = "<group>"; };
 		A9A5EC551DB1253700566005 /* Synchronize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Synchronize.swift; sourceTree = "<group>"; };
 		A9A5EC581DB1256300566005 /* BleManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BleManager.swift; sourceTree = "<group>"; };
 		A9A5EC591DB1256300566005 /* BlePeripheral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlePeripheral.swift; sourceTree = "<group>"; };
@@ -100,6 +101,7 @@
 		A950EB001DB00351005FC305 /* NewtManager */ = {
 			isa = PBXGroup;
 			children = (
+				A95CE57E1DB6BB48008C234E /* NewtManager.entitlements */,
 				A950EB011DB00351005FC305 /* AppDelegate.swift */,
 				A950EB081DB00351005FC305 /* Assets.xcassets */,
 				A950EB0A1DB00351005FC305 /* LaunchScreen.storyboard */,
@@ -206,6 +208,9 @@
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.iCloud = {
 								enabled = 1;
 							};
 						};
@@ -437,6 +442,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = NewtManager/NewtManager.entitlements;
 				DEVELOPMENT_TEAM = 2X94RM7457;
 				INFOPLIST_FILE = NewtManager/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -453,6 +459,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = NewtManager/NewtManager.entitlements;
 				DEVELOPMENT_TEAM = 2X94RM7457;
 				INFOPLIST_FILE = NewtManager/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;

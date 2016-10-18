@@ -12,7 +12,7 @@ class ImagesViewController: NewtViewController {
     
     // Config
     private static let kInternalFirmwareSubdirectory = "/firmware"
-    private static let kShowAlertOnBootError = false
+    private static let kShowAlertOnBootError = true
     private static let kShowAlertOnListError = true
 
     // UI
@@ -101,6 +101,19 @@ class ImagesViewController: NewtViewController {
         }
     }
     
+    fileprivate func boot(version: String) {
+        let message = "Would you like to activate it and reset the device?"
+        let alertController = UIAlertController(title: "Boot version \(version)", message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Activate", style: .default, handler: { [unowned self] alertAction in
+            
+            self.sendBootRequest(version: version)
+        })
+        alertController.addAction(okAction)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+        
+    }
     
     // MARK: - Image List
     private func refreshImageList() {
@@ -151,7 +164,7 @@ class ImagesViewController: NewtViewController {
             // Extract firmware file info
             imagesInternal = [ImageInfo]()
             for firmwareFileName in firmwareFileNames {
-                if let data = dataFrom(fileName: firmwareFileName, subdirectory: ImagesViewController.kInternalFirmwareSubdirectory) {
+                if let url = urlFrom(bundleFileName: firmwareFileName, subdirectory: ImagesViewController.kInternalFirmwareSubdirectory), let data = dataFrom(url: url) {
                     let (version, hash) = BlePeripheral.readInfo(imageData: data)
                     DLog("Firmware: \(firmwareFileName): v\(version.major).\(version.minor).\(version.revision).\(version.buildNum) hash: \(hash)")
                     let imageInfo = ImageInfo(name: firmwareFileName, version: version.description, hash: hash)
@@ -168,24 +181,18 @@ class ImagesViewController: NewtViewController {
         updateUI()
     }
     
-    private func urlFrom(fileName: String, subdirectory: String) -> URL? {
-        let name = fileName as NSString
+    private func urlFrom(bundleFileName: String, subdirectory: String) -> URL? {
+        let name = bundleFileName as NSString
         let fileUrl = Bundle.main.url(forResource: name.deletingPathExtension, withExtension: name.pathExtension, subdirectory: subdirectory)
         
         return fileUrl
     }
     
-    private func dataFrom(fileName: String, subdirectory: String) -> Data? {
-        // Get Url
-        guard let fileUrl = urlFrom(fileName: fileName, subdirectory: subdirectory) else {
-            DLog("Error reading file path")
-            return nil
-        }
-        
+    private func dataFrom(url: URL) -> Data? {
         // Read data
         var data: Data?
         do {
-            data = try Data(contentsOf: fileUrl)
+            data = try Data(contentsOf: url)
             
         } catch {
             DLog("Error reading file: \(error)")
@@ -195,13 +202,22 @@ class ImagesViewController: NewtViewController {
     }
     
     
-    fileprivate func uploadImage(name imageName: String) {
+    fileprivate func uploadImage(bundleFileName: String) {
+        guard let fileUrl = urlFrom(bundleFileName: bundleFileName, subdirectory: ImagesViewController.kInternalFirmwareSubdirectory) else {
+            DLog("Error reading file path")
+            return
+        }
         
-        guard let imageData = dataFrom(fileName: imageName, subdirectory: ImagesViewController.kInternalFirmwareSubdirectory) else {
+        uploadImage(url: fileUrl)
+    }
+    
+    fileprivate func uploadImage(url: URL) {
+        guard let imageData = dataFrom(url: url) else {
             showErrorAlert(from: self, title: "Error", message: "Error reading image file")
             return
         }
         
+        let imageName = url.lastPathComponent
         let message = "Would you like to upload \(imageName)?"
         let alertController = UIAlertController(title: "Upload Image", message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "Ok", style: .default) {[unowned self] _ in
@@ -272,12 +288,12 @@ class ImagesViewController: NewtViewController {
                     context.present(alertController, animated: true, completion: nil)
                     
                     // Refresh Image List
+                    context.refreshBootVersion()
                     context.refreshImageList()
                 }
             }
         }
     }
-    
     
     private func sendBootRequest(imageData: Data) {
         guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
@@ -302,20 +318,6 @@ class ImagesViewController: NewtViewController {
         }
     }
 
-    
-    fileprivate func boot(version: String) {
-        let message = "Would you like to activate it and reset the device?"
-        let alertController = UIAlertController(title: "Boot version \(version)", message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "Activate", style: .default, handler: { [unowned self] alertAction in
-            
-            self.sendBootRequest(version: version)
-        })
-        alertController.addAction(okAction)
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        alertController.addAction(cancelAction)
-        present(alertController, animated: true, completion: nil)
-
-    }
     
     private func sendBootRequest(version: String) {
         guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
@@ -361,6 +363,14 @@ class ImagesViewController: NewtViewController {
             // Success. Reset dvice
             DLog("Reset successful")
         }
+    }
+    
+    // MARK: Custom images
+    fileprivate func importImage(sourceView: UIView) {
+        let importMenu = UIDocumentMenuViewController(documentTypes: ["public.data", "public.content"], in: .import)
+        importMenu.delegate = self
+        importMenu.popoverPresentationController?.sourceView = sourceView
+        present(importMenu, animated: true, completion: nil)
     }
     
     // MARK: - UI
@@ -492,10 +502,11 @@ extension ImagesViewController: UITableViewDelegate {
             
         case 2:
             if let imageInfo: ImageInfo? = indexPath.row < (imagesInternal?.count ?? 0) ? imagesInternal![indexPath.row]:nil {
-                uploadImage(name: imageInfo!.name)
+                uploadImage(bundleFileName: imageInfo!.name)
             }
             else {
-                DLog("Show image picker")
+                let currentCell = self.tableView(tableView, cellForRowAt: indexPath)
+                importImage(sourceView: currentCell.contentView)
             }
             
         default:
@@ -512,4 +523,22 @@ extension ImagesViewController: UploadProgressViewControllerDelegate {
         DLog("Upload cancelled")
         isUploadCancelled = true
     }
+}
+
+// MARK: - UIDocumentMenuDelegate
+extension ImagesViewController: UIDocumentMenuDelegate {
+    
+    func documentMenu(_ documentMenu: UIDocumentMenuViewController, didPickDocumentPicker documentPicker: UIDocumentPickerViewController) {
+        documentPicker.delegate = self
+        present(documentPicker, animated: true, completion: nil)
+    }
+}
+
+// MARK: - UIDocumentPickerDelegate
+extension ImagesViewController: UIDocumentPickerDelegate {
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
+        DLog("picked: \(url.absoluteString)")
+        uploadImage(url: url)
+    }
+
 }

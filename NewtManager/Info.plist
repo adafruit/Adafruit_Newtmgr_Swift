@@ -22,6 +22,8 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>NewtManager would like to make data available to connected bluetooth devices while the app is in background</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>bluetooth-central</string>

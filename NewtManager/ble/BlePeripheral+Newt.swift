@@ -17,7 +17,7 @@ extension BlePeripheral {
     
     //
     typealias NewtRequestCompletionHandler = ((_ data: Any?, _ error: Error?) -> Void)
-    typealias NewtRequestProgressHandler = ((_ progress: Float) -> Bool)
+    typealias NewtRequestProgressHandler = ((_ progress: Float) -> Bool)    // Return value indicates if the operation should be cancelled
     
     // MARK: - Custom properties
     private struct CustomPropertiesKeys {
@@ -75,6 +75,7 @@ extension BlePeripheral {
         case internalError
         case updateImageInvalid
         case imageInvalid
+        case userCancelled
         
         var description: String {
             switch self {
@@ -88,11 +89,13 @@ extension BlePeripheral {
             case .internalError: return "Internal error"
             case .updateImageInvalid: return "Upload image is invalid"
             case .imageInvalid: return "Image invalid"
+            case .userCancelled: return "Cancelled"
             }
         }
     }
     
     // Nmgr Flags/Opcode/Group/Id Enums
+    // TODO: convert to Swift3 naming conventions
     private enum Flags: UInt8 {
         case Default = 0
         
@@ -461,11 +464,16 @@ extension BlePeripheral {
         }
         
         var packetData: Data? = nil
-        if isCancelled || imageData.count - dataOffset <= 0 {      // Finished
+        
+        if isCancelled {                                // Cancelled
+            completion?(nil, NewtError.userCancelled)
+            newtRequestsQueue.next()
+        }
+        else if imageData.count - dataOffset <= 0 {     // Finished
             completion?(nil, nil)
             newtRequestsQueue.next()
         }
-        else {                                      // Create packet data
+        else {                                          // Create packet data
             packetData = createUploadPacket(with: imageData, packetOffset: dataOffset)
         }
  
@@ -730,6 +738,8 @@ extension BlePeripheral {
     
     
     // MARK: - Image Structures and functions
+    // TODO: convert to Swift3 naming conventions
+
     private struct NewtImageHeader {
         static let kHeaderSize: UInt16    = 32
         static let kMagic: UInt32         = 0x96f3b83c
