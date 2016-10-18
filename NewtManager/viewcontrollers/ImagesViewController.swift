@@ -19,9 +19,10 @@ class ImagesViewController: NewtViewController {
     @IBOutlet weak var baseTableView: UITableView!
     
     // Boot info
-    fileprivate var bootImage: String?
+    fileprivate var mainImage: String?
+    fileprivate var activeImage: String?
+    fileprivate var testImage: String?
     fileprivate var imageVersions: [String]?
-//    fileprivate var selectedBankRow: Int?
     
     // Image Upload
     fileprivate struct ImageInfo {
@@ -52,21 +53,6 @@ class ImagesViewController: NewtViewController {
         refreshImageList()
     }
     
-    // MARK: - Navigation
-    /*
-    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
-        return selectedBankRow != nil && imageVersions != nil && selectedBankRow! < (imageVersions?.count ?? 0)
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let viewController = segue.destination as? ImageBankViewController {
-            viewController.blePeripheral = blePeripheral
-            viewController.bankId = "\(selectedBankRow!)"
-            viewController.currentImageVersion = selectedBankRow! < (imageVersions?.count ?? 0) ? imageVersions![selectedBankRow!]:nil
-        }
-    }
- */
-    
     // MARK: - Newt
     override func newtBecomeReady() {
         super.newtBecomeReady()
@@ -78,7 +64,6 @@ class ImagesViewController: NewtViewController {
         }
     }
     
-    
     // MARK: - Boot Info
     private func refreshBootVersion() {
         guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
@@ -86,28 +71,30 @@ class ImagesViewController: NewtViewController {
         }
         
         // Retrieve Boot info
-        peripheral.newtRequest(with: .boot) { [weak self] (bootImageString, error) in
+        peripheral.newtRequest(with: .boot) { [weak self] (bootImages, error) in
             guard let context = self else {
                 return
             }
             
             if error != nil {
                 DLog("Error Boot: \(error!)")
-                context.bootImage = "error retrieving info"
+                context.mainImage = "error retrieving info"
+                context.activeImage = "error retrieving info"
                 
                 if ImagesViewController.kShowAlertOnBootError {
                     DispatchQueue.main.async {
                         showErrorAlert(from: context, title: "Error", message: "Error retrieving boot data")
                     }
                 }
-                
             }
             
-            if let bootImageString = bootImageString as? String {
-                DLog("BootImage: \(bootImageString)")
-                context.bootImage = bootImageString
+            if let (mainImage, activeImage, testImage) = bootImages as? (String?, String?, String?) {
+                context.mainImage = mainImage
+                context.activeImage = activeImage
+                context.testImage = testImage
             }
             
+    
             DispatchQueue.main.async {
                 context.updateUI()
             }
@@ -411,7 +398,7 @@ extension ImagesViewController: UITableViewDataSource {
         var count: Int
         switch section {
         case 0:
-            count = 1
+            count = 3
         case 1:
             count = imageVersions?.count ?? 0
         case 2:
@@ -456,9 +443,20 @@ extension ImagesViewController: UITableViewDataSource {
         var detailText: String?
         switch indexPath.section {
         case 0:
-            text = "Boot Image"
-            detailText = bootImage != nil ? bootImage:"no info"
+            if indexPath.row == 0 {
+                text = "Main Image"
+                detailText = mainImage != nil ? mainImage!:"empty"
+            }
+            else if indexPath.row == 1 {
+                text = "Active Image"
+                detailText = activeImage != nil ? activeImage!:"empty"
+            }
+            else {
+                text = "Test Image"
+                detailText = testImage != nil ? testImage!:"empty"
+            }
             cell.accessoryType = .none
+            
         case 1:
             text = "Bank \(indexPath.row)"
             let imageVersion = imageVersions![indexPath.row]

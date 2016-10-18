@@ -634,9 +634,11 @@ extension BlePeripheral {
             return
         }
         
-        let tasksJson = json["boot"].arrayValue.map({$0.stringValue})
+        let mainImage = json["main"].string
+        let activeImage = json["active"].string
+        let testImage = json["test"].string
         
-        completionHandler?(tasksJson, nil)
+        completionHandler?((mainImage, activeImage, testImage), nil)
     }
 
     
