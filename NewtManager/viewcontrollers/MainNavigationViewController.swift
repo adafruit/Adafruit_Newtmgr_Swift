@@ -69,10 +69,7 @@ class MainNavigationViewController: UINavigationController {
         // Show alert if error found
         if let errorMessage = errorMessage {
             DLog("ble status change alert: \(errorMessage)")
-            let alertController = UIAlertController(title: "Error", message: errorMessage, preferredStyle: .alert)
-            let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
-            alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            showErrorAlert(from: self, title: "Error", message: errorMessage)
         }
     }
 }

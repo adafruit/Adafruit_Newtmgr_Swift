@@ -17,7 +17,7 @@ extension BlePeripheral {
     
     //
     typealias NewtRequestCompletionHandler = ((_ data: Any?, _ error: Error?) -> Void)
-    typealias NewtRequestProgressHandler = ((_ progress: Float) -> Void)
+    typealias NewtRequestProgressHandler = ((_ progress: Float) -> Bool)
     
     // MARK: - Custom properties
     private struct CustomPropertiesKeys {
@@ -438,13 +438,14 @@ extension BlePeripheral {
     private func newtUploadPacket(from imageData: Data, offset dataOffset: Int, progress: NewtRequestProgressHandler?, completion: NewtRequestCompletionHandler?) -> Data? {
   
         // Update progress
+        var isCancelled = false
         if let progress = progress {
             let currentProgress = Float(dataOffset) / Float(imageData.count)
-            progress(currentProgress)
+            isCancelled = progress(currentProgress)
         }
         
         var packetData: Data? = nil
-        if imageData.count - dataOffset <= 0 {      // Finished
+        if isCancelled || imageData.count - dataOffset <= 0 {      // Finished
             completion?(nil, nil)
             newtRequestsQueue.next()
         }
@@ -556,10 +557,10 @@ extension BlePeripheral {
                 parseResponseUploadImage(json, imageData: imageData)
                 
             case .activate:
-                DLog("Activate not implemented")
+                parseBasicJsonResponse(json)
                 
             case .reset:
-                DLog("Reset not implemented")
+                parseBasicResponse()
             }
         }
         else {
@@ -613,6 +614,29 @@ extension BlePeripheral {
         completionHandler?(tasksJson, nil)
     }
 
+    
+     // MARK: Basic Command (Activate)
+    private func parseBasicJsonResponse(_ json: JSON) {
+        defer {
+            newtRequestsQueue.next()
+        }
+        
+        let completionHandler = newtRequestsQueue.first()?.completion
+        guard verifyResponseCode(json, completionHandler: completionHandler) else {
+            return
+        }
+
+        completionHandler?(nil, nil)
+    }
+    
+    private func parseBasicResponse() {
+        defer {
+            newtRequestsQueue.next()
+        }
+        
+        let completionHandler = newtRequestsQueue.first()?.completion
+        completionHandler?(nil, nil)
+    }
     
     // MARK: Upload Image
     private func parseResponseUploadImage(_ json: JSON, imageData: Data) {
@@ -837,6 +861,19 @@ extension BlePeripheral {
         }
         
         return (ver, hash)
+    }
+    
+    // MARK: - Utils
+    static func newtShowErrorAlert(from controller: UIViewController, title: String? = "Error", error: Error) {
+        let message: String?
+        if let newtError = error as? BlePeripheral.NewtError {
+            message = newtError.description
+        }
+        else {
+            message = error.localizedDescription
+        }
+        
+        showErrorAlert(from: controller, title: title, message: message)
     }
 
 }

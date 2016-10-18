@@ -42,14 +42,10 @@ class DeviceTabBarViewController: UITabBarController {
                 DLog("Newt setup error: \(error!)")
                 
                 DispatchQueue.main.async {
-                    let message = "Error initializing Newt service"
-                    let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-                    let okAction = UIAlertAction(title: "Ok", style: .default, handler: { alertAction in
+                    showErrorAlert(from: context, title: "Error", message: "Error initializing Newt service") { [unowned context] _ in
                         // Go back to scanning controller
                         _ = context.navigationController?.popToRootViewController(animated: true)
-                    })
-                    alertController.addAction(okAction)
-                    context.present(alertController, animated: true, completion: nil)
+                    }
                 }
                 
                 BleManager.sharedInstance.disconnect(from: peripheral)

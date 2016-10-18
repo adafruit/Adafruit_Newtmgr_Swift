@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		620781DE7336F4A748F2B17B /* Pods_NewtManager.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22A1C0FEAE5AF77CC589BD13 /* Pods_NewtManager.framework */; };
 		A92CC7461DB52083002124EF /* UploadProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92CC7451DB52083002124EF /* UploadProgressViewController.swift */; };
-		A946D0CB1DB309D300D731B2 /* ImageBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A946D0CA1DB309D300D731B2 /* ImageBankViewController.swift */; };
 		A946D0D91DB31E0400D731B2 /* firmware in Resources */ = {isa = PBXBuildFile; fileRef = A946D0D81DB31E0400D731B2 /* firmware */; };
 		A94B02A21DB4570200593514 /* CommandQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94B02A11DB4570200593514 /* CommandQueue.swift */; };
 		A950EB021DB00351005FC305 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB011DB00351005FC305 /* AppDelegate.swift */; };
@@ -20,6 +19,8 @@
 		A950EB1C1DB01424005FC305 /* ScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB1B1DB01424005FC305 /* ScannerViewController.swift */; };
 		A950EB201DB04C6F005FC305 /* MainNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB1F1DB04C6F005FC305 /* MainNavigationViewController.swift */; };
 		A950EB221DB0534D005FC305 /* TasksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB211DB0534D005FC305 /* TasksViewController.swift */; };
+		A95CE57B1DB68252008C234E /* DebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95CE57A1DB68252008C234E /* DebugViewController.swift */; };
+		A95CE57D1DB6887E008C234E /* AlertUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95CE57C1DB6887E008C234E /* AlertUtils.swift */; };
 		A9A5EC561DB1253700566005 /* Synchronize.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A5EC551DB1253700566005 /* Synchronize.swift */; };
 		A9A5EC5B1DB1256300566005 /* BleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A5EC581DB1256300566005 /* BleManager.swift */; };
 		A9A5EC5C1DB1256300566005 /* BlePeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A5EC591DB1256300566005 /* BlePeripheral.swift */; };
@@ -35,7 +36,6 @@
 		248D6317AE0B051C55E9F7D9 /* Pods-NewtManager.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NewtManager.release.xcconfig"; path = "Pods/Target Support Files/Pods-NewtManager/Pods-NewtManager.release.xcconfig"; sourceTree = "<group>"; };
 		2F6D5EE2A6A578F5257A3873 /* Pods-NewtManager.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NewtManager.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NewtManager/Pods-NewtManager.debug.xcconfig"; sourceTree = "<group>"; };
 		A92CC7451DB52083002124EF /* UploadProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadProgressViewController.swift; sourceTree = "<group>"; };
-		A946D0CA1DB309D300D731B2 /* ImageBankViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageBankViewController.swift; sourceTree = "<group>"; };
 		A946D0D81DB31E0400D731B2 /* firmware */ = {isa = PBXFileReference; lastKnownFileType = folder; path = firmware; sourceTree = "<group>"; };
 		A94B02A11DB4570200593514 /* CommandQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandQueue.swift; sourceTree = "<group>"; };
 		A950EAFE1DB00351005FC305 /* NewtManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewtManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -48,6 +48,8 @@
 		A950EB1B1DB01424005FC305 /* ScannerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScannerViewController.swift; sourceTree = "<group>"; };
 		A950EB1F1DB04C6F005FC305 /* MainNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainNavigationViewController.swift; sourceTree = "<group>"; };
 		A950EB211DB0534D005FC305 /* TasksViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksViewController.swift; sourceTree = "<group>"; };
+		A95CE57A1DB68252008C234E /* DebugViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugViewController.swift; sourceTree = "<group>"; };
+		A95CE57C1DB6887E008C234E /* AlertUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertUtils.swift; sourceTree = "<group>"; };
 		A9A5EC551DB1253700566005 /* Synchronize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Synchronize.swift; sourceTree = "<group>"; };
 		A9A5EC581DB1256300566005 /* BleManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BleManager.swift; sourceTree = "<group>"; };
 		A9A5EC591DB1256300566005 /* BlePeripheral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlePeripheral.swift; sourceTree = "<group>"; };
@@ -119,6 +121,7 @@
 				A9A5EC551DB1253700566005 /* Synchronize.swift */,
 				A9FACDA41DB2724C00061E70 /* DataConversions.swift */,
 				A94B02A11DB4570200593514 /* CommandQueue.swift */,
+				A95CE57C1DB6887E008C234E /* AlertUtils.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -132,8 +135,8 @@
 				A9FACDAA1DB2AE3000061E70 /* NewtViewController.swift */,
 				A950EB211DB0534D005FC305 /* TasksViewController.swift */,
 				A9EB79D01DB2FD9A00635A6D /* ImagesViewController.swift */,
-				A946D0CA1DB309D300D731B2 /* ImageBankViewController.swift */,
 				A92CC7451DB52083002124EF /* UploadProgressViewController.swift */,
+				A95CE57A1DB68252008C234E /* DebugViewController.swift */,
 			);
 			path = viewcontrollers;
 			sourceTree = "<group>";
@@ -295,7 +298,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A946D0CB1DB309D300D731B2 /* ImageBankViewController.swift in Sources */,
 				A950EB221DB0534D005FC305 /* TasksViewController.swift in Sources */,
 				A9FACDA91DB2AE0F00061E70 /* DeviceTabBarViewController.swift in Sources */,
 				A950EB201DB04C6F005FC305 /* MainNavigationViewController.swift in Sources */,
@@ -309,6 +311,8 @@
 				A9EB79D11DB2FD9A00635A6D /* ImagesViewController.swift in Sources */,
 				A9A5EC5D1DB1256300566005 /* BlePeripheral+Newt.swift in Sources */,
 				A9A5EC561DB1253700566005 /* Synchronize.swift in Sources */,
+				A95CE57D1DB6887E008C234E /* AlertUtils.swift in Sources */,
+				A95CE57B1DB68252008C234E /* DebugViewController.swift in Sources */,
 				A92CC7461DB52083002124EF /* UploadProgressViewController.swift in Sources */,
 				A950EB1C1DB01424005FC305 /* ScannerViewController.swift in Sources */,
 			);

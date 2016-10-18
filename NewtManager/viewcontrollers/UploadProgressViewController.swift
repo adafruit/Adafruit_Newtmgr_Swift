@@ -17,8 +17,12 @@ class UploadProgressViewController: UIViewController {
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var progressLabel: UILabel!
     @IBOutlet weak var dialogView: UIView!
+    @IBOutlet weak var imageNameLabel: UILabel!
+    @IBOutlet weak var imageSizeLabel: UILabel!
     
     weak var delegate: UploadProgressViewControllerDelegate?
+    var imageName: String?
+    var imageSize: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +32,8 @@ class UploadProgressViewController: UIViewController {
         dialogView.layer.masksToBounds = true
         
         // Initial state
+        imageNameLabel.text = imageName
+        imageSizeLabel.text = imageSize
         set(progress: 0)
     }
 
@@ -40,6 +46,7 @@ class UploadProgressViewController: UIViewController {
         progressView.progress = progress
         progressLabel.text = String(format: "%.1f%%", progress * 100.0)
     }
+    
 
     /*
     // MARK: - Navigation

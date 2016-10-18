@@ -21,7 +21,7 @@ class ImagesViewController: NewtViewController {
     // Boot info
     fileprivate var bootImage: String?
     fileprivate var imageVersions: [String]?
-    fileprivate var selectedBankRow: Int?
+//    fileprivate var selectedBankRow: Int?
     
     // Image Upload
     fileprivate struct ImageInfo {
@@ -31,7 +31,7 @@ class ImagesViewController: NewtViewController {
     }
     fileprivate var imagesInternal: [ImageInfo]?
     private var uploadProgressViewController: UploadProgressViewController?
-
+    fileprivate var isUploadCancelled = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,6 +53,7 @@ class ImagesViewController: NewtViewController {
     }
     
     // MARK: - Navigation
+    /*
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
         return selectedBankRow != nil && imageVersions != nil && selectedBankRow! < (imageVersions?.count ?? 0)
     }
@@ -64,9 +65,12 @@ class ImagesViewController: NewtViewController {
             viewController.currentImageVersion = selectedBankRow! < (imageVersions?.count ?? 0) ? imageVersions![selectedBankRow!]:nil
         }
     }
+ */
     
     // MARK: - Newt
     override func newtBecomeReady() {
+        super.newtBecomeReady()
+
         // Refresh if view is visible
         if isViewLoaded && view.window != nil {
             refreshBootVersion()
@@ -89,16 +93,14 @@ class ImagesViewController: NewtViewController {
             
             if error != nil {
                 DLog("Error Boot: \(error!)")
+                context.bootImage = "error retrieving info"
                 
                 if ImagesViewController.kShowAlertOnBootError {
                     DispatchQueue.main.async {
-                        let message = "Error retrieving boot data"
-                        let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-                        let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
-                        alertController.addAction(okAction)
-                        context.present(alertController, animated: true, completion: nil)
+                        showErrorAlert(from: context, title: "Error", message: "Error retrieving boot data")
                     }
                 }
+                
             }
             
             if let bootImageString = bootImageString as? String {
@@ -112,6 +114,8 @@ class ImagesViewController: NewtViewController {
         }
     }
     
+    
+    // MARK: - Image List
     private func refreshImageList() {
         guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
             return
@@ -129,11 +133,7 @@ class ImagesViewController: NewtViewController {
                 
                 if ImagesViewController.kShowAlertOnListError {
                     DispatchQueue.main.async {
-                        let message = "Error retrieving image list"
-                        let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-                        let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
-                        alertController.addAction(okAction)
-                        context.present(alertController, animated: true, completion: nil)
+                        showErrorAlert(from: context, title: "Error", message: "Error retrieving image list")
                     }
                 }
             }
@@ -148,6 +148,12 @@ class ImagesViewController: NewtViewController {
             }
         }
         
+    }
+    
+    // MARK: - Boot
+    
+    fileprivate func boot(bankId: Int) {
+        DLog("boot bank: \(bankId)")
     }
     
     // MARK: - Image Update
@@ -211,14 +217,9 @@ class ImagesViewController: NewtViewController {
     fileprivate func uploadImage(name imageName: String) {
         
         guard let imageData = dataFrom(fileName: imageName, subdirectory: ImagesViewController.kInternalFirmwareSubdirectory) else {
-            let alertController = UIAlertController(title: "Error", message: "Error reading image file", preferredStyle: .alert)
-            let okAction = UIAlertAction(title: "Ok", style: .default, handler: { alertAction in
-            })
-            alertController.addAction(okAction)
-            present(alertController, animated: true, completion: nil)
+            showErrorAlert(from: self, title: "Error", message: "Error reading image file")
             return
         }
-        
         
         let message = "Would you like to upload \(imageName)?"
         let alertController = UIAlertController(title: "Upload Image", message: message, preferredStyle: .alert)
@@ -226,7 +227,9 @@ class ImagesViewController: NewtViewController {
             
             // Create upload dialog
             self.uploadProgressViewController = (self.storyboard?.instantiateViewController(withIdentifier: "UploadProgressViewController") as! UploadProgressViewController)
-            self.uploadProgressViewController?.delegate = self
+            self.uploadProgressViewController!.delegate = self
+            self.uploadProgressViewController!.imageName = imageName
+            self.uploadProgressViewController!.imageSize = String(format: "%.0f KB", Double(imageData.count)/1024.0)
             self.present(self.uploadProgressViewController!, animated: true) { [unowned self] in
                 self.sendUploadRequest(imageData: imageData)
             }
@@ -240,17 +243,24 @@ class ImagesViewController: NewtViewController {
     }
     
     private func sendUploadRequest(imageData: Data) {
+        guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
+            return
+        }
+        
+        isUploadCancelled = false
+        
         // Send upload request
-        blePeripheral?.newtRequest(with: .upload(imageData: imageData), progress: { (progress) in
-            DispatchQueue.main.async { [weak self]  in
+        peripheral.newtRequest(with: .upload(imageData: imageData), progress: { [weak self] (progress) -> Bool in
+            
+            DispatchQueue.main.async {
                 self?.uploadProgressViewController?.set(progress: progress)
             }
+            return self?.isUploadCancelled ?? true
             
         }) { (result, error) in
             
             DispatchQueue.main.async { [weak self]  in
                 self?.uploadProgressViewController?.dismiss(animated: true) { [weak self] in
-
                     guard let context = self else {
                         return
                     }
@@ -260,30 +270,22 @@ class ImagesViewController: NewtViewController {
                     guard error == nil else {
                         DLog("upload error: \(error!)")
                         
-                        let message: String?
-                        if let newtError = error as? BlePeripheral.NewtError {
-                            message = newtError.description
-                        }
-                        else {
-                            message = error!.localizedDescription
-                        }
-                        
-                        let alertController = UIAlertController(title: "Upload image failed", message: message, preferredStyle: .alert)
-                        let okAction = UIAlertAction(title: "Ok", style: .default, handler: { alertAction in
-                        })
-                        alertController.addAction(okAction)
-                        context.present(alertController, animated: true, completion: nil)
+                        BlePeripheral.newtShowErrorAlert(from: context, title: "Upload image failed", error: error!)
                         return
                     }
                     
-                    // Success
-                    DLog("Upload finished successfully")
+                    // Success. Ask if should activate
+                    DLog("Upload successful")
                     
-                    let message = "Image has been succesfully uploaded"
-                    let alertController = UIAlertController(title: "Uploap Finishsed", message: message, preferredStyle: .alert)
-                    let okAction = UIAlertAction(title: "Ok", style: .default, handler: { alertAction in
+                    let message = "Image has been succesfully uploaded.\nWould you like to activate it and reset the device?"
+                    let alertController = UIAlertController(title: "Upload successful", message: message, preferredStyle: .alert)
+                    let okAction = UIAlertAction(title: "Activate", style: .default, handler: { [unowned context] alertAction in
+                        
+                        context.sendActivateRequest(imageData: imageData)
                     })
                     alertController.addAction(okAction)
+                    let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+                    alertController.addAction(cancelAction)
                     context.present(alertController, animated: true, completion: nil)
                     
                     // Refresh Image LIst
@@ -292,7 +294,53 @@ class ImagesViewController: NewtViewController {
             }
         }
     }
+    
+    
+    private func sendActivateRequest(imageData: Data) {
+        guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
+            return
+        }
+        
+        peripheral.newtRequest(with: .activate(imageData: imageData)) { [weak self]  (_, error) in
+            guard let context = self else {
+                return
+            }
+            
+            guard error == nil else {
+                DLog("activate error: \(error!)")
+                
+                BlePeripheral.newtShowErrorAlert(from: context, title: "Activate image failed", error: error!)
+                return
+            }
+            
+            // Success. Reset dvice
+            DLog("Activate successful")
+            context.sendResetRequest()
+        }
+    }
 
+    
+    private func sendResetRequest() {
+        guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
+            return
+        }
+        
+        peripheral.newtRequest(with: .reset) { [weak self]  (_, error) in
+            guard let context = self else {
+                return
+            }
+            
+            guard error == nil else {
+                DLog("reset error: \(error!)")
+                
+                BlePeripheral.newtShowErrorAlert(from: context, title: "Reset device failed", error: error!)
+                return
+            }
+            
+            // Success. Reset dvice
+            DLog("Reset successful")
+        }
+    }
     
     // MARK: - UI
     private func updateUI() {
@@ -381,7 +429,7 @@ extension ImagesViewController: UITableViewDataSource {
             text = "Bank \(indexPath.row)"
             let imageVersion: String? = imageVersions![indexPath.row] //indexPath.row < (imageVersions?.count ?? 0) ? imageVersions![indexPath.row] : "empty"
             detailText = imageVersion
-            cell.accessoryType = .disclosureIndicator
+            cell.accessoryType = indexPath.row != 0 ? .disclosureIndicator:.none
             
         case 2:
             let imageInfo: ImageInfo? = indexPath.row < (imagesInternal?.count ?? 0) ? imagesInternal![indexPath.row]:nil
@@ -407,9 +455,11 @@ extension ImagesViewController: UITableViewDelegate {
             break
             
         case 1:
-            selectedBankRow = indexPath.row
-            performSegue(withIdentifier: "bankSegue", sender: self)
+//            selectedBankRow = indexPath.row
+//            performSegue(withIdentifier: "bankSegue", sender: self)
         
+            boot(bankId: indexPath.row)
+            
         case 2:
             if let imageInfo: ImageInfo? = indexPath.row < (imagesInternal?.count ?? 0) ? imagesInternal![indexPath.row]:nil {
                 uploadImage(name: imageInfo!.name)
@@ -430,6 +480,6 @@ extension ImagesViewController: UITableViewDelegate {
 extension ImagesViewController: UploadProgressViewControllerDelegate {
     func onUploadCancel() {
         DLog("Upload cancelled")
-        
+        isUploadCancelled = true
     }
 }

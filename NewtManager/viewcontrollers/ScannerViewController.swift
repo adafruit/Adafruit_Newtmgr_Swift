@@ -87,7 +87,6 @@ class ScannerViewController: UIViewController {
         
         DLog("Connecting...");
         let alertController = UIAlertController(title: nil, message: "Connecting...", preferredStyle: .alert)
-        
         alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (_) -> Void in
             BleManager.sharedInstance.disconnect(from: peripheral)
         }))
@@ -168,14 +167,9 @@ class ScannerViewController: UIViewController {
     
     // MARK: - UI
     private func showPeripheralDisconnectedDialog() {
-        
-        let alertController = UIAlertController(title: nil, message: "Peripheral Disconnected", preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "Ok", style: .default, handler: { [unowned self] (_) -> Void in
+        showErrorAlert(from: self, title: nil, message: "Peripheral Disconnected") { [unowned self] _ in
             _ = self.navigationController?.popToRootViewController(animated: true)
-        })
-        
-        alertController.addAction(okAction)
-        present(alertController, animated: true, completion: nil)
+        }
     }
     
     private func updateScannedPeripherals() {
