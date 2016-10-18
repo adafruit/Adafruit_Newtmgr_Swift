@@ -149,13 +149,7 @@ class ImagesViewController: NewtViewController {
         }
         
     }
-    
-    // MARK: - Boot
-    
-    fileprivate func boot(bankId: Int) {
-        DLog("boot bank: \(bankId)")
-    }
-    
+ 
     // MARK: - Image Update
     private func refreshImageFiles() {
         
@@ -242,6 +236,8 @@ class ImagesViewController: NewtViewController {
       
     }
     
+    // MARK: - Requests
+
     private func sendUploadRequest(imageData: Data) {
         guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
             return
@@ -281,14 +277,14 @@ class ImagesViewController: NewtViewController {
                     let alertController = UIAlertController(title: "Upload successful", message: message, preferredStyle: .alert)
                     let okAction = UIAlertAction(title: "Activate", style: .default, handler: { [unowned context] alertAction in
                         
-                        context.sendActivateRequest(imageData: imageData)
+                        context.sendBootRequest(imageData: imageData)
                     })
                     alertController.addAction(okAction)
                     let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
                     alertController.addAction(cancelAction)
                     context.present(alertController, animated: true, completion: nil)
                     
-                    // Refresh Image LIst
+                    // Refresh Image List
                     context.refreshImageList()
                 }
             }
@@ -296,29 +292,67 @@ class ImagesViewController: NewtViewController {
     }
     
     
-    private func sendActivateRequest(imageData: Data) {
+    private func sendBootRequest(imageData: Data) {
         guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
             return
         }
         
-        peripheral.newtRequest(with: .activate(imageData: imageData)) { [weak self]  (_, error) in
+        peripheral.newtRequest(with: .bootImage(data: imageData)) { [weak self]  (_, error) in
             guard let context = self else {
                 return
             }
             
             guard error == nil else {
-                DLog("activate error: \(error!)")
+                DLog("boot image error: \(error!)")
                 
-                BlePeripheral.newtShowErrorAlert(from: context, title: "Activate image failed", error: error!)
+                BlePeripheral.newtShowErrorAlert(from: context, title: "Boot image failed", error: error!)
                 return
             }
             
-            // Success. Reset dvice
-            DLog("Activate successful")
+            // Success. Reset device
+            DLog("Boot image successful")
             context.sendResetRequest()
         }
     }
 
+    
+    fileprivate func boot(version: String) {
+        let message = "Would you like to activate it and reset the device?"
+        let alertController = UIAlertController(title: "Boot version \(version)", message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Activate", style: .default, handler: { [unowned self] alertAction in
+            
+            self.sendBootRequest(version: version)
+        })
+        alertController.addAction(okAction)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+
+    }
+    
+    private func sendBootRequest(version: String) {
+        guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
+            return
+        }
+        
+        peripheral.newtRequest(with: .bootVersion(version: version)) { [weak self]  (_, error) in
+            guard let context = self else {
+                return
+            }
+            
+            guard error == nil else {
+                DLog("boot version error: \(error!)")
+                
+                BlePeripheral.newtShowErrorAlert(from: context, title: "Boot version failed", error: error!)
+                return
+            }
+            
+            // Success. Reset device
+            DLog("Boot version successful")
+            context.sendResetRequest()
+        }
+    }
+    
     
     private func sendResetRequest() {
         guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
@@ -427,9 +461,9 @@ extension ImagesViewController: UITableViewDataSource {
             cell.accessoryType = .none
         case 1:
             text = "Bank \(indexPath.row)"
-            let imageVersion: String? = imageVersions![indexPath.row] //indexPath.row < (imageVersions?.count ?? 0) ? imageVersions![indexPath.row] : "empty"
+            let imageVersion = imageVersions![indexPath.row]
             detailText = imageVersion
-            cell.accessoryType = indexPath.row != 0 ? .disclosureIndicator:.none
+            cell.accessoryType = .disclosureIndicator
             
         case 2:
             let imageInfo: ImageInfo? = indexPath.row < (imagesInternal?.count ?? 0) ? imagesInternal![indexPath.row]:nil
@@ -455,10 +489,8 @@ extension ImagesViewController: UITableViewDelegate {
             break
             
         case 1:
-//            selectedBankRow = indexPath.row
-//            performSegue(withIdentifier: "bankSegue", sender: self)
-        
-            boot(bankId: indexPath.row)
+            let imageVersion = imageVersions![indexPath.row]
+            boot(version: imageVersion)
             
         case 2:
             if let imageInfo: ImageInfo? = indexPath.row < (imagesInternal?.count ?? 0) ? imagesInternal![indexPath.row]:nil {

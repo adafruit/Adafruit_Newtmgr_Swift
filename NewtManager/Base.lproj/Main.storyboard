@@ -90,12 +90,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IS8-Kb-AGy" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2576" y="568"/>
+            <point key="canvasLocation" x="2724" y="571"/>
         </scene>
         <!--Debug Commands-->
         <scene sceneID="eRy-xz-fKO">
             <objects>
-                <viewController id="ehV-gi-sPm" customClass="DebugViewController" customModule="NewtManager" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="ehV-gi-sPm" customClass="CommandsViewController" customModule="NewtManager" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="1AI-ju-U9j"/>
                         <viewControllerLayoutGuide type="bottom" id="Mc1-FX-qVA"/>
@@ -129,7 +129,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vfI-a2-cCn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2579" y="-191"/>
+            <point key="canvasLocation" x="2721" y="-190"/>
         </scene>
         <!--Images-->
         <scene sceneID="oWw-Jt-eO5">
@@ -168,7 +168,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="O1M-yB-H5v" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2579" y="-940"/>
+            <point key="canvasLocation" x="2718" y="-933"/>
         </scene>
         <!--Upload Progress View Controller-->
         <scene sceneID="bOK-5v-Zed">
@@ -262,7 +262,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fFq-sJ-Erk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3018" y="-942"/>
+            <point key="canvasLocation" x="3479" y="-935"/>
         </scene>
         <!--Main Navigation View Controller-->
         <scene sceneID="0t7-xY-WGA">

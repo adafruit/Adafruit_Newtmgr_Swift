@@ -19,9 +19,8 @@
 		A950EB1C1DB01424005FC305 /* ScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB1B1DB01424005FC305 /* ScannerViewController.swift */; };
 		A950EB201DB04C6F005FC305 /* MainNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB1F1DB04C6F005FC305 /* MainNavigationViewController.swift */; };
 		A950EB221DB0534D005FC305 /* TasksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB211DB0534D005FC305 /* TasksViewController.swift */; };
-		A95CE57B1DB68252008C234E /* DebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95CE57A1DB68252008C234E /* DebugViewController.swift */; };
+		A95CE57B1DB68252008C234E /* CommandsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95CE57A1DB68252008C234E /* CommandsViewController.swift */; };
 		A95CE57D1DB6887E008C234E /* AlertUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95CE57C1DB6887E008C234E /* AlertUtils.swift */; };
-		A9A5EC561DB1253700566005 /* Synchronize.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A5EC551DB1253700566005 /* Synchronize.swift */; };
 		A9A5EC5B1DB1256300566005 /* BleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A5EC581DB1256300566005 /* BleManager.swift */; };
 		A9A5EC5C1DB1256300566005 /* BlePeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A5EC591DB1256300566005 /* BlePeripheral.swift */; };
 		A9A5EC5D1DB1256300566005 /* BlePeripheral+Newt.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A5EC5A1DB1256300566005 /* BlePeripheral+Newt.swift */; };
@@ -48,7 +47,7 @@
 		A950EB1B1DB01424005FC305 /* ScannerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScannerViewController.swift; sourceTree = "<group>"; };
 		A950EB1F1DB04C6F005FC305 /* MainNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainNavigationViewController.swift; sourceTree = "<group>"; };
 		A950EB211DB0534D005FC305 /* TasksViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksViewController.swift; sourceTree = "<group>"; };
-		A95CE57A1DB68252008C234E /* DebugViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugViewController.swift; sourceTree = "<group>"; };
+		A95CE57A1DB68252008C234E /* CommandsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandsViewController.swift; sourceTree = "<group>"; };
 		A95CE57C1DB6887E008C234E /* AlertUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertUtils.swift; sourceTree = "<group>"; };
 		A9A5EC551DB1253700566005 /* Synchronize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Synchronize.swift; sourceTree = "<group>"; };
 		A9A5EC581DB1256300566005 /* BleManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BleManager.swift; sourceTree = "<group>"; };
@@ -136,7 +135,7 @@
 				A950EB211DB0534D005FC305 /* TasksViewController.swift */,
 				A9EB79D01DB2FD9A00635A6D /* ImagesViewController.swift */,
 				A92CC7451DB52083002124EF /* UploadProgressViewController.swift */,
-				A95CE57A1DB68252008C234E /* DebugViewController.swift */,
+				A95CE57A1DB68252008C234E /* CommandsViewController.swift */,
 			);
 			path = viewcontrollers;
 			sourceTree = "<group>";
@@ -310,9 +309,8 @@
 				A9FACDAB1DB2AE3000061E70 /* NewtViewController.swift in Sources */,
 				A9EB79D11DB2FD9A00635A6D /* ImagesViewController.swift in Sources */,
 				A9A5EC5D1DB1256300566005 /* BlePeripheral+Newt.swift in Sources */,
-				A9A5EC561DB1253700566005 /* Synchronize.swift in Sources */,
 				A95CE57D1DB6887E008C234E /* AlertUtils.swift in Sources */,
-				A95CE57B1DB68252008C234E /* DebugViewController.swift in Sources */,
+				A95CE57B1DB68252008C234E /* CommandsViewController.swift in Sources */,
 				A92CC7461DB52083002124EF /* UploadProgressViewController.swift in Sources */,
 				A950EB1C1DB01424005FC305 /* ScannerViewController.swift in Sources */,
 			);

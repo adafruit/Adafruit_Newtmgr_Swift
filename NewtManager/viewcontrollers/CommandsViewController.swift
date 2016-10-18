@@ -1,5 +1,5 @@
 //
-//  DebugViewController.swift
+//  CommandsViewController.swift
 //  NewtManager
 //
 //  Created by Antonio García on 18/10/2016.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DebugViewController: NewtViewController {
+class CommandsViewController: NewtViewController {
 
     // UI
     @IBOutlet weak var baseTableView: UITableView!
@@ -67,7 +67,7 @@ class DebugViewController: NewtViewController {
                     return
                 }
                 
-                guard error != nil else {
+                guard error == nil else {
                     DLog("Error: \(error!)")
                     
                     
@@ -81,10 +81,11 @@ class DebugViewController: NewtViewController {
     }
 }
 
-extension DebugViewController: UITableViewDataSource {
+extension CommandsViewController: UITableViewDataSource {
+    private static let kCommandNames = ["Reset", "Boot version"]
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let kNumCommands = 1
-        return (blePeripheral?.isNewtManagerReady ?? false) ? kNumCommands:0
+        return (blePeripheral?.isNewtManagerReady ?? false) ? CommandsViewController.kCommandNames.count:0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -98,28 +99,33 @@ extension DebugViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        
-        var title: String?
-        switch indexPath.row {
-        case 0:
-            title = "Reset"
-        default:
-            title = nil
-        }
-        
-        cell.textLabel!.text = title
+        cell.textLabel!.text = CommandsViewController.kCommandNames[indexPath.row]
         cell.accessoryType = .disclosureIndicator
 
     }
 }
 
-extension DebugViewController: UITableViewDelegate {
+extension CommandsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        
         switch indexPath.row {
         case 0:
             sendRequest(for: .reset)
+            
+        case 1:
+            let alert = UIAlertController(title: "Enter version to boot", message: "Version", preferredStyle: .alert)
+            alert.addTextField { (textField) in
+                textField.placeholder = "0.0.0"
+            }
+            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [unowned self] (_) in
+                let textField = alert.textFields![0]
+                if let version = textField.text {
+                    self.sendRequest(for: .bootVersion(version: version))
+                }
+            }))
+            self.present(alert, animated: true, completion: nil)
+            
+
         default:
             break
         }

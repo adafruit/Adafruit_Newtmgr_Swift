@@ -132,7 +132,7 @@ extension BlePeripheral {
         case Boot       = 2
         case File       = 3
         case List2      = 4
-        case Boot2      = 5
+        case Activate   = 5
         case Corelist   = 6
         case Coreload   = 7
         
@@ -228,7 +228,8 @@ extension BlePeripheral {
         case taskStats
         case boot
         case upload(imageData: Data)
-        case activate(imageData: Data)
+        case bootImage(data: Data)
+        case bootVersion(version: String)
         case reset
     }
     
@@ -243,6 +244,8 @@ extension BlePeripheral {
             self.completion = completion
         }
         
+        static let uploadPacket = Packet(op: OpCode.Write, flags: Flags.Default, len: 0, group: Group.Image, seq: 0, id: GroupImage.Upload.code)!
+
         var packet: Packet {
             var packet: Packet
             
@@ -254,13 +257,16 @@ extension BlePeripheral {
                 packet = Packet(op: OpCode.Read, flags: Flags.Default,  len: 0, group: Group.Default, seq: 0, id: GroupDefault.Taskstats.code)!
                 
             case .boot:
-                packet = Packet(op: OpCode.Read, flags: Flags.Default,  len: 0, group: Group.Default, seq: 0, id: GroupImage.Boot.code)!
+                packet = Packet(op: OpCode.Read, flags: Flags.Default,  len: 0, group: Group.Image, seq: 0, id: GroupImage.Boot.code)!
                 
             case .upload:
                 packet = NmgrRequest.uploadPacket
                 
-            case .activate:
-                packet = Packet(op: OpCode.Write, flags: Flags.Default, len: 0, group: Group.Image, seq: 0, id: GroupImage.Boot2.code)!
+            case .bootImage:
+                packet = Packet(op: OpCode.Write, flags: Flags.Default, len: 0, group: Group.Image, seq: 0, id: GroupImage.Activate.code)!
+                
+            case .bootVersion:
+                packet = Packet(op: OpCode.Write, flags: Flags.Default, len: 0, group: Group.Image, seq: 0, id: GroupImage.Boot.code)!
                 
             case .reset:
                 packet = Packet(op: OpCode.Write, flags: Flags.Default, len: 0, group: Group.Default, seq: 0, id: GroupDefault.Reset.code)!
@@ -268,9 +274,6 @@ extension BlePeripheral {
             
             return packet
         }
-        
-        static let uploadPacket = Packet(op: OpCode.Write, flags: Flags.Default, len: 0, group: Group.Image, seq: 0, id: GroupImage.Upload.code)!
-        
         
         var description: String {
             switch command {
@@ -282,8 +285,10 @@ extension BlePeripheral {
                 return "Boot"
             case .upload:
                 return "Upload"
-            case .activate:
-                return "Activate"
+            case .bootImage:
+                return "Boot from image"
+            case .bootVersion(let version):
+                return "Boot version \(version)"
             case .reset:
                 return "Reset"
             }
@@ -391,8 +396,11 @@ extension BlePeripheral {
         case .upload(let imageData):
             data = newtUpload(imageData: imageData, progress: request.progress, completion: request.completion)
             
-        case .activate(let imageData):
-            data = newtActivate(imageData: imageData, packet: request.packet)
+        case .bootImage(let imageData):
+            data = newtBoot(imageData: imageData, packet: request.packet)
+            
+        case .bootVersion(let version):
+            data = newtBoot(version: version, packet: request.packet)
             
         default:
             data = request.packet.encode(data: nil)
@@ -411,8 +419,8 @@ extension BlePeripheral {
         }
     }
 
-    // MARK: Activate
-    private func newtActivate(imageData: Data, packet: Packet) -> Data {
+    // MARK: Boot
+    private func newtBoot(imageData: Data, packet: Packet) -> Data {
         let (_, buildId) = BlePeripheral.readInfo(imageData: imageData)
         
         let buildIdBase64 = buildId.base64EncodedString(options: [])
@@ -423,6 +431,14 @@ extension BlePeripheral {
         return requestPacketData
     }
     
+    
+    private func newtBoot(version: String, packet: Packet) -> Data {
+        let dataDictionary: [String: Any] = [ "test": version]
+        let encodedData = encodeJson(dataDictionary: dataDictionary)
+        
+        let requestPacketData = packet.encode(data: encodedData)
+        return requestPacketData
+    }
     // MARK: Upload
     private func newtUpload(imageData: Data, progress: NewtRequestProgressHandler?, completion: NewtRequestCompletionHandler?) -> Data? {
         guard imageData.count >= 32 else {
@@ -489,8 +505,6 @@ extension BlePeripheral {
         }*/
         
         // Create request packet
-        //let requestPacket = NmgrRequest.uploadPacket
-        //requestPacket.len = UInt16(encodedData?.count ?? 0)
         let requestPacketData = NmgrRequest.uploadPacket.encode(data: encodedData)
         
         return requestPacketData
@@ -531,6 +545,8 @@ extension BlePeripheral {
         }
         
         if let command = newtRequestsQueue.first()?.command {
+            
+            // Decode json
             let json = JSON(data: response.packet.data)
             
             #if DEBUG
@@ -538,11 +554,20 @@ extension BlePeripheral {
                 DLog("Received JSON payload: \(payload != nil ? payload!: "<empty>")")
             #endif
             
-            guard json.error == nil, !json.isEmpty else {
-                responseError(error: NewtError.receivedResponseIsNotAJson(json.error))
-                return
+            
+            // Check json validity if needed
+            switch command {
+            case .reset:        // Reset response is not a JSON
+                break
+                
+            default:
+                guard json.error == nil, !json.isEmpty else {
+                    responseError(error: NewtError.receivedResponseIsNotAJson(json.error))
+                    return
+                }
             }
             
+            // Parse response
             switch command {
             case .list:
                 parseResponseList(json)
@@ -556,7 +581,7 @@ extension BlePeripheral {
             case .upload(let imageData):
                 parseResponseUploadImage(json, imageData: imageData)
                 
-            case .activate:
+            case .bootImage, .bootVersion:
                 parseBasicJsonResponse(json)
                 
             case .reset:
