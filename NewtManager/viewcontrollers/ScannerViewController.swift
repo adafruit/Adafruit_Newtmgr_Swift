@@ -41,7 +41,7 @@ class ScannerViewController: UIViewController {
         
         // Start scannning
         BleManager.sharedInstance.startScan()
-//        BleManager.sharedInstance.startScan(withServices: [NewtManager.kNewtServiceUUID])
+//        BleManager.sharedInstance.startScan(withServices: [BlePeripheral.kNewtServiceUUID])
         
         // Update UI
         updateScannedPeripherals()
@@ -138,7 +138,7 @@ class ScannerViewController: UIViewController {
         // Clear selected peripheral
         self.selectedPeripheral = nil
         
-        // Disconnect NewtManager if needed
+        // Clear newt status if needed
         peripheral.newtDeInit()
         
         // If not an expected disconnection then show an alert to the user

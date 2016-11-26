@@ -25,8 +25,6 @@ class CommandsViewController: NewtViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -42,10 +40,9 @@ class CommandsViewController: NewtViewController {
         // Pass the selected object to the new view controller.
     }
     */
-
     
-    override func newtBecomeReady() {
-        super.newtBecomeReady()
+    override func newtDidBecomeReady() {
+        super.newtDidBecomeReady()
         
         updateUI()
     }
@@ -61,7 +58,7 @@ class CommandsViewController: NewtViewController {
             return
         }
         
-        peripheral.newtRequest(with: command) { [weak self] (result, error) in
+        peripheral.newtSendRequest(with: command) { [weak self] (result, error) in
             DispatchQueue.main.async {
                 guard let context = self else {
                     return
@@ -69,7 +66,6 @@ class CommandsViewController: NewtViewController {
                 
                 guard error == nil else {
                     DLog("Error: \(error!)")
-                    
                     
                     BlePeripheral.newtShowErrorAlert(from: context, title: "Error", error: error!)
                     return

@@ -44,8 +44,8 @@ class TaksViewController: NewtViewController {
     }
     */
     
-    override func newtBecomeReady() {
-        super.newtBecomeReady()
+    override func newtDidBecomeReady() {
+        super.newtDidBecomeReady()
 
         // Refresh if no data was previously loaded and view is visible
         if tasks == nil && isViewLoaded && view.window != nil {
@@ -58,7 +58,7 @@ class TaksViewController: NewtViewController {
             return
         }
         
-        peripheral.newtRequest(with: .taskStats) { [weak self] (imageVersionStrings, error) in            
+        peripheral.newtSendRequest(with: .taskStats) { [weak self] (imageVersionStrings, error) in            
             guard let context = self else {
                 return
             }

@@ -53,7 +53,7 @@ class DeviceTabBarViewController: UITabBarController {
             }
             
             if let context = self, let newtController = context.selectedViewController as? NewtViewController {
-                newtController.newtBecomeReady()
+                newtController.newtDidBecomeReady()
             }
         }
     }
@@ -64,7 +64,6 @@ class DeviceTabBarViewController: UITabBarController {
     }
         
     deinit {
-        
         if let peripheral = blePeripheral {
             BleManager.sharedInstance.disconnect(from: peripheral)
         }

@@ -54,8 +54,8 @@ class ImagesViewController: NewtViewController {
     }
     
     // MARK: - Newt
-    override func newtBecomeReady() {
-        super.newtBecomeReady()
+    override func newtDidBecomeReady() {
+        super.newtDidBecomeReady()
 
         // Refresh if view is visible
         if isViewLoaded && view.window != nil {
@@ -71,7 +71,7 @@ class ImagesViewController: NewtViewController {
         }
         
         // Retrieve Boot info
-        peripheral.newtRequest(with: .boot) { [weak self] (bootImages, error) in
+        peripheral.newtSendRequest(with: .boot) { [weak self] (bootImages, error) in
             guard let context = self else {
                 return
             }
@@ -122,7 +122,7 @@ class ImagesViewController: NewtViewController {
         }
         
         // Retrieve list info
-        peripheral.newtRequest(with: .list) { [weak self] (imageVersionStrings, error) in
+        peripheral.newtSendRequest(with: .list) { [weak self] (imageVersionStrings, error) in
             guard let context = self else {
                 return
             }
@@ -249,7 +249,7 @@ class ImagesViewController: NewtViewController {
         isUploadCancelled = false
         
         // Send upload request
-        peripheral.newtRequest(with: .upload(imageData: imageData), progress: { [weak self] (progress) -> Bool in
+        peripheral.newtSendRequest(with: .upload(imageData: imageData), progress: { [weak self] (progress) -> Bool in
             
             DispatchQueue.main.async {
                 self?.uploadProgressViewController?.set(progress: progress)
@@ -300,7 +300,7 @@ class ImagesViewController: NewtViewController {
             return
         }
         
-        peripheral.newtRequest(with: .bootImage(data: imageData)) { [weak self]  (_, error) in
+        peripheral.newtSendRequest(with: .bootImage(data: imageData)) { [weak self]  (_, error) in
             guard let context = self else {
                 return
             }
@@ -324,7 +324,7 @@ class ImagesViewController: NewtViewController {
             return
         }
         
-        peripheral.newtRequest(with: .bootVersion(version: version)) { [weak self]  (_, error) in
+        peripheral.newtSendRequest(with: .bootVersion(version: version)) { [weak self]  (_, error) in
             guard let context = self else {
                 return
             }
@@ -348,7 +348,7 @@ class ImagesViewController: NewtViewController {
             return
         }
         
-        peripheral.newtRequest(with: .reset) { [weak self]  (_, error) in
+        peripheral.newtSendRequest(with: .reset) { [weak self]  (_, error) in
             guard let context = self else {
                 return
             }

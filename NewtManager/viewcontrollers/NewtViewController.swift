@@ -46,7 +46,7 @@ class NewtViewController: UIViewController {
     }
     */
     
-    func newtBecomeReady() {
+    func newtDidBecomeReady() {
         // To be overrided by subclasses
     }
 
