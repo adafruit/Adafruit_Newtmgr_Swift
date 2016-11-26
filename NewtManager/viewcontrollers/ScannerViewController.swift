@@ -10,8 +10,11 @@ import UIKit
 
 class ScannerViewController: UIViewController {
 
+    // UI
     @IBOutlet weak var baseTableView: UITableView!
-    
+    private let refreshControl = UIRefreshControl()
+
+    // Data
     fileprivate var peripherals = [BlePeripheral]()
     fileprivate var selectedPeripheral: BlePeripheral?
     fileprivate var expectingDisconnetionFromPeripheralUuid: UUID?
@@ -19,6 +22,12 @@ class ScannerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // Setup table refresh
+        refreshControl.addTarget(self, action: #selector(onTableRefresh(_:)), for: UIControlEvents.valueChanged)
+        baseTableView.addSubview(refreshControl)
+        baseTableView.sendSubview(toBack: refreshControl)
+
+        // Ble Notifications
         registerNotifications(enabled: true)
     }
 
@@ -41,7 +50,6 @@ class ScannerViewController: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        
         // Stop scanning
         BleManager.sharedInstance.stopScan()
         
@@ -49,8 +57,8 @@ class ScannerViewController: UIViewController {
         peripherals = [BlePeripheral]()
     }
     
-    
     deinit {
+        // Ble Notifications
         registerNotifications(enabled: false)
     }
    
@@ -131,7 +139,7 @@ class ScannerViewController: UIViewController {
         self.selectedPeripheral = nil
         
         // Disconnect NewtManager if needed
-        peripheral.newtManagerDisconnected()
+        peripheral.newtDeInit()
         
         // If not an expected disconnection then show an alert to the user
         if peripheral.identifier == expectingDisconnetionFromPeripheralUuid {
@@ -185,6 +193,11 @@ class ScannerViewController: UIViewController {
         if let selectedPeripheral = selectedPeripheral, let selectedRow = peripherals.index(of: selectedPeripheral) {
             baseTableView.selectRow(at: IndexPath(row: selectedRow, section: 0), animated: false, scrollPosition: .none)
         }
+    }
+    
+    func onTableRefresh(_ sender: AnyObject) {
+        BleManager.sharedInstance.refreshPeripherals()
+        refreshControl.endRefreshing()
     }
 }
 

@@ -54,7 +54,7 @@ class TaksViewController: NewtViewController {
     }
     
     private func refreshTaks() {
-        guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
+        guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
         }
         

@@ -57,7 +57,7 @@ class CommandsViewController: NewtViewController {
     
     
     fileprivate func sendRequest(for command: BlePeripheral.NmgrCommand) {
-        guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
+        guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
         }
         
@@ -85,7 +85,7 @@ extension CommandsViewController: UITableViewDataSource {
     private static let kCommandNames = ["Reset", "Boot version"]
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return (blePeripheral?.isNewtManagerReady ?? false) ? CommandsViewController.kCommandNames.count:0
+        return (blePeripheral?.isNewtReady ?? false) ? CommandsViewController.kCommandNames.count:0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -123,6 +123,7 @@ extension CommandsViewController: UITableViewDelegate {
                     self.sendRequest(for: .bootVersion(version: version))
                 }
             }))
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             self.present(alert, animated: true, completion: nil)
             
 

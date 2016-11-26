@@ -66,7 +66,7 @@ class ImagesViewController: NewtViewController {
     
     // MARK: - Boot Info
     private func refreshBootVersion() {
-        guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
+        guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
         }
         
@@ -117,7 +117,7 @@ class ImagesViewController: NewtViewController {
     
     // MARK: - Image List
     private func refreshImageList() {
-        guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
+        guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
         }
         
@@ -242,7 +242,7 @@ class ImagesViewController: NewtViewController {
     // MARK: - Requests
 
     private func sendUploadRequest(imageData: Data) {
-        guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
+        guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
         }
         
@@ -296,7 +296,7 @@ class ImagesViewController: NewtViewController {
     }
     
     private func sendBootRequest(imageData: Data) {
-        guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
+        guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
         }
         
@@ -320,7 +320,7 @@ class ImagesViewController: NewtViewController {
 
     
     private func sendBootRequest(version: String) {
-        guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
+        guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
         }
         
@@ -344,7 +344,7 @@ class ImagesViewController: NewtViewController {
     
     
     private func sendResetRequest() {
-        guard let peripheral = blePeripheral, peripheral.isNewtManagerReady else {
+        guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
         }
         

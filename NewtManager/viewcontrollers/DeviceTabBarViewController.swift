@@ -33,7 +33,7 @@ class DeviceTabBarViewController: UITabBarController {
             return
         }
         
-        peripheral.setupNewtManager() { [weak self] error in
+        peripheral.newtInit() { [weak self] error in
             guard let context = self else {
                 return
             }
