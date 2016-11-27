@@ -52,7 +52,6 @@ class CommandsViewController: NewtViewController {
         baseTableView.reloadData()
     }
     
-    
     fileprivate func sendRequest(for command: BlePeripheral.NmgrCommand) {
         guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
@@ -97,7 +96,6 @@ extension CommandsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         cell.textLabel!.text = CommandsViewController.kCommandNames[indexPath.row]
         cell.accessoryType = .disclosureIndicator
-
     }
 }
 
@@ -127,8 +125,6 @@ extension CommandsViewController: UITableViewDelegate {
             break
         }
         
-        
         tableView.deselectRow(at: indexPath, animated: true)
     }
 }
-

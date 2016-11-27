@@ -53,7 +53,9 @@ class DeviceTabBarViewController: UITabBarController {
             }
             
             if let context = self, let newtController = context.selectedViewController as? NewtViewController {
-                newtController.newtDidBecomeReady()
+                DispatchQueue.main.async {
+                    newtController.newtDidBecomeReady()
+                }
             }
         }
     }

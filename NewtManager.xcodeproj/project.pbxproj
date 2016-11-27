@@ -30,6 +30,10 @@
 		A98F88B51DE9A37B00DD8800 /* Data+ScanValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98F88A91DE9A37B00DD8800 /* Data+ScanValue.swift */; };
 		A98F88B61DE9A37B00DD8800 /* DataConversions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98F88AA1DE9A37B00DD8800 /* DataConversions.swift */; };
 		A98F88B71DE9A37B00DD8800 /* LogHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98F88AB1DE9A37B00DD8800 /* LogHelper.swift */; };
+		A98F88E21DEB1A5E00DD8800 /* CBOR.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98F88DC1DEB1A5E00DD8800 /* CBOR.swift */; };
+		A98F88E31DEB1A5E00DD8800 /* CBORDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98F88DD1DEB1A5E00DD8800 /* CBORDecoder.swift */; };
+		A98F88E41DEB1A5E00DD8800 /* CBORInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98F88DE1DEB1A5E00DD8800 /* CBORInputStream.swift */; };
+		A98F88E61DEB1A5E00DD8800 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98F88E11DEB1A5E00DD8800 /* Util.swift */; };
 		A9EB79D11DB2FD9A00635A6D /* ImagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EB79D01DB2FD9A00635A6D /* ImagesViewController.swift */; };
 		A9FACDA91DB2AE0F00061E70 /* DeviceTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FACDA81DB2AE0F00061E70 /* DeviceTabBarViewController.swift */; };
 		A9FACDAB1DB2AE3000061E70 /* NewtViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FACDAA1DB2AE3000061E70 /* NewtViewController.swift */; };
@@ -64,6 +68,11 @@
 		A98F88A91DE9A37B00DD8800 /* Data+ScanValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+ScanValue.swift"; sourceTree = "<group>"; };
 		A98F88AA1DE9A37B00DD8800 /* DataConversions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataConversions.swift; sourceTree = "<group>"; };
 		A98F88AB1DE9A37B00DD8800 /* LogHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogHelper.swift; sourceTree = "<group>"; };
+		A98F88DC1DEB1A5E00DD8800 /* CBOR.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBOR.swift; sourceTree = "<group>"; };
+		A98F88DD1DEB1A5E00DD8800 /* CBORDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBORDecoder.swift; sourceTree = "<group>"; };
+		A98F88DE1DEB1A5E00DD8800 /* CBORInputStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBORInputStream.swift; sourceTree = "<group>"; };
+		A98F88E01DEB1A5E00DD8800 /* SwiftCBOR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwiftCBOR.h; sourceTree = "<group>"; };
+		A98F88E11DEB1A5E00DD8800 /* Util.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 		A9A5EC551DB1253700566005 /* Synchronize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Synchronize.swift; sourceTree = "<group>"; };
 		A9EB79D01DB2FD9A00635A6D /* ImagesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagesViewController.swift; sourceTree = "<group>"; };
 		A9FACDA81DB2AE0F00061E70 /* DeviceTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceTabBarViewController.swift; sourceTree = "<group>"; };
@@ -119,8 +128,8 @@
 				A950EB0D1DB00351005FC305 /* Info.plist */,
 				A946D0D21DB31DFB00D731B2 /* resources */,
 				A950EB151DB006A5005FC305 /* viewcontrollers */,
-				A98F889D1DE9A37B00DD8800 /* AdafruitKit */,
 				A950EB131DB006A5005FC305 /* utils */,
+				A98F889D1DE9A37B00DD8800 /* AdafruitKit */,
 			);
 			path = NewtManager;
 			sourceTree = "<group>";
@@ -128,6 +137,7 @@
 		A950EB131DB006A5005FC305 /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				A98F88DB1DEB1A5E00DD8800 /* SwiftCBOR */,
 				A9A5EC551DB1253700566005 /* Synchronize.swift */,
 			);
 			path = utils;
@@ -182,6 +192,19 @@
 				A98F88AB1DE9A37B00DD8800 /* LogHelper.swift */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		A98F88DB1DEB1A5E00DD8800 /* SwiftCBOR */ = {
+			isa = PBXGroup;
+			children = (
+				A98F88DC1DEB1A5E00DD8800 /* CBOR.swift */,
+				A98F88DD1DEB1A5E00DD8800 /* CBORDecoder.swift */,
+				A98F88DE1DEB1A5E00DD8800 /* CBORInputStream.swift */,
+				A98F88E01DEB1A5E00DD8800 /* SwiftCBOR.h */,
+				A98F88E11DEB1A5E00DD8800 /* Util.swift */,
+			);
+			name = SwiftCBOR;
+			path = CBOR/SwiftCBOR;
 			sourceTree = "<group>";
 		};
 		ADB974C6F23A53247635E87F /* Pods */ = {
@@ -341,8 +364,11 @@
 				A98F88B51DE9A37B00DD8800 /* Data+ScanValue.swift in Sources */,
 				A98F88B41DE9A37B00DD8800 /* CommandQueue.swift in Sources */,
 				A950EB201DB04C6F005FC305 /* MainNavigationViewController.swift in Sources */,
+				A98F88E31DEB1A5E00DD8800 /* CBORDecoder.swift in Sources */,
 				A98F88B11DE9A37B00DD8800 /* UartLogManager.swift in Sources */,
 				A950EB021DB00351005FC305 /* AppDelegate.swift in Sources */,
+				A98F88E41DEB1A5E00DD8800 /* CBORInputStream.swift in Sources */,
+				A98F88E21DEB1A5E00DD8800 /* CBOR.swift in Sources */,
 				A98F88AD1DE9A37B00DD8800 /* BlePeripheral+Newt.swift in Sources */,
 				A9FACDAB1DB2AE3000061E70 /* NewtViewController.swift in Sources */,
 				A98F88B31DE9A37B00DD8800 /* AlertUtils.swift in Sources */,
@@ -353,6 +379,7 @@
 				A92CC7461DB52083002124EF /* UploadProgressViewController.swift in Sources */,
 				A98F88B71DE9A37B00DD8800 /* LogHelper.swift in Sources */,
 				A950EB1C1DB01424005FC305 /* ScannerViewController.swift in Sources */,
+				A98F88E61DEB1A5E00DD8800 /* Util.swift in Sources */,
 				A98F88AC1DE9A37B00DD8800 /* BleManager.swift in Sources */,
 				A98F88B21DE9A37B00DD8800 /* UartManager.swift in Sources */,
 			);

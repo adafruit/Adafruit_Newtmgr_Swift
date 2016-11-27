@@ -38,7 +38,6 @@ class ImagesViewController: NewtViewController {
         super.viewDidLoad()
 
         refreshImageFiles()
-
     }
     
     override func didReceiveMemoryWarning() {
