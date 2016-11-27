@@ -12,7 +12,6 @@
 		37CA32601C07211900D36B5B /* CBOR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CA325F1C07211900D36B5B /* CBOR.swift */; };
 		37F34C051C0265AE00D36B5B /* SwiftCBOR.h in Headers */ = {isa = PBXBuildFile; fileRef = 37F34C041C0265AE00D36B5B /* SwiftCBOR.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		37F34C1C1C0328B300D36B5B /* CBORDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F34C1B1C0328B300D36B5B /* CBORDecoder.swift */; };
-		A98F88EE1DEB4B0400DD8800 /* SwiftCBORTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98F88ED1DEB4B0400DD8800 /* SwiftCBORTests.swift */; };
 		A98F88F01DEB4B0400DD8800 /* SwiftCBOR.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37F34C011C0265AD00D36B5B /* SwiftCBOR.framework */; };
 /* End PBXBuildFile section */
 
@@ -37,8 +36,6 @@
 		37F34C121C0265AE00D36B5B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		37F34C1B1C0328B300D36B5B /* CBORDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBORDecoder.swift; sourceTree = "<group>"; };
 		A98F88EB1DEB4B0400DD8800 /* SwiftCBORTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftCBORTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A98F88ED1DEB4B0400DD8800 /* SwiftCBORTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftCBORTests.swift; sourceTree = "<group>"; };
-		A98F88EF1DEB4B0400DD8800 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,7 +62,6 @@
 			children = (
 				37F34C031C0265AD00D36B5B /* SwiftCBOR */,
 				37F34C0F1C0265AE00D36B5B /* SwiftCBORTests */,
-				A98F88EC1DEB4B0400DD8800 /* SwiftCBORTests */,
 				37F34C021C0265AD00D36B5B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -97,15 +93,6 @@
 			children = (
 				37F34C101C0265AE00D36B5B /* SwiftCBORTests.swift */,
 				37F34C121C0265AE00D36B5B /* Info.plist */,
-			);
-			path = SwiftCBORTests;
-			sourceTree = "<group>";
-		};
-		A98F88EC1DEB4B0400DD8800 /* SwiftCBORTests */ = {
-			isa = PBXGroup;
-			children = (
-				A98F88ED1DEB4B0400DD8800 /* SwiftCBORTests.swift */,
-				A98F88EF1DEB4B0400DD8800 /* Info.plist */,
 			);
 			path = SwiftCBORTests;
 			sourceTree = "<group>";
@@ -234,7 +221,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A98F88EE1DEB4B0400DD8800 /* SwiftCBORTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -365,7 +351,7 @@
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 3.0.1;
 			};
 			name = Debug;
 		};
@@ -389,7 +375,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 3.0.1;
 			};
 			name = Release;
 		};
