@@ -18,6 +18,16 @@ public indirect enum CBOR : Equatable, Hashable,
 	case double(Float64)
 	case `break`
 
+    public var uInt16: UInt16? {
+        
+        switch self {
+        case let .unsignedInt(value): return UInt16(value)
+        case let .negativeInt(value): return UInt16(-Int(value+1))
+        default:
+            return nil
+        }
+    }
+    
 	public var hashValue : Int {
 		switch self {
 		case let .unsignedInt(l): return l.hashValue
