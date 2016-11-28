@@ -17,7 +17,6 @@ class ScannerViewController: UIViewController {
     // Data
     fileprivate var peripherals = [BlePeripheral]()
     fileprivate var selectedPeripheral: BlePeripheral?
-    fileprivate var expectingDisconnetionFromPeripheralUuid: UUID?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,8 +26,6 @@ class ScannerViewController: UIViewController {
         baseTableView.addSubview(refreshControl)
         baseTableView.sendSubview(toBack: refreshControl)
 
-        // Ble Notifications
-        registerNotifications(enabled: true)
     }
 
     override func didReceiveMemoryWarning() {
@@ -38,6 +35,9 @@ class ScannerViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        // Ble Notifications
+        registerNotifications(enabled: true)
         
         // Start scannning
         BleManager.sharedInstance.startScan()
@@ -49,35 +49,36 @@ class ScannerViewController: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        
+
         // Stop scanning
         BleManager.sharedInstance.stopScan()
+        
+        // Ble Notifications
+        registerNotifications(enabled: false)
         
         // Clear peripherals
         peripherals = [BlePeripheral]()
     }
     
-    deinit {
-        // Ble Notifications
-        registerNotifications(enabled: false)
-    }
-   
     // MARK: - BLE Notifications
+    private var didDiscoverPeripheralObserver: NSObjectProtocol?
+    private var willConnectToPeripheralObserver: NSObjectProtocol?
+    private var didConnectToPeripheralObserver: NSObjectProtocol?
+    private var didDisconnectFromPeripheralObserver: NSObjectProtocol?
     
     private func registerNotifications(enabled: Bool) {
+        let notificationCenter = NotificationCenter.default
         if enabled {
-            NotificationCenter.default.addObserver(forName: .didDiscoverPeripheral, object: nil, queue: OperationQueue.main, using: didDiscoverPeripheral)
-            NotificationCenter.default.addObserver(forName: .willConnectToPeripheral, object: nil, queue: OperationQueue.main, using: willConnectToPeripheral)
-            NotificationCenter.default.addObserver(forName: .didConnectToPeripheral, object: nil, queue: OperationQueue.main, using: didConnectToPeripheral)
-            NotificationCenter.default.addObserver(forName: .willDisconnectFromPeripheral, object: nil, queue: OperationQueue.main, using: willDisconnectFromPeripheral)
-            NotificationCenter.default.addObserver(forName: .didDisconnectFromPeripheral, object: nil, queue: OperationQueue.main, using: didDisconnectFromPeripheral)
+            didDiscoverPeripheralObserver = notificationCenter.addObserver(forName: .didDiscoverPeripheral, object: nil, queue: OperationQueue.main, using: didDiscoverPeripheral)
+            willConnectToPeripheralObserver = notificationCenter.addObserver(forName: .willConnectToPeripheral, object: nil, queue: OperationQueue.main, using: willConnectToPeripheral)
+            didConnectToPeripheralObserver = notificationCenter.addObserver(forName: .didConnectToPeripheral, object: nil, queue: OperationQueue.main, using: didConnectToPeripheral)
+            didDisconnectFromPeripheralObserver = notificationCenter.addObserver(forName: .didDisconnectFromPeripheral, object: nil, queue: OperationQueue.main, using: didDisconnectFromPeripheral)
         }
         else {
-            NotificationCenter.default.removeObserver(self, name: .didDiscoverPeripheral, object: nil)
-            NotificationCenter.default.removeObserver(self, name: .willConnectToPeripheral, object: nil)
-            NotificationCenter.default.removeObserver(self, name: .didConnectToPeripheral, object: nil)
-            NotificationCenter.default.removeObserver(self, name: .willDisconnectFromPeripheral, object: nil)
-            NotificationCenter.default.removeObserver(self, name: .didDisconnectFromPeripheral, object: nil)
+            if let didDiscoverPeripheralObserver = didDiscoverPeripheralObserver {notificationCenter.removeObserver(didDiscoverPeripheralObserver)}
+            if let willConnectToPeripheralObserver = willConnectToPeripheralObserver {notificationCenter.removeObserver(willConnectToPeripheralObserver)}
+            if let didConnectToPeripheralObserver = didConnectToPeripheralObserver {notificationCenter.removeObserver(didConnectToPeripheralObserver)}
+            if let didDisconnectFromPeripheralObserver = didDisconnectFromPeripheralObserver {notificationCenter.removeObserver(didDisconnectFromPeripheralObserver)}
         }
     }
     
@@ -103,9 +104,6 @@ class ScannerViewController: UIViewController {
     
     
     private func didConnectToPeripheral(notification: Notification) {
-        // Reset values on connection
-        expectingDisconnetionFromPeripheralUuid = nil
-        
         // Show peripheral details
         if presentedViewController != nil {   // Dismiss current dialog if present
             dismiss(animated: true, completion: { [weak self] () -> Void in
@@ -117,14 +115,6 @@ class ScannerViewController: UIViewController {
         }
     }
 
-    private func willDisconnectFromPeripheral(notification: Notification) {
-        guard let peripheral = BleManager.sharedInstance.peripheral(from: notification) else {
-            return
-        }
-
-        expectingDisconnetionFromPeripheralUuid =  peripheral.identifier
-    }
-    
     private func didDisconnectFromPeripheral(notification: Notification) {
 
         guard let peripheral = BleManager.sharedInstance.peripheral(from: notification) else {
@@ -137,25 +127,6 @@ class ScannerViewController: UIViewController {
         
         // Clear selected peripheral
         self.selectedPeripheral = nil
-        
-        // Clear newt status if needed
-        peripheral.newtDeInit()
-        
-        // If not an expected disconnection then show an alert to the user
-        if peripheral.identifier == expectingDisconnetionFromPeripheralUuid {
-            expectingDisconnetionFromPeripheralUuid = nil
-        }
-        else {
-            // Show alert
-            if presentedViewController != nil {
-                dismiss(animated: true, completion: { () -> Void in
-                    self.showPeripheralDisconnectedDialog()
-                })
-            }
-            else {
-                showPeripheralDisconnectedDialog()
-            }
-        }
     }
     
     // MARK: - Navigation
@@ -174,12 +145,6 @@ class ScannerViewController: UIViewController {
     }
     
     // MARK: - UI
-    private func showPeripheralDisconnectedDialog() {
-        showErrorAlert(from: self, title: nil, message: "Peripheral Disconnected") { [unowned self] _ in
-            _ = self.navigationController?.popToRootViewController(animated: true)
-        }
-    }
-    
     private func updateScannedPeripherals() {
     
         // Update current peripheral list

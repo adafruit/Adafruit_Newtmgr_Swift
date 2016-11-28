@@ -34,7 +34,7 @@ public indirect enum CBOR : Equatable, Hashable,
 		case let .half(l):        return l.hashValue
 		case let .float(l):       return l.hashValue
 		case let .double(l):      return l.hashValue
-		case .`break`:            return Int.min
+		case .break:            return Int.min
 		}
 	}
 	
