@@ -121,7 +121,7 @@ class ImagesViewController: NewtViewController {
         }
         
         // Retrieve list info
-        peripheral.newtSendRequest(with: .list) { [weak self] (imageVersionStrings, error) in
+        peripheral.newtSendRequest(with: .imageList) { [weak self] (imageVersionStrings, error) in
             guard let context = self else {
                 return
             }

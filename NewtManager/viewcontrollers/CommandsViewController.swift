@@ -77,10 +77,24 @@ class CommandsViewController: NewtViewController {
 }
 
 extension CommandsViewController: UITableViewDataSource {
-    private static let kCommandNames = ["Reset", "Boot version"]
+    enum Commands: Int {
+        case reset = 0
+        case imageList
+        case bootVersion
+        
+        var name: String {
+            switch self {
+            case .reset: return "Reset"
+            case .imageList: return "Image List"
+            case .bootVersion: return "Boot version"
+            }
+        }
+    }
+    
+    private static let kNumCommands = 3
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return (blePeripheral?.isNewtReady ?? false) ? CommandsViewController.kCommandNames.count:0
+        return (blePeripheral?.isNewtReady ?? false) ? CommandsViewController.kNumCommands:0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -94,19 +108,28 @@ extension CommandsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        cell.textLabel!.text = CommandsViewController.kCommandNames[indexPath.row]
+        guard let command = Commands(rawValue: indexPath.row) else { return }
+        cell.textLabel!.text = command.name
         cell.accessoryType = .disclosureIndicator
     }
 }
 
 extension CommandsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
-        switch indexPath.row {
-        case 0:
+        defer {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
+        
+        guard let command = Commands(rawValue: indexPath.row) else { return }
+        
+        switch command {
+        case .reset:
             sendRequest(for: .reset)
             
-        case 1:
+        case .imageList:
+            sendRequest(for: .imageList)
+            
+        case .bootVersion:
             let alert = UIAlertController(title: "Enter version to boot", message: "Version", preferredStyle: .alert)
             alert.addTextField { (textField) in
                 textField.placeholder = "0.0.0"
@@ -119,12 +142,6 @@ extension CommandsViewController: UITableViewDelegate {
             }))
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             self.present(alert, animated: true, completion: nil)
-            
-
-        default:
-            break
         }
-        
-        tableView.deselectRow(at: indexPath, animated: true)
     }
 }

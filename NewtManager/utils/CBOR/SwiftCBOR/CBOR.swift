@@ -18,15 +18,7 @@ public indirect enum CBOR : Equatable, Hashable,
 	case double(Float64)
 	case `break`
 
-    public var uInt16: UInt16? {
-        
-        switch self {
-        case let .unsignedInt(value): return UInt16(value)
-        case let .negativeInt(value): return UInt16(-Int(value+1))
-        default:
-            return nil
-        }
-    }
+
     
 	public var hashValue : Int {
 		switch self {
@@ -82,6 +74,8 @@ public indirect enum CBOR : Equatable, Hashable,
 	}
 	public init(booleanLiteral value: Bool) { self = .boolean(value) }
 	public init(floatLiteral value: Float32) { self = .float(value) }
+    
+    public init(cbor: CBOR) {self = cbor}
 }
 
 public func ==(lhs: CBOR, rhs: CBOR) -> Bool {
@@ -103,4 +97,67 @@ public func ==(lhs: CBOR, rhs: CBOR) -> Bool {
 	case (.break,              .break):              return true
 	default:                                         return false
 	}
+}
+
+// MARK: - CustomStringConvertible
+extension CBOR: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case let .unsignedInt(value): return String(value)
+        case let .negativeInt(value): return String(-Int(value+1))
+        case let .byteString(bytes): return hexDescription(bytes: bytes)
+        case let .utf8String(text): return "\"\(text)\""
+        case let .array(array):
+            return "[" + array.reduce("", { $0 + "\($1)\($1 != array.last ? ", ":"")" }) + "]"
+        case let .map(dictionary):
+            let array = dictionary.map({"\($0.key): \($0.value)"})
+            return "{\(array.joined(separator: ", "))}"
+        case let .tagged(tagId, cbor): return "TAG_\(tagId):\(cbor)"
+        case let .simple(value): return String(value)
+        case let .boolean(value): return value ? "true":"false"
+        case .null: return "null"
+        case .undefined: return "undefined"
+        case let .half(value): return String(value)
+        case let .float(value): return String(value)
+        case let .double(value): return String(value)
+            
+        default:
+            return ""
+        }
+    }
+}
+
+// MARK: - Int, Double, Float, Int8, Int16, Int32, Int64
+extension CBOR {
+    public var uInt16: UInt16? {
+        
+        switch self {
+        case let .unsignedInt(value): return UInt16(value)
+        case let .negativeInt(value): return UInt16(-Int(value+1))
+        default:
+            return nil
+        }
+    }
+}
+
+
+// MARK: - Array
+
+extension CBOR {
+    // Optional [CBOR]
+    public var array: [CBOR]? {
+        switch self {
+        case let .array(value): return value.map{ CBOR(cbor: $0) }
+        default: return nil
+        }
+    }
+    
+    // Non-optional [CBOR]
+    public var arrayValue: [CBOR] {
+        switch self {
+        case let .array(value): return value
+        default: return []
+        }
+    }
+ 
 }
