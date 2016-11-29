@@ -48,7 +48,7 @@ class ImagesViewController: NewtViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        refreshBootVersion()
+        //refreshBootVersion()
         refreshImageList()
     }
     
@@ -58,11 +58,12 @@ class ImagesViewController: NewtViewController {
 
         // Refresh if view is visible
         if isViewLoaded && view.window != nil {
-            refreshBootVersion()
+            //refreshBootVersion()
             refreshImageList()
         }
     }
     
+    /*
     // MARK: - Boot Info
     private func refreshBootVersion() {
         guard let peripheral = blePeripheral, peripheral.isNewtReady else {
@@ -99,13 +100,14 @@ class ImagesViewController: NewtViewController {
             }
         }
     }
-    
-    fileprivate func boot(version: String) {
+ */
+ 
+    fileprivate func boot(image: BlePeripheral.NewtImage) {
         let message = "Would you like to activate it and reset the device?"
-        let alertController = UIAlertController(title: "Boot version \(version)", message: message, preferredStyle: .alert)
+        let alertController = UIAlertController(title: "Boot version \(image.version)", message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "Activate", style: .default, handler: { [unowned self] alertAction in
             
-            self.sendBootRequest(version: version)
+            //self.sendBootRequest(version: version)
         })
         alertController.addAction(okAction)
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -288,7 +290,7 @@ class ImagesViewController: NewtViewController {
                     context.present(alertController, animated: true, completion: nil)
                     
                     // Refresh Image List
-                    context.refreshBootVersion()
+                    //context.refreshBootVersion()
                     context.refreshImageList()
                 }
             }
@@ -382,40 +384,43 @@ class ImagesViewController: NewtViewController {
 
 // MARK: - UITableViewDataSource
 extension ImagesViewController: UITableViewDataSource {
+    enum TableSections: Int {
+        case boot = -1
+        case imageSlots = 0
+        case imageUpdates = 1
+        
+        var name: String {
+            switch self {
+            case .boot: return "Boot"
+            case .imageSlots: return "Image Slots"
+            case .imageUpdates: return "Image Updates"
+            }
+        }
+    }
+    
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return TableSections.imageUpdates.rawValue+1 // 3
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         
-        var title: String?
-        switch section {
-        case 0:
-            title = "Boot"
-        case 1:
-            title = "Image Slots"
-        case 2:
-            title = "Image Updates"
-        default:
-            break
-        }
-        
-        return title
+        guard let tableSection = TableSections(rawValue: section) else {return nil}
+
+        return tableSection.name
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
+        guard let tableSection = TableSections(rawValue: section) else {return 0}
+
         var count: Int
-        switch section {
-        case 0:
+        switch tableSection {
+        case .boot:
             count = 3
-        case 1:
+        case .imageSlots:
             count = images?.count ?? 0
-        case 2:
+        case .imageUpdates:
             count = (imagesInternal?.count ?? 0) + 1        // +1 "Upload an Image" button
-            
-        default:
-            count = 0
         }
         return count
     }
@@ -449,10 +454,12 @@ extension ImagesViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
+        guard let tableSection = TableSections(rawValue: indexPath.section) else {return}
+
         var text: String?
         var detailText: String?
-        switch indexPath.section {
-        case 0:
+        switch tableSection {
+        case .boot:
             if indexPath.row == 0 {
                 text = "Main Image"
                 detailText = mainImage != nil ? mainImage!:"empty"
@@ -467,21 +474,19 @@ extension ImagesViewController: UITableViewDataSource {
             }
             cell.accessoryType = .none
             
-        case 1:
+        case .imageSlots:
             text = "Slot \(indexPath.row)"
             if let image = images?[indexPath.row] {
                 detailText = image.version
                 cell.accessoryType = .disclosureIndicator
             }
             
-        case 2:
+        case .imageUpdates:
             let imageInfo: ImageInfo? = indexPath.row < (imagesInternal?.count ?? 0) ? imagesInternal![indexPath.row]:nil
             text = imageInfo != nil ? imageInfo!.name : "Upload an image"
             detailText = imageInfo != nil ? imageInfo!.version : nil
             cell.accessoryType = .disclosureIndicator
             
-        default:
-            break
         }
         
         cell.textLabel!.text = text
@@ -493,16 +498,23 @@ extension ImagesViewController: UITableViewDataSource {
 extension ImagesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        switch indexPath.section {
-        case 0:
+        defer {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
+        
+        guard let tableSection = TableSections(rawValue: indexPath.section) else {return}
+
+        
+        switch tableSection {
+        case .boot:
             break
             
-        case 1:
-            if let imageVersion = images?[indexPath.row] {
-                // boot(version: imageVersion)
+        case .imageSlots:
+            if let image = images?[indexPath.row] {
+                 boot(image: image)
             }
             
-        case 2:
+        case .imageUpdates:
             if let imageInfo: ImageInfo? = indexPath.row < (imagesInternal?.count ?? 0) ? imagesInternal![indexPath.row]:nil {
                 uploadImage(bundleFileName: imageInfo!.name)
             }
@@ -510,12 +522,8 @@ extension ImagesViewController: UITableViewDelegate {
                 let currentCell = self.tableView(tableView, cellForRowAt: indexPath)
                 importImage(sourceView: currentCell.contentView)
             }
-            
-        default:
-            break
         }
         
-        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
