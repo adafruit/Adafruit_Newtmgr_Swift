@@ -22,7 +22,7 @@ class ImagesViewController: NewtViewController {
     fileprivate var mainImage: String?
     fileprivate var activeImage: String?
     fileprivate var testImage: String?
-    fileprivate var imageVersions: [String]?
+    fileprivate var images: [BlePeripheral.NewtImage]?
     
     // Image Upload
     fileprivate struct ImageInfo {
@@ -121,27 +121,28 @@ class ImagesViewController: NewtViewController {
         }
         
         // Retrieve list info
-        peripheral.newtSendRequest(with: .imageList) { [weak self] (imageVersionStrings, error) in
+        peripheral.newtSendRequest(with: .imageList) { [weak self] (newtImages, error) in
             guard let context = self else {
                 return
             }
             
             if error != nil {
                 DLog("Error ListImages: \(error!)")
-                context.imageVersions = nil
-                
+                context.images = nil
+
                 if ImagesViewController.kShowAlertOnListError {
                     DispatchQueue.main.async {
                         showErrorAlert(from: context, title: "Error", message: "Error retrieving image list")
                     }
                 }
             }
-            
-            if let imageVersionStrings = imageVersionStrings as? [String] {
-                DLog("ListImages: \(imageVersionStrings.joined(separator: ", "))")
-                context.imageVersions = imageVersionStrings
+
+            if let newtImages = newtImages as? [BlePeripheral.NewtImage] {
+                DLog("ListImages: \(newtImages.map({"\($0.slot): \($0.version)"}).joined(separator: ", ") )")
+                let sortedImages = newtImages.sorted(by: {$0.slot < $1.slot})
+                context.images = sortedImages
             }
-            
+
             DispatchQueue.main.async {
                 context.updateUI()
             }
@@ -392,7 +393,7 @@ extension ImagesViewController: UITableViewDataSource {
         case 0:
             title = "Boot"
         case 1:
-            title = "Image Banks"
+            title = "Image Slots"
         case 2:
             title = "Image Updates"
         default:
@@ -409,7 +410,7 @@ extension ImagesViewController: UITableViewDataSource {
         case 0:
             count = 3
         case 1:
-            count = imageVersions?.count ?? 0
+            count = images?.count ?? 0
         case 2:
             count = (imagesInternal?.count ?? 0) + 1        // +1 "Upload an Image" button
             
@@ -467,10 +468,11 @@ extension ImagesViewController: UITableViewDataSource {
             cell.accessoryType = .none
             
         case 1:
-            text = "Bank \(indexPath.row)"
-            let imageVersion = imageVersions![indexPath.row]
-            detailText = imageVersion
-            cell.accessoryType = .disclosureIndicator
+            text = "Slot \(indexPath.row)"
+            if let image = images?[indexPath.row] {
+                detailText = image.version
+                cell.accessoryType = .disclosureIndicator
+            }
             
         case 2:
             let imageInfo: ImageInfo? = indexPath.row < (imagesInternal?.count ?? 0) ? imagesInternal![indexPath.row]:nil
@@ -496,8 +498,9 @@ extension ImagesViewController: UITableViewDelegate {
             break
             
         case 1:
-            let imageVersion = imageVersions![indexPath.row]
-            boot(version: imageVersion)
+            if let imageVersion = images?[indexPath.row] {
+                // boot(version: imageVersion)
+            }
             
         case 2:
             if let imageInfo: ImageInfo? = indexPath.row < (imagesInternal?.count ?? 0) ? imagesInternal![indexPath.row]:nil {

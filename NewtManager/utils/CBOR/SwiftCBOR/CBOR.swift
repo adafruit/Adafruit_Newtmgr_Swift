@@ -19,7 +19,6 @@ public indirect enum CBOR : Equatable, Hashable,
 	case `break`
 
 
-    
 	public var hashValue : Int {
 		switch self {
 		case let .unsignedInt(l): return l.hashValue
@@ -39,7 +38,7 @@ public indirect enum CBOR : Equatable, Hashable,
 		case .break:            return Int.min
 		}
 	}
-	
+	/*
 	public subscript(position: CBOR) -> CBOR? {
 		get {
 			switch (self, position) {
@@ -55,7 +54,24 @@ public indirect enum CBOR : Equatable, Hashable,
 			default: break
 			}
 		}
-	}
+	}*/
+    
+    public subscript(position: CBOR) -> CBOR {
+        get {
+            switch (self, position) {
+            case (let .array(l), let .unsignedInt(i)): return l[Int(i)]
+            case (let .map(l), let i): return l[i] ?? CBOR.null
+            default: return CBOR.null
+            }
+        }
+        set(x) {
+            switch (self, position) {
+            case (var .array(l), let .unsignedInt(i)): l[Int(i)] = x
+            case (var .map(l), let i): l[i] = x
+            default: break
+            }
+        }
+    }
 
 	public init(nilLiteral: ()) { self = .null }
 	public init(integerLiteral value: Int) {
@@ -127,16 +143,103 @@ extension CBOR: CustomStringConvertible {
     }
 }
 
-// MARK: - Int, Double, Float, Int8, Int16, Int32, Int64
-extension CBOR {
-    public var uInt16: UInt16? {
-        
+// MARK: - Bool
+
+extension CBOR { // : Swift.Bool
+    
+    //Optional bool
+    public var bool: Bool? {
         switch self {
-        case let .unsignedInt(value): return UInt16(value)
-        case let .negativeInt(value): return UInt16(-Int(value+1))
+        case let .boolean(value): return value
         default:
             return nil
         }
+    }
+    
+    //Non-optional bool
+    public var boolValue: Bool {
+        switch self {
+        case let .unsignedInt(value): return value == 1
+        case let .negativeInt(value): return -Int(value+1) == 1
+        case let .boolean(value): return value
+        case let .simple(value): return value == 1
+        case let .utf8String(text): return ["true", "y", "t"].contains() { (truthyString) in
+            return text.caseInsensitiveCompare(truthyString) == .orderedSame
+            }
+        case .null: return false
+        case .undefined: return false
+        case let .half(value): return value == 1
+        case let .float(value): return value == 1
+        case let .double(value): return value == 1
+            
+        default:
+            return false
+        }
+    }
+}
+
+// MARK: - String
+
+extension CBOR {
+    
+    //Optional string
+    public var string: String? {
+        switch self {
+        case let .utf8String(value): return value
+        default:
+            return nil
+        }
+    }
+    
+    //Non-optional string
+    public var stringValue: String {
+        switch self {
+        case let .utf8String(value): return value
+        default: return ""
+        }
+    }
+}
+
+// MARK: - ByteString
+
+extension CBOR {
+    
+    //Optional string
+    public var byteString: [UInt8]? {
+        switch self {
+        case let .byteString(value): return value
+        default:
+            return nil
+        }
+    }
+    
+    //Non-optional string
+    public var byteStringValue: [UInt8] {
+        switch self {
+        case let .byteString(value): return value
+        default: return [UInt8]()
+        }
+    }
+}
+
+
+// MARK: - Int, Double, Float, Int8, Int16, Int32, Int64
+extension CBOR {
+    public var int: Int? {
+        switch self {
+        case let .unsignedInt(value): return Int(value)
+        case let .negativeInt(value): return -Int(value+1)
+        default:
+            return nil
+        }
+    }
+    
+    public var intValue: Int {
+        return int ?? 0
+    }
+    
+    public var uInt16: UInt16? {
+        return UInt16(int ?? 0)
     }
 }
 
