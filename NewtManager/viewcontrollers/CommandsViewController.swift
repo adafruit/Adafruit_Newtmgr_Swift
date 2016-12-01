@@ -80,12 +80,14 @@ extension CommandsViewController: UITableViewDataSource {
     enum Commands: Int {
         case reset = 0
         case imageList
+        case echo
         case bootVersion
         
         var name: String {
             switch self {
             case .reset: return "Reset"
             case .imageList: return "Image List"
+            case .echo: return  "Echo"
             case .bootVersion: return "Boot version"
             }
         }
@@ -128,6 +130,9 @@ extension CommandsViewController: UITableViewDelegate {
             
         case .imageList:
             sendRequest(for: .imageList)
+            
+        case .echo:
+            sendRequest(for: .echo(message: "Hello"))
             
         case .bootVersion:
             let alert = UIAlertController(title: "Enter version to boot", message: "Version", preferredStyle: .alert)

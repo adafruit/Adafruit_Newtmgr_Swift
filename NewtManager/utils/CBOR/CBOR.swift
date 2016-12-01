@@ -1,3 +1,16 @@
+
+public enum CBORError : Error {
+    //
+    case invalidCBOR
+    case invalidSubscript
+    
+    // Decoder
+    case unfinishedSequence
+    case wrongTypeInsideSequence
+    case incorrectUTF8String
+}
+
+
 public indirect enum CBOR : Equatable, Hashable,
 	ExpressibleByNilLiteral, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral,
 	ExpressibleByArrayLiteral, ExpressibleByDictionaryLiteral, ExpressibleByBooleanLiteral,
@@ -17,7 +30,7 @@ public indirect enum CBOR : Equatable, Hashable,
 	case float(Float32)
 	case double(Float64)
 	case `break`
-
+    case error(CBORError)     // TODO: change string to Error
 
 	public var hashValue : Int {
 		switch self {
@@ -36,6 +49,7 @@ public indirect enum CBOR : Equatable, Hashable,
 		case let .float(l):       return l.hashValue
 		case let .double(l):      return l.hashValue
 		case .break:            return Int.min
+        case .error(_):         return -3
 		}
 	}
 	/*
@@ -61,8 +75,7 @@ public indirect enum CBOR : Equatable, Hashable,
             switch (self, position) {
             case (let .array(l), let .unsignedInt(i)): return l[Int(i)]
             case (let .map(l), let i): return l[i] ?? CBOR.null
-            default: return CBOR.null
-            }
+            default: return CBOR.error(CBORError.invalidSubscript)              }
         }
         set(x) {
             switch (self, position) {
@@ -81,13 +94,24 @@ public indirect enum CBOR : Equatable, Hashable,
 	public init(unicodeScalarLiteral value: String) { self = .utf8String(value) }
 	public init(stringLiteral value: String) { self = .utf8String(value) }
 	public init(arrayLiteral elements: CBOR...) { self = .array(elements) }
+    public init(array elements: [CBOR]) { self = .array(elements) }
 	public init(dictionaryLiteral elements: (CBOR, CBOR)...) {
 		var result = [CBOR : CBOR]()
 		for (key, value) in elements {
 			result[key] = value
 		}
 		self = .map(result)
-	}
+    }
+    public init(dictionary elements: [(CBOR, CBOR)]) {
+        var result = [CBOR : CBOR]()
+        for (key, value) in elements {
+            result[key] = value
+        }
+        self = .map(result)
+    }
+    public init(dictionary: [CBOR : CBOR]) {
+        self = .map(dictionary)
+    }
 	public init(booleanLiteral value: Bool) { self = .boolean(value) }
 	public init(floatLiteral value: Float32) { self = .float(value) }
     
@@ -113,6 +137,62 @@ public func ==(lhs: CBOR, rhs: CBOR) -> Bool {
 	case (.break,              .break):              return true
 	default:                                         return false
 	}
+}
+
+// Init
+extension CBOR {
+    init?(_ any: Any) {
+        var result: CBOR?
+        
+        switch any {
+        case nil:
+            result = CBOR(nilLiteral: ())
+            
+        case let value as Int:
+            result = CBOR(integerLiteral: value)
+            
+        case let value as String:
+            result = CBOR(unicodeScalarLiteral: value)
+            
+        case let value as [Any]:
+            let cborConversionArray = value.map({ CBOR(any: $0) })
+            let isValid = cborConversionArray.first(where: {$0 == nil}) == nil          // Check if there is any nil values (failed conversion)
+            if isValid {
+                let cborArray = cborConversionArray.map({$0!})          // Convert from CBOR? to CBOR
+                result = CBOR(array: cborArray)
+            }
+            
+        case let value as [String: Any]:
+            result = CBOR(dictionary: value)
+            
+        default:
+            DLog("CBOR Init: unrecognized type")
+            break
+        }
+        
+        if let result = result {
+            self = result
+        }
+        else {
+            return nil
+        }
+    }
+    
+    init?(dictionary: Dictionary<String, Any>) {
+        
+        var itemsArray: [(CBOR, CBOR)] = []
+        for (key, value) in dictionary {
+            
+            guard let valueCbor = CBOR(any: value) else {
+                return nil
+            }
+            
+            let keyCbor = CBOR(unicodeScalarLiteral: key)
+            itemsArray.append((keyCbor, valueCbor))
+        }
+        
+        self = CBOR(dictionary: itemsArray)
+    }
 }
 
 // MARK: - CustomStringConvertible
@@ -239,7 +319,7 @@ extension CBOR {
     }
     
     public var uInt16: UInt16? {
-        return UInt16(int ?? 0)
+        return int != nil ? UInt16(int!):nil
     }
 }
 

@@ -1,13 +1,7 @@
 import Foundation
 
 
-public enum CBORError : Error {
-	case unfinishedSequence
-	case wrongTypeInsideSequence
-	case incorrectUTF8String
-}
-
-open class CBORDecoderData {
+open class CBORDecoder {
 
 	fileprivate var data : Data
 

@@ -140,7 +140,7 @@ class ImagesViewController: NewtViewController {
             }
 
             if let newtImages = newtImages as? [BlePeripheral.NewtImage] {
-                DLog("ListImages: \(newtImages.map({"\($0.slot): \($0.version)"}).joined(separator: ", ") )")
+                DLog("ListImages: \(newtImages.map({"\($0.slot)-\($0.version)"}).joined(separator: ", ") )")
                 let sortedImages = newtImages.sorted(by: {$0.slot < $1.slot})
                 context.images = sortedImages
             }
