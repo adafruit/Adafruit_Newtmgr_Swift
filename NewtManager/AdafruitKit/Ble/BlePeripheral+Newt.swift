@@ -76,41 +76,6 @@ extension BlePeripheral {
     }
     
     // MARK: - Message format
-    
-    enum NewtError: Error {
-        case invalidCharacteristic
-        case enableNotifyFailed
-        case receivedResponseIsNotAPacket
-        case receivedResponseIsNotAJson(Error?)
-        case receivedResponseJsonMissingFields
-        case receviedResponseJsonInvalidValues
-        case receivedResultNotOk(String)
-        case internalError
-        case updateImageInvalid
-        case imageInvalid
-        case userCancelled
-        case waitingForReponse
-        
-        var description: String {
-            switch self {
-            case .invalidCharacteristic: return "Newt characteristic is invalid"
-            case .enableNotifyFailed: return "Cannot enable notification on Newt characteristic"
-            case .receivedResponseIsNotAPacket: return "Received response is not a packet"
-            case .receivedResponseIsNotAJson(let error): return "Received invalid Json: \(error?.localizedDescription ?? "")"
-            case .receivedResponseJsonMissingFields: return "Received Json with missing fields"
-            case .receviedResponseJsonInvalidValues: return "Received Json with invalid values"
-            case .receivedResultNotOk(let message): return "Received incorrect result: \(message)"
-            case .internalError: return "Internal error"
-            case .updateImageInvalid: return "Upload image is invalid"
-            case .imageInvalid: return "Image invalid"
-            case .userCancelled: return "Cancelled"
-            case .waitingForReponse: return "Waiting for previous command"
-            }
-        }
-    }
-    
-    // Nmgr Flags/Opcode/Group/Id Enums
-    
     private enum Flags: UInt8 {
         case none               = 0
         case responseComplete   = 1
@@ -167,10 +132,10 @@ extension BlePeripheral {
     
     private enum GroupDefault: UInt8 {
         case echo           = 0
+        case taskStats      = 2
         
         /*
         case ConsEchoCtrl   = 1
-        case Taskstats      = 2
         case Mpstats        = 3
         case DatetimeStr    = 4
  */
@@ -254,11 +219,9 @@ extension BlePeripheral {
     enum NmgrCommand {
         case imageList
         case imageTest(hash: Data)
-        case imageConfirm(hash: Data)
+        case imageConfirm(hash: Data?)
         case upload(imageData: Data)
-        /*
         case taskStats
-         */
         case reset
         case echo(message: String)
     }
@@ -286,11 +249,9 @@ extension BlePeripheral {
             case .upload:
                 packet = NmgrRequest.uploadPacket
                 
-
-                /*
             case .taskStats:
-                packet = Packet(op: OpCode.read, flags: Flags.none, group: Group.default, seq: 0, id: GroupDefault.Taskstats.code)
-                */
+                packet = Packet(op: OpCode.read, flags: Flags.none, group: Group.default, seq: 0, id: GroupDefault.taskStats.code)
+
             case .reset:
                 packet = Packet(op: OpCode.write, flags: Flags.none, group: Group.default, seq: 0, id: GroupDefault.reset.code)
                 
@@ -311,11 +272,8 @@ extension BlePeripheral {
                 return "Image Confirm"
             case .upload:
                 return "Upload"
-
-                /*
             case .taskStats:
                 return "TaskStats"
- */
             case .reset:
                 return "Reset"
             case .echo:
@@ -478,8 +436,16 @@ extension BlePeripheral {
     }
 
     // MARK: ImageConfirm
-    private func newtImageConfirm(hash: Data) -> Data? {
-        let dataDictionary: [String: Any] = ["confirm": true, "hash": NSNull()]
+    private func newtImageConfirm(hash: Data?) -> Data? {
+        
+        var dataDictionary: [String: Any] = ["confirm": true]
+        if let hash = hash {
+            dataDictionary["hash"] =  hash
+        }
+        else {
+            dataDictionary["hash"] = NSNull()
+        }
+        
         let encodedData = encodeCbor(dataDictionary: dataDictionary)
         
         return encodedData
@@ -561,7 +527,7 @@ extension BlePeripheral {
     }
     
     private func encodeCbor(dataDictionary: Dictionary<String, Any>) -> Data? {
-        guard let cbor = CBOR(dataDictionary) else {
+        guard let cbor = CBOR(rawValue: dataDictionary) else {
             DLog("Error generating CBOR")
             return nil
         }
@@ -649,23 +615,16 @@ extension BlePeripheral {
             
             // Parse response
             switch command {
-                
             case .imageList, .imageTest, .imageConfirm:
                 parseResponseImageList(cbor: cbor)
-                
             case .echo:
                 parseEcho(cbor: cbor)
-
             case .upload(let imageData):
                 parseResponseUploadImage(cbor: cbor, imageData: imageData)
-
-                /*
-                 case .taskStats:
-                 parseResponseTaskStats(json)
-                 */
-                
+            case .taskStats:
+                parseResponseTaskStats(cbor: cbor)
             default:
-                parseBasicCborResponse(cbor)
+                parseBasicResponse(cbor: cbor)
             }
         }
         else {
@@ -701,6 +660,7 @@ extension BlePeripheral {
         completionHandler?(images, nil)
     }
     
+       // MARK: Echo
     private func parseEcho(cbor: CBOR) {
         defer {
             newtRequestsQueue.next()
@@ -711,27 +671,25 @@ extension BlePeripheral {
         let completionHandler = newtRequestsQueue.first()?.completion
         completionHandler?(echoResponse, nil)
     }
-    // MARK: TaskStats
-    /*
-     private func parseResponseTaskStats(_ json: JSON) {
-     defer {
-     newtRequestsQueue.next()
-     }
-     
-     let completionHandler = newtRequestsQueue.first()?.completion
-     guard verifyResponseCode(json, completionHandler: completionHandler) else {
-     return
-     }
-     
-     let tasksJson = json["tasks"].arrayValue.map({$0.stringValue})
-     
-     completionHandler?(tasksJson, nil)
-     }
-     
-     */
     
-    // MARK: Basic Command (Activate)
-    private func parseBasicCborResponse(_ cbor: CBOR) {
+    // MARK: TaskStats
+    private func parseResponseTaskStats(cbor: CBOR) {
+        defer {
+            newtRequestsQueue.next()
+        }
+        
+        let completionHandler = newtRequestsQueue.first()?.completion
+        guard verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
+            return
+        }
+
+        let tasksCbor = cbor["tasks"]//.dictionary
+        
+        completionHandler?(tasksCbor, nil)
+    }
+    
+    // MARK: Basic Command
+    private func parseBasicResponse(cbor: CBOR) {
         defer {
             newtRequestsQueue.next()
         }
@@ -819,7 +777,7 @@ extension BlePeripheral {
     // MARK: - Utils
     static func newtShowErrorAlert(from controller: UIViewController, title: String? = "Error", error: Error) {
         let message: String?
-        if let newtError = error as? BlePeripheral.NewtError {
+        if let newtError = error as? NewtError {
             message = newtError.description
         }
         else {

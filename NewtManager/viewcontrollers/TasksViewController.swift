@@ -18,7 +18,6 @@ class TaksViewController: NewtViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
 
     override func didReceiveMemoryWarning() {
@@ -57,10 +56,8 @@ class TaksViewController: NewtViewController {
         guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
         }
-        
-        DLog("Error: Implement me")
-/*
-        peripheral.newtSendRequest(with: .taskStats) { [weak self] (imageVersionStrings, error) in
+
+        peripheral.newtSendRequest(with: .taskStats) { [weak self] (taskStats, error) in
             guard let context = self else {
                 return
             }
@@ -74,16 +71,18 @@ class TaksViewController: NewtViewController {
                 }
             }
 
-            if let imageVersionStrings = imageVersionStrings as? [String] {
-                DLog("TasksStats: \(imageVersionStrings.joined(separator: ", "))")
+            /*
+            if let taskStats = taskStats as? [String] {
+                DLog("TasksStats: \(taskStats.joined(separator: ", "))")
                 context.tasks = imageVersionStrings
             }
+ */
             
             DispatchQueue.main.async {
                 context.updateUI()
             }
         }
- */
+ 
     }
     
     private func updateUI() {

@@ -281,12 +281,18 @@ class ImagesViewController: NewtViewController {
         }
     }
     
-    fileprivate func sendImageConfirmRequest(hash: Data, isTest: Bool,  resetOnSuccess: Bool) {
+    fileprivate func sendImageConfirmRequest(hash: Data?, isTest: Bool,  resetOnSuccess: Bool) {
         guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
         }
         
-        peripheral.newtSendRequest(with: isTest ? .imageTest(hash: hash): .imageConfirm(hash: hash)) { [weak self]  (newtImages, error) in
+        guard !isTest || (isTest && hash != nil) else {
+            return
+        }
+        
+        let command: BlePeripheral.NmgrCommand = isTest ? .imageTest(hash: hash!): .imageConfirm(hash: hash)
+        
+        peripheral.newtSendRequest(with: command) { [weak self]  (newtImages, error) in
             guard let context = self else {
                 return
             }
@@ -515,7 +521,7 @@ extension ImagesViewController: ImageSlotTableViewCellDelegate {
     
     func onClickImageTest(index: Int) {
         guard let image = images?[index] else { return }
-        sendImageConfirmRequest(hash: image.hash, isTest: true, resetOnSuccess: false)
+        sendImageConfirmRequest(hash: index == 0 ? nil:image.hash, isTest: true, resetOnSuccess: false)
     }
     
     func onClickImageConfirm(index: Int) {
