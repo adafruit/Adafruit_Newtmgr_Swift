@@ -474,8 +474,6 @@ extension BlePeripheral {
         let encodedData = encodeCbor(dataDictionary: dataDictionary)
         
         return encodedData
-        //let requestPacketData = packet.encode(data: encodedData)
-        //return requestPacketData
     }
     
     // MARK: Boot
@@ -487,8 +485,6 @@ extension BlePeripheral {
         let encodedData = encodeJson(dataDictionary: dataDictionary)
         
         return encodedData
-        //        let requestPacketData = packet.encode(data: encodedData)
-        //        return requestPacketData
     }
     
     
@@ -497,8 +493,6 @@ extension BlePeripheral {
         let encodedData = encodeJson(dataDictionary: dataDictionary)
         
         return encodedData
-        //       let requestPacketData = packet.encode(data: encodedData)
-        //        return requestPacketData
     }
     
     // MARK: Upload
@@ -510,10 +504,10 @@ extension BlePeripheral {
         }
         
         // Start uploading the first packet (it will continue uploading packets step by step each time a notification is received)
-        return newtUploadPacket(from: imageData, offset: 0, progress: progress, completion: completion)
+        return newtUploadPacketData(from: imageData, offset: 0, progress: progress, completion: completion)
     }
     
-    private func newtUploadPacket(from imageData: Data, offset dataOffset: Int, progress: NewtRequestProgressHandler?, completion: NewtRequestCompletionHandler?) -> Data? {
+    private func newtUploadPacketData(from imageData: Data, offset dataOffset: Int, progress: NewtRequestProgressHandler?, completion: NewtRequestCompletionHandler?) -> Data? {
         
         // Update progress
         var isCancelled = false
@@ -533,48 +527,42 @@ extension BlePeripheral {
             newtRequestsQueue.next()
         }
         else {                                          // Create packet data
-            packetData = createUploadPacket(with: imageData, packetOffset: dataOffset)
+            packetData = createUploadPacketData(with: imageData, packetOffset: dataOffset)
         }
         
         return packetData
     }
     
-    private func createUploadPacket(with firmwareData: Data, packetOffset: Int) -> Data? {
+    private func createUploadPacketData(with firmwareData: Data, packetOffset: Int) -> Data? {
         
         // Calculate bytes to send
-        let kMaxPacketSize = 76
-        
+        //let kMaxPacketSize = 56 // 76
+        let isFirstPacket = packetOffset == 0
+        let maxPacketSize =  153 - (isFirstPacket ? 7:0)
+
         let firmwareSize = firmwareData.count
         let remainingBytes = firmwareSize - packetOffset
         
         var bytesToSend: Int
-        if remainingBytes >= kMaxPacketSize {
-            bytesToSend = kMaxPacketSize
+        if remainingBytes >= maxPacketSize {
+            bytesToSend = maxPacketSize
         }
         else {
-            bytesToSend = remainingBytes % kMaxPacketSize
+            bytesToSend = remainingBytes % maxPacketSize
         }
         
         // Create data to send
         let packetData = firmwareData.subdata(in: packetOffset..<packetOffset+bytesToSend)
         
         // Encode packetData
-        let packetDataBase64 = packetData.base64EncodedString(options: [])
-        var dataDictionary: [String: Any] = ["off": packetOffset, "data": packetDataBase64]
-        if packetOffset == 0 {
+        //let packetDataBase64 = packetData.base64EncodedString(options: [])
+        var dataDictionary: [String: Any] = ["off": packetOffset, "data": packetData]
+        if isFirstPacket {
             dataDictionary["len"] = firmwareSize
         }
-        let encodedData = encodeJson(dataDictionary: dataDictionary)
-        
-        /*
-         if let encodedData = encodedData {
-         DLog("payload: \(hexDescription(data: encodedData))")
-         }*/
+        let encodedData = encodeCbor(dataDictionary: dataDictionary)
         
         return encodedData
-        // Create request packet
-        //let requestPacketData = NmgrRequest.uploadPacket.encode(data: encodedData)
-        //return requestPacketData
     }
     
     private func encodeCbor(dataDictionary: Dictionary<String, Any>) -> Data? {
@@ -583,7 +571,8 @@ extension BlePeripheral {
             return nil
         }
         
-        DLog("CBOR payload: \(cbor.description)")
+        DLog("------");
+        DLog("Prepare CBOR payload: \(cbor.description)")
         
         var encodedData: Data?
         do {
@@ -671,6 +660,10 @@ extension BlePeripheral {
                 
             case .echo:
                 parseEcho(cbor: cbor)
+
+            case .upload(let imageData):
+                parseResponseUploadImage(cbor: cbor, imageData: imageData)
+
                 /*
                  case .taskStats:
                  parseResponseTaskStats(json)
@@ -678,8 +671,6 @@ extension BlePeripheral {
                  case .boot:
                  parseResponseBoot(json)
                  
-                 case .upload(let imageData):
-                 parseResponseUploadImage(json, imageData: imageData)
                  
                  case .bootImage, .bootVersion:
                  parseBasicJsonResponse(json)
@@ -785,7 +776,7 @@ extension BlePeripheral {
         }
         
         let completionHandler = newtRequestsQueue.first()?.completion
-        guard verifyResponseCode(cbor, completionHandler: completionHandler) else {
+        guard verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
             return
         }
         
@@ -793,38 +784,43 @@ extension BlePeripheral {
     }
     
     // MARK: Upload Image
-    /*
-     private func parseResponseUploadImage(_ json: JSON, imageData: Data) {
-     
-     let request = newtRequestsQueue.first()
-     
-     guard verifyResponseCode(json, completionHandler: request?.completion) else {
-     newtRequestsQueue.next()
-     return
-     }
-     
-     guard let newtCharacteristic = newtCharacteristic, let newtCharacteristicWriteType = newtCharacteristicWriteType else {
-     DLog("Command Error: characteristic no longer valid")
-     request?.completion?(nil, NewtError.invalidCharacteristic)
-     newtRequestsQueue.next()
-     return
-     }
-     
-     let offset = json["off"].intValue
-     if let writeData = newtUploadPacket(from: imageData, offset: offset, progress: request?.progress, completion: request?.completion) {
-     
-     write(data: writeData, for: newtCharacteristic, type: newtCharacteristicWriteType) { [weak self] error in
-     if error != nil {
-     DLog("Error: \(error!)")
-     request?.completion?(nil, error)
-     self?.newtRequestsQueue.next()
-     }
-     }
-     }
-     }
-     */
+    
+    private func parseResponseUploadImage(cbor: CBOR, imageData: Data) {
+        
+        let request = newtRequestsQueue.first()
+        
+        guard verifyResponseCode(cbor: cbor, completionHandler: request?.completion) else {
+            newtRequestsQueue.next()
+            return
+        }
+        
+        guard let newtCharacteristic = newtCharacteristic, let newtCharacteristicWriteType = newtCharacteristicWriteType else {
+            DLog("Command Error: characteristic no longer valid")
+            request?.completion?(nil, NewtError.invalidCharacteristic)
+            newtRequestsQueue.next()
+            return
+        }
+
+        
+        let offset = cbor["off"].intValue
+        if let writeData = newtUploadPacketData(from: imageData, offset: offset, progress: request?.progress, completion: request?.completion) {
+            
+            let requestPacketData = NmgrRequest.uploadPacket.encode(data: writeData)
+            
+            DLog("Send Command: Op:\(NmgrRequest.uploadPacket.op.rawValue) Flags:\(NmgrRequest.uploadPacket.flags.rawValue) Len:\(writeData.count) Group:\(NmgrRequest.uploadPacket.group.rawValue) Seq:\(NmgrRequest.uploadPacket.seq) Id:\(NmgrRequest.uploadPacket.id) Data:[\(hexDescription(data: writeData))]")
+            
+            write(data: requestPacketData, for: newtCharacteristic, type: newtCharacteristicWriteType) { [weak self] error in
+                if error != nil {
+                    DLog("Error: \(error!)")
+                    request?.completion?(nil, error)
+                    self?.newtRequestsQueue.next()
+                }
+            }
+        }
+    }
+    
     // MARK: Utils
-    private func verifyResponseCode(_ cbor: CBOR, completionHandler: NewtRequestCompletionHandler?) -> Bool {
+    private func verifyResponseCode(cbor: CBOR, completionHandler: NewtRequestCompletionHandler?) -> Bool {
         
         guard let returnCodeRaw = cbor["rc"].uInt16 else {
             DLog("parseResponse Error: rc not found")

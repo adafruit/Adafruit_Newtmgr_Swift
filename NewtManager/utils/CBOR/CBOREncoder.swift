@@ -38,18 +38,16 @@ class CBOREncoder {
     private static let kNegativeIntMask = MajorType.negativeInt.rawValue << 5
     
     func encodeItemAsData(cbor: CBOR) throws -> Data {
-        
         let bytes = try encodeItemAsBytes(cbor: cbor)
         return Data(bytes: bytes)
-        
     }
     
     func encodeItemAsBytes(cbor: CBOR) throws -> [UInt8] {
         switch cbor {
         case let .unsignedInt(value):
-            return encode(int: Int(value), majorType: .byteString)
+            return encode(int: Int(value), majorType: .unsignedInt)
         case let .negativeInt(value):
-            return encode(int: -Int(value)-1, majorType: .byteString)
+            return encode(int: -Int(value)-1, majorType: .negativeInt)
         case let .byteString(bytes):
             return encode(bytes: bytes)
         case let .utf8String(text):
@@ -98,7 +96,6 @@ class CBOREncoder {
     private func encode(simple value: UInt8) -> [UInt8] {
         let majorTypeMask = MajorType.simple.rawValue << 5
         return [majorTypeMask | UInt8(value & 0x1f)]
-
     }
     
     private func encode(dicionary: [CBOR:CBOR]) throws -> [UInt8] {
@@ -112,7 +109,7 @@ class CBOREncoder {
         
         return result
     }
-    
+
     private func encode(array: [CBOR]) throws -> [UInt8] {
         var result = encode(int: array.count, majorType: .array)
         for element in array {
@@ -142,19 +139,23 @@ class CBOREncoder {
         let majorTypeMask = majorType.rawValue << 5
         
         if value <= 0x17 {
-            return [majorTypeMask | UInt8(value)]
+            return [majorTypeMask | toUInt8(value)]
         }
         else if value < 0x100 {
-            return [majorTypeMask | CBOREncoder.kOneByte, UInt8(value)]
+            return [majorTypeMask | CBOREncoder.kOneByte, toUInt8(value)]
         }
         else if value < 0x10000 {
-            return [majorTypeMask | CBOREncoder.kTwoBytes, UInt8(value >> 8), UInt8(value)]
+            return [majorTypeMask | CBOREncoder.kTwoBytes, toUInt8(value >> 8), toUInt8(value)]
         }
         else if value < 0x100000000 {
-            return [majorTypeMask | CBOREncoder.kFourBytes, UInt8(value >> 24), UInt8(value >> 16), UInt8(value >> 8), UInt8(value)]
+            return [majorTypeMask | CBOREncoder.kFourBytes, toUInt8(value >> 24), toUInt8(value >> 16), toUInt8(value >> 8), toUInt8(value)]
         }
         else {
-            return [majorTypeMask | CBOREncoder.kEightBytes, UInt8(value >> 56), UInt8(value >> 48), UInt8(value >> 40), UInt8(value >> 32), UInt8(value >> 24), UInt8(value >> 16), UInt8(value >> 8), UInt8(value)]
+            return [majorTypeMask | CBOREncoder.kEightBytes, toUInt8(value >> 56), toUInt8(value >> 48), toUInt8(value >> 40), toUInt8(value >> 32), toUInt8(value >> 24), toUInt8(value >> 16), toUInt8(value >> 8), toUInt8(value)]
         }
+    }
+    
+    private func toUInt8(_ value: Int) -> UInt8 {
+        return UInt8(value & 0xff)
     }
 }

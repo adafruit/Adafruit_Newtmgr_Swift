@@ -14,7 +14,8 @@ open class CBORDecoder {
             throw CBORError.unfinishedSequence
         }
         
-        let result: T = data.scanValue(start: 0, length: n)
+        //let result: T = data.scanValue(start: 0, length: n)
+        let result: T = Data(data.subdata(in: 0..<n).reversed()).withUnsafeBytes { $0.pointee }
         data.removeFirst(n)
 
         return result

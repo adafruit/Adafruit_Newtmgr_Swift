@@ -1,3 +1,4 @@
+import Foundation
 
 public enum CBORError : Error {
     //
@@ -75,7 +76,8 @@ public indirect enum CBOR : Equatable, Hashable,
             switch (self, position) {
             case (let .array(l), let .unsignedInt(i)): return l[Int(i)]
             case (let .map(l), let i): return l[i] ?? CBOR.null
-            default: return CBOR.error(CBORError.invalidSubscript)              }
+            default: return CBOR.error(CBORError.invalidSubscript)
+            }
         }
         set(x) {
             switch (self, position) {
@@ -115,7 +117,8 @@ public indirect enum CBOR : Equatable, Hashable,
 	public init(booleanLiteral value: Bool) { self = .boolean(value) }
 	public init(floatLiteral value: Float32) { self = .float(value) }
     
-    public init(cbor: CBOR) {self = cbor}
+    public init(cbor: CBOR) { self = cbor }
+    public init(byteString: [UInt8]) { self = .byteString(byteString)}
 }
 
 public func ==(lhs: CBOR, rhs: CBOR) -> Bool {
@@ -165,6 +168,9 @@ extension CBOR {
         case let value as [String: Any]:
             result = CBOR(dictionary: value)
             
+        case let data as Data:
+            result = CBOR(data: data)
+            
         default:
             DLog("CBOR Init: unrecognized type")
             break
@@ -192,6 +198,11 @@ extension CBOR {
         }
         
         self = CBOR(dictionary: itemsArray)
+    }
+    
+    init(data: Data) {
+        let bytes = [UInt8](data)
+        self = CBOR(byteString: bytes)
     }
 }
 
@@ -313,9 +324,22 @@ extension CBOR {
             return nil
         }
     }
+
+    public var uInt: UInt? {
+        switch self {
+        case let .unsignedInt(value): return value
+        default:
+            return nil
+        }
+    }
+    
     
     public var intValue: Int {
         return int ?? 0
+    }
+    
+    public var uIntValue: UInt {
+        return uInt ?? 0
     }
     
     public var uInt16: UInt16? {
