@@ -58,7 +58,9 @@ class TaksViewController: NewtViewController {
             return
         }
         
-        peripheral.newtSendRequest(with: .taskStats) { [weak self] (imageVersionStrings, error) in            
+        DLog("Error: Implement me")
+/*
+        peripheral.newtSendRequest(with: .taskStats) { [weak self] (imageVersionStrings, error) in
             guard let context = self else {
                 return
             }
@@ -81,6 +83,7 @@ class TaksViewController: NewtViewController {
                 context.updateUI()
             }
         }
+ */
     }
     
     private func updateUI() {

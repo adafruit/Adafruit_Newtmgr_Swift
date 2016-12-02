@@ -136,6 +136,8 @@ class CBOREncoder {
     }
 
     private func encode(int value: Int, majorType: MajorType) -> [UInt8] {
+        // FIX: it may fail to encode 64 bit values on 32bit platforms (iphone5s)
+        
         let majorTypeMask = majorType.rawValue << 5
         
         if value <= 0x17 {
@@ -147,7 +149,7 @@ class CBOREncoder {
         else if value < 0x10000 {
             return [majorTypeMask | CBOREncoder.kTwoBytes, toUInt8(value >> 8), toUInt8(value)]
         }
-        else if value < 0x100000000 {
+        else if Int64(value) < 0x100000000 {
             return [majorTypeMask | CBOREncoder.kFourBytes, toUInt8(value >> 24), toUInt8(value >> 16), toUInt8(value >> 8), toUInt8(value)]
         }
         else {

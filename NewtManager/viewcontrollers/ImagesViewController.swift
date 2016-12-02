@@ -12,17 +12,20 @@ class ImagesViewController: NewtViewController {
     
     // Config
     private static let kInternalFirmwareSubdirectory = "/firmware"
-    private static let kShowAlertOnBootError = true
     private static let kShowAlertOnListError = true
 
     // UI
     @IBOutlet weak var baseTableView: UITableView!
-    
+    private let refreshControl = UIRefreshControl()
+ 
     // Boot info
     fileprivate var mainImage: String?
     fileprivate var activeImage: String?
     fileprivate var testImage: String?
-    fileprivate var images: [BlePeripheral.NewtImage]?
+    fileprivate var images: [NewtImage]?
+    fileprivate var isImageInfoHidden = [Bool]()
+    
+    // Slots
     
     // Image Upload
     fileprivate struct ImageInfo {
@@ -37,6 +40,16 @@ class ImagesViewController: NewtViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // Table View self-sizing
+        baseTableView.rowHeight = UITableViewAutomaticDimension
+        baseTableView.estimatedRowHeight = 44
+
+        // Setup table refresh
+        refreshControl.addTarget(self, action: #selector(onTableRefresh(_:)), for: UIControlEvents.valueChanged)
+        baseTableView.addSubview(refreshControl)
+        baseTableView.sendSubview(toBack: refreshControl)
+
+        // Refresh images
         refreshImageFiles()
     }
     
@@ -48,7 +61,6 @@ class ImagesViewController: NewtViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        //refreshBootVersion()
         refreshImageList()
     }
     
@@ -58,63 +70,28 @@ class ImagesViewController: NewtViewController {
 
         // Refresh if view is visible
         if isViewLoaded && view.window != nil {
-            //refreshBootVersion()
             refreshImageList()
         }
     }
     
     /*
-    // MARK: - Boot Info
-    private func refreshBootVersion() {
-        guard let peripheral = blePeripheral, peripheral.isNewtReady else {
-            return
-        }
-        
-        // Retrieve Boot info
-        peripheral.newtSendRequest(with: .boot) { [weak self] (bootImages, error) in
-            guard let context = self else {
-                return
-            }
-            
-            if error != nil {
-                DLog("Error Boot: \(error!)")
-                context.mainImage = "error retrieving info"
-                context.activeImage = "error retrieving info"
-                
-                if ImagesViewController.kShowAlertOnBootError {
-                    DispatchQueue.main.async {
-                        showErrorAlert(from: context, title: "Error", message: "Error retrieving boot data")
-                    }
-                }
-            }
-            
-            if let (mainImage, activeImage, testImage) = bootImages as? (String?, String?, String?) {
-                context.mainImage = mainImage
-                context.activeImage = activeImage
-                context.testImage = testImage
-            }
-            
-    
-            DispatchQueue.main.async {
-                context.updateUI()
-            }
-        }
-    }
- */
- 
-    fileprivate func boot(image: BlePeripheral.NewtImage) {
-        let message = "Would you like to activate it and reset the device?"
+    fileprivate func showImageOptions(image: NewtImage) {
+        let message = "Would you like to test it and reset the device?"
         let alertController = UIAlertController(title: "Boot version \(image.version)", message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "Activate", style: .default, handler: { [unowned self] alertAction in
-            
+        let testAction = UIAlertAction(title: "Only Test", style: .default, handler: { [unowned self] alertAction in
+            self.sendImageTestRequest(hash: image.hash, resetOnSuccess: false)
             //self.sendBootRequest(version: version)
         })
-        alertController.addAction(okAction)
+        alertController.addAction(testAction)
+        let testAndRebootAction = UIAlertAction(title: "Test and Reset", style: .default, handler: { [unowned self] alertAction in
+            self.sendImageTestRequest(hash: image.hash, resetOnSuccess: true)
+        })
+        alertController.addAction(testAndRebootAction)
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
         present(alertController, animated: true, completion: nil)
-        
     }
+ */
     
     // MARK: - Image List
     private func refreshImageList() {
@@ -139,10 +116,8 @@ class ImagesViewController: NewtViewController {
                 }
             }
 
-            if let newtImages = newtImages as? [BlePeripheral.NewtImage] {
-                DLog("ListImages: \(newtImages.map({"\($0.slot)-\($0.version)"}).joined(separator: ", ") )")
-                let sortedImages = newtImages.sorted(by: {$0.slot < $1.slot})
-                context.images = sortedImages
+            if let newtImages = newtImages as? [NewtImage] {
+                context.setNewtImages(newtImages)
             }
 
             DispatchQueue.main.async {
@@ -150,6 +125,13 @@ class ImagesViewController: NewtViewController {
             }
         }
         
+    }
+    
+    private func setNewtImages(_ newtImages: [NewtImage]) {
+        DLog("images: \(newtImages.map({"\($0.slot)-\($0.version)"}).joined(separator: ", ") )")
+        let sortedImages = newtImages.sorted(by: {$0.slot < $1.slot})
+        images = sortedImages
+        isImageInfoHidden = [Bool](repeating: true, count: newtImages.count)
     }
  
     // MARK: - Image Update
@@ -243,7 +225,7 @@ class ImagesViewController: NewtViewController {
     
     // MARK: - Requests
 
-    private func sendUploadRequest(imageData: Data) {
+    fileprivate func sendUploadRequest(imageData: Data) {
         guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
         }
@@ -274,78 +256,66 @@ class ImagesViewController: NewtViewController {
                         BlePeripheral.newtShowErrorAlert(from: context, title: "Upload image failed", error: error!)
                         return
                     }
-                    
+
                     // Success. Ask if should activate
                     DLog("Upload successful")
-                    
+
+                    /*
                     let message = "Image has been succesfully uploaded.\nWould you like to activate it and reset the device?"
                     let alertController = UIAlertController(title: "Upload successful", message: message, preferredStyle: .alert)
                     let okAction = UIAlertAction(title: "Activate", style: .default, handler: { [unowned context] alertAction in
+                        DLog("Error: Implement me")
                         
-                        context.sendBootRequest(imageData: imageData)
+                        //context.sendBootRequest(imageData: imageData)
                     })
                     alertController.addAction(okAction)
                     let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
                     alertController.addAction(cancelAction)
                     context.present(alertController, animated: true, completion: nil)
-                    
+                    */
+
                     // Refresh Image List
-                    //context.refreshBootVersion()
                     context.refreshImageList()
                 }
             }
         }
     }
     
-    private func sendBootRequest(imageData: Data) {
+    fileprivate func sendImageConfirmRequest(hash: Data, isTest: Bool,  resetOnSuccess: Bool) {
         guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
         }
         
-        peripheral.newtSendRequest(with: .bootImage(data: imageData)) { [weak self]  (_, error) in
+        peripheral.newtSendRequest(with: isTest ? .imageTest(hash: hash): .imageConfirm(hash: hash)) { [weak self]  (newtImages, error) in
             guard let context = self else {
                 return
             }
             
             guard error == nil else {
-                DLog("boot image error: \(error!)")
+                DLog("Set test image error: \(error!)")
                 
-                BlePeripheral.newtShowErrorAlert(from: context, title: "Boot image failed", error: error!)
+                BlePeripheral.newtShowErrorAlert(from: context, title: "Set test image failed", error: error!)
                 return
             }
-            
-            // Success. Reset device
-            DLog("Boot image successful")
-            context.sendResetRequest()
-        }
-    }
 
-    
-    private func sendBootRequest(version: String) {
-        guard let peripheral = blePeripheral, peripheral.isNewtReady else {
-            return
-        }
-        
-        peripheral.newtSendRequest(with: .bootVersion(version: version)) { [weak self]  (_, error) in
-            guard let context = self else {
-                return
-            }
-            
-            guard error == nil else {
-                DLog("boot version error: \(error!)")
-                
-                BlePeripheral.newtShowErrorAlert(from: context, title: "Boot version failed", error: error!)
-                return
-            }
-            
             // Success. Reset device
-            DLog("Boot version successful")
-            context.sendResetRequest()
+            DLog("Set \(isTest ? "test":"confirm") image: successful")
+            
+            if let newtImages = newtImages as? [NewtImage] {
+                context.setNewtImages(newtImages)
+            }
+            
+            DispatchQueue.main.async {
+                context.updateUI()
+            }
+
+            if resetOnSuccess {
+                context.sendResetRequest()
+            }
         }
     }
     
-    
-    private func sendResetRequest() {
+    fileprivate func sendResetRequest() {
         guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
         }
@@ -380,18 +350,21 @@ class ImagesViewController: NewtViewController {
         // Reload table
         baseTableView.reloadData()
     }
+    
+    func onTableRefresh(_ sender: AnyObject) {
+        refreshImageList()
+        refreshControl.endRefreshing()
+    }
 }
 
 // MARK: - UITableViewDataSource
 extension ImagesViewController: UITableViewDataSource {
     enum TableSections: Int {
-        case boot = -1
         case imageSlots = 0
         case imageUpdates = 1
         
         var name: String {
             switch self {
-            case .boot: return "Boot"
             case .imageSlots: return "Image Slots"
             case .imageUpdates: return "Image Updates"
             }
@@ -415,8 +388,6 @@ extension ImagesViewController: UITableViewDataSource {
 
         var count: Int
         switch tableSection {
-        case .boot:
-            count = 3
         case .imageSlots:
             count = images?.count ?? 0
         case .imageUpdates:
@@ -427,20 +398,28 @@ extension ImagesViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
+        let tableSection = TableSections(rawValue: indexPath.section) ?? .imageUpdates
+        
         var cell: UITableViewCell?
-        switch indexPath.section {
-            /*
-        case 0:
-            let reuseIdentifier = "BootCell"
+        switch tableSection {
+            
+        case .imageSlots:
+            let reuseIdentifier = "ImageSlotCell"
             cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier)
             if cell == nil {
                 cell = UITableViewCell(style: .value1, reuseIdentifier: reuseIdentifier)
             }
+            
+            // Note: this is not done on willDisplay to avoid self-sizing problems
+            if let image = images?[indexPath.row] {
+                let slotCell = cell as! ImageSlotTableViewCell
+                slotCell.set(id: indexPath.row, image: image, isInfoHidden: isImageInfoHidden[indexPath.row])
+                slotCell.delegate = self
+                slotCell.accessoryType = .none
+                slotCell.selectionStyle = .default
+            }
 
-        case 1:
-            let reuseIdentifier = "ImageBanksCell"
-
-            */
+            
         default:
             let reuseIdentifier = "ImageCell"
             cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier)
@@ -456,63 +435,35 @@ extension ImagesViewController: UITableViewDataSource {
         
         guard let tableSection = TableSections(rawValue: indexPath.section) else {return}
 
-        var text: String?
-        var detailText: String?
         switch tableSection {
-        case .boot:
-            if indexPath.row == 0 {
-                text = "Main Image"
-                detailText = mainImage != nil ? mainImage!:"empty"
-            }
-            else if indexPath.row == 1 {
-                text = "Active Image"
-                detailText = activeImage != nil ? activeImage!:"empty"
-            }
-            else {
-                text = "Test Image"
-                detailText = testImage != nil ? testImage!:"empty"
-            }
-            cell.accessoryType = .none
             
         case .imageSlots:
-            text = "Slot \(indexPath.row)"
-            if let image = images?[indexPath.row] {
-                detailText = image.version
-                cell.accessoryType = .disclosureIndicator
-            }
+            break
             
         case .imageUpdates:
             let imageInfo: ImageInfo? = indexPath.row < (imagesInternal?.count ?? 0) ? imagesInternal![indexPath.row]:nil
-            text = imageInfo != nil ? imageInfo!.name : "Upload an image"
-            detailText = imageInfo != nil ? imageInfo!.version : nil
             cell.accessoryType = .disclosureIndicator
-            
+            cell.textLabel!.text = imageInfo != nil ? imageInfo!.name : "Upload an image"
+            cell.detailTextLabel!.text = imageInfo != nil ? imageInfo!.version : nil
+            cell.selectionStyle = .default
         }
         
-        cell.textLabel!.text = text
-        cell.detailTextLabel!.text = detailText
     }
 }
 
 // MARK: - UITableViewDelegate
 extension ImagesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         defer {
             tableView.deselectRow(at: indexPath, animated: true)
         }
         
         guard let tableSection = TableSections(rawValue: indexPath.section) else {return}
-
         
         switch tableSection {
-        case .boot:
-            break
-            
         case .imageSlots:
-            if let image = images?[indexPath.row] {
-                 boot(image: image)
-            }
+            let slotCell = tableView.cellForRow(at: indexPath) as! ImageSlotTableViewCell
+            slotCell.onClickInfo(self)
             
         case .imageUpdates:
             if let imageInfo: ImageInfo? = indexPath.row < (imagesInternal?.count ?? 0) ? imagesInternal![indexPath.row]:nil {
@@ -523,8 +474,9 @@ extension ImagesViewController: UITableViewDelegate {
                 importImage(sourceView: currentCell.contentView)
             }
         }
-        
     }
+ 
+    
 }
 
 // MARK: - UploadProgressViewControllerDelegate
@@ -537,7 +489,6 @@ extension ImagesViewController: UploadProgressViewControllerDelegate {
 
 // MARK: - UIDocumentMenuDelegate
 extension ImagesViewController: UIDocumentMenuDelegate {
-    
     func documentMenu(_ documentMenu: UIDocumentMenuViewController, didPickDocumentPicker documentPicker: UIDocumentPickerViewController) {
         documentPicker.delegate = self
         present(documentPicker, animated: true, completion: nil)
@@ -550,5 +501,29 @@ extension ImagesViewController: UIDocumentPickerDelegate {
         DLog("picked: \(url.absoluteString)")
         uploadImage(url: url)
     }
+}
 
+// MARK: - ImageSlotTableViewCellDelegate
+extension ImagesViewController: ImageSlotTableViewCellDelegate {
+    func onImageSlotCellHeightChanged(index: Int, isInfoHidden: Bool) {
+        isImageInfoHidden[index] = isInfoHidden
+
+        // Animate table changes
+        baseTableView.beginUpdates()
+        baseTableView.endUpdates()
+    }
+    
+    func onClickImageTest(index: Int) {
+        guard let image = images?[index] else { return }
+        sendImageConfirmRequest(hash: image.hash, isTest: true, resetOnSuccess: false)
+    }
+    
+    func onClickImageConfirm(index: Int) {
+        guard let image = images?[index] else { return }
+        sendImageConfirmRequest(hash: image.hash, isTest: false, resetOnSuccess: false)
+    }
+    
+    func onClickImageReset(index: Int) {
+        sendResetRequest()
+    }
 }

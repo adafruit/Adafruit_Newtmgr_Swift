@@ -81,14 +81,12 @@ extension CommandsViewController: UITableViewDataSource {
         case reset = 0
         case imageList
         case echo
-        case bootVersion
         
         var name: String {
             switch self {
             case .reset: return "Reset"
             case .imageList: return "Image List"
             case .echo: return  "Echo"
-            case .bootVersion: return "Boot version"
             }
         }
     }
@@ -132,17 +130,14 @@ extension CommandsViewController: UITableViewDelegate {
             sendRequest(for: .imageList)
             
         case .echo:
-            sendRequest(for: .echo(message: "Hello"))
-            
-        case .bootVersion:
-            let alert = UIAlertController(title: "Enter version to boot", message: "Version", preferredStyle: .alert)
+            let alert = UIAlertController(title: "Enter Echo message", message: "Message", preferredStyle: .alert)
             alert.addTextField { (textField) in
-                textField.placeholder = "0.0.0"
+                textField.placeholder = "Hello"
             }
             alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [unowned self] (_) in
                 let textField = alert.textFields![0]
-                if let version = textField.text {
-                    self.sendRequest(for: .bootVersion(version: version))
+                if let message = textField.text {
+                    self.sendRequest(for: .echo(message: message))
                 }
             }))
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))

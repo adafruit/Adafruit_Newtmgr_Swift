@@ -27,6 +27,9 @@
 		A94F25891DF0936500F46930 /* Data+ScanValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F257D1DF0936500F46930 /* Data+ScanValue.swift */; };
 		A94F258A1DF0936500F46930 /* DataConversions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F257E1DF0936500F46930 /* DataConversions.swift */; };
 		A94F258B1DF0936500F46930 /* LogHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F257F1DF0936500F46930 /* LogHelper.swift */; };
+		A94F258E1DF1A1E100F46930 /* NewtImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F258D1DF1A1E100F46930 /* NewtImage.swift */; };
+		A94F25901DF1A26C00F46930 /* Newt.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F258F1DF1A26C00F46930 /* Newt.swift */; };
+		A94F25951DF1ACC300F46930 /* ImageSlotTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F25941DF1ACC300F46930 /* ImageSlotTableViewCell.swift */; };
 		A950EB021DB00351005FC305 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB011DB00351005FC305 /* AppDelegate.swift */; };
 		A950EB071DB00351005FC305 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A950EB051DB00351005FC305 /* Main.storyboard */; };
 		A950EB091DB00351005FC305 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A950EB081DB00351005FC305 /* Assets.xcassets */; };
@@ -64,6 +67,9 @@
 		A94F257D1DF0936500F46930 /* Data+ScanValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+ScanValue.swift"; sourceTree = "<group>"; };
 		A94F257E1DF0936500F46930 /* DataConversions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataConversions.swift; sourceTree = "<group>"; };
 		A94F257F1DF0936500F46930 /* LogHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogHelper.swift; sourceTree = "<group>"; };
+		A94F258D1DF1A1E100F46930 /* NewtImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewtImage.swift; sourceTree = "<group>"; };
+		A94F258F1DF1A26C00F46930 /* Newt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Newt.swift; sourceTree = "<group>"; };
+		A94F25941DF1ACC300F46930 /* ImageSlotTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSlotTableViewCell.swift; sourceTree = "<group>"; };
 		A950EAFE1DB00351005FC305 /* NewtManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewtManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A950EB011DB00351005FC305 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A950EB061DB00351005FC305 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -118,6 +124,7 @@
 		A94F25711DF0936500F46930 /* AdafruitKit */ = {
 			isa = PBXGroup;
 			children = (
+				A94F258C1DF1A0B000F46930 /* MyNewt */,
 				A94F25721DF0936500F46930 /* Ble */,
 				A94F257A1DF0936500F46930 /* Utils */,
 			);
@@ -148,6 +155,15 @@
 				A94F257F1DF0936500F46930 /* LogHelper.swift */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		A94F258C1DF1A0B000F46930 /* MyNewt */ = {
+			isa = PBXGroup;
+			children = (
+				A94F258D1DF1A1E100F46930 /* NewtImage.swift */,
+				A94F258F1DF1A26C00F46930 /* Newt.swift */,
+			);
+			path = MyNewt;
 			sourceTree = "<group>";
 		};
 		A950EAF51DB00350005FC305 = {
@@ -204,6 +220,7 @@
 				A9FACDAA1DB2AE3000061E70 /* NewtViewController.swift */,
 				A950EB211DB0534D005FC305 /* TasksViewController.swift */,
 				A9EB79D01DB2FD9A00635A6D /* ImagesViewController.swift */,
+				A94F25941DF1ACC300F46930 /* ImageSlotTableViewCell.swift */,
 				A92CC7451DB52083002124EF /* UploadProgressViewController.swift */,
 				A95CE57A1DB68252008C234E /* CommandsViewController.swift */,
 			);
@@ -365,6 +382,7 @@
 				A94F25841DF0936500F46930 /* Sensor.swift in Sources */,
 				A9FACDA91DB2AE0F00061E70 /* DeviceTabBarViewController.swift in Sources */,
 				A94F25801DF0936500F46930 /* BleManager.swift in Sources */,
+				A94F258E1DF1A1E100F46930 /* NewtImage.swift in Sources */,
 				A94F258B1DF0936500F46930 /* LogHelper.swift in Sources */,
 				A94F25701DF0452700F46930 /* CBOREncoder.swift in Sources */,
 				A950EB201DB04C6F005FC305 /* MainNavigationViewController.swift in Sources */,
@@ -375,6 +393,7 @@
 				A94F25861DF0936500F46930 /* UartManager.swift in Sources */,
 				A94F25851DF0936500F46930 /* UartLogManager.swift in Sources */,
 				A94F256C1DF0448D00F46930 /* CBORInputStream.swift in Sources */,
+				A94F25901DF1A26C00F46930 /* Newt.swift in Sources */,
 				A94F25881DF0936500F46930 /* CommandQueue.swift in Sources */,
 				A94F25821DF0936500F46930 /* BlePeripheral+Uart.swift in Sources */,
 				A94F25891DF0936500F46930 /* Data+ScanValue.swift in Sources */,
@@ -382,6 +401,7 @@
 				A9FACDAB1DB2AE3000061E70 /* NewtViewController.swift in Sources */,
 				A9EB79D11DB2FD9A00635A6D /* ImagesViewController.swift in Sources */,
 				A94F25811DF0936500F46930 /* BlePeripheral+Newt.swift in Sources */,
+				A94F25951DF1ACC300F46930 /* ImageSlotTableViewCell.swift in Sources */,
 				A94F25831DF0936500F46930 /* BlePeripheral.swift in Sources */,
 				A95CE57B1DB68252008C234E /* CommandsViewController.swift in Sources */,
 				A92CC7461DB52083002124EF /* UploadProgressViewController.swift in Sources */,

@@ -134,12 +134,14 @@ extension BlePeripheral {
     private enum Group: UInt16 {
         case `default`    = 0
         case image      = 1
+        
+        /*
         case stats      = 2
         case config     = 3
         case logs       = 4
         case crash      = 5
         case peruser    = 64
-        
+        */
         var code: UInt16 {
             return rawValue
         }
@@ -148,12 +150,15 @@ extension BlePeripheral {
     private enum GroupImage: UInt8 {
         case list       = 0
         case upload     = 1
+
+        /*
         case Boot       = 2
         case File       = 3
         case List2      = 4
         case Activate   = 5
         case Corelist   = 6
         case Coreload   = 7
+        */
         
         var code: UInt8 {
             return rawValue
@@ -162,10 +167,13 @@ extension BlePeripheral {
     
     private enum GroupDefault: UInt8 {
         case echo           = 0
+        
+        /*
         case ConsEchoCtrl   = 1
         case Taskstats      = 2
         case Mpstats        = 3
         case DatetimeStr    = 4
+ */
         case reset          = 5
         
         var code: UInt8 {
@@ -210,10 +218,9 @@ extension BlePeripheral {
         var id: UInt8
         var data: Data
         
-        init(op: OpCode, flags: Flags, /*len: UInt16,*/ group: Group, seq:UInt8, id: UInt8, data: Data = Data()) {
+        init(op: OpCode, flags: Flags, group: Group, seq:UInt8, id: UInt8, data: Data = Data()) {
             self.op    = op
             self.flags = flags
-            //self.len   = len
             self.group = group
             self.seq   = seq
             self.id    = id
@@ -246,11 +253,12 @@ extension BlePeripheral {
     
     enum NmgrCommand {
         case imageList
-        case taskStats
-        case boot
+        case imageTest(hash: Data)
+        case imageConfirm(hash: Data)
         case upload(imageData: Data)
-        case bootImage(data: Data)
-        case bootVersion(version: String)
+        /*
+        case taskStats
+         */
         case reset
         case echo(message: String)
     }
@@ -272,24 +280,17 @@ extension BlePeripheral {
             var packet: Packet
             
             switch command {
-            case .imageList:
+            case .imageList, .imageTest, .imageConfirm:
                 packet = Packet(op: OpCode.read, flags: Flags.none, group: Group.image, seq: 0, id: GroupImage.list.code)
-                
-            case .taskStats:
-                packet = Packet(op: OpCode.read, flags: Flags.none, group: Group.default, seq: 0, id: GroupDefault.Taskstats.code)
-                
-            case .boot:
-                packet = Packet(op: OpCode.read, flags: Flags.none, group: Group.image, seq: 0, id: GroupImage.Boot.code)
                 
             case .upload:
                 packet = NmgrRequest.uploadPacket
                 
-            case .bootImage:
-                packet = Packet(op: OpCode.write, flags: Flags.none, group: Group.image, seq: 0, id: GroupImage.Activate.code)
-                
-            case .bootVersion:
-                packet = Packet(op: OpCode.write, flags: Flags.none, group: Group.image, seq: 0, id: GroupImage.Boot.code)
-                
+
+                /*
+            case .taskStats:
+                packet = Packet(op: OpCode.read, flags: Flags.none, group: Group.default, seq: 0, id: GroupDefault.Taskstats.code)
+                */
             case .reset:
                 packet = Packet(op: OpCode.write, flags: Flags.none, group: Group.default, seq: 0, id: GroupDefault.reset.code)
                 
@@ -304,16 +305,17 @@ extension BlePeripheral {
             switch command {
             case .imageList:
                 return "Image List"
-            case .taskStats:
-                return "TaskStats"
-            case .boot:
-                return "Boot"
+            case .imageTest:
+                return "Image Test"
+            case .imageConfirm:
+                return "Image Confirm"
             case .upload:
                 return "Upload"
-            case .bootImage:
-                return "Boot from image"
-            case .bootVersion(let version):
-                return "Boot version \(version)"
+
+                /*
+            case .taskStats:
+                return "TaskStats"
+ */
             case .reset:
                 return "Reset"
             case .echo:
@@ -436,27 +438,25 @@ extension BlePeripheral {
         
         var data: Data?
         switch request.command {
+        case let .imageTest(hash: hash):
+            data = newtImageTest(hash: hash)
+
+        case let .imageConfirm(hash: hash):
+            data = newtImageConfirm(hash: hash)
+
         case .upload(let imageData):
             data = newtUpload(imageData: imageData, progress: request.progress, completion: request.completion)
             
         case .echo(let message):
-            data = newtEcho(message: message, packet: request.packet)
-            
-        case .bootImage(let imageData):
-            data = newtBoot(imageData: imageData, packet: request.packet)
-            
-        case .bootVersion(let version):
-            data = newtBoot(version: version, packet: request.packet)
-            
+            data = newtEcho(message: message)
+  
         default:
-            data = nil //request.packet.encode(data: nil)
+            data = nil
         }
         
         let requestPacketData = request.packet.encode(data: data)
         
-        DLog("Send Command: Op:\(request.packet.op.rawValue) Flags:\(request.packet.flags.rawValue) Len:\(data?.count ?? 0) Group:\(request.packet.group.rawValue) Seq:\(request.packet.seq) Id:\(request.packet.id) Data:[\(data != nil ? hexDescription(data: data!):" ")]")
-        
-        //DLog("Command: \(request.description) [\(hexDescription(data: writeData))]")
+        DLog("Send Command: Op:\(request.packet.op.rawValue) Flags:\(request.packet.flags.rawValue) Len:\(data?.count ?? 0) Group:\(request.packet.group.rawValue) Seq:\(request.packet.seq) Id:\(request.packet.id) Data:[\(data != nil ? hexDescription(data: data!):"")]")
         
         write(data: requestPacketData, for: newtCharacteristic, type: newtCharacteristicWriteType) { [weak self] error in
             if error != nil {
@@ -468,29 +468,27 @@ extension BlePeripheral {
         }
     }
     
-    // MARK: Echo
-    private func newtEcho(message: String, packet: Packet) -> Data? {
-        let dataDictionary: [String: Any] = ["d": message]
+    // MARK: ImageTest
+    private func newtImageTest(hash: Data) -> Data? {
+        //let hashBase64 = hash.base64EncodedString(options: [])
+        let dataDictionary: [String: Any] = ["confirm": false, "hash": hash]
+        let encodedData = encodeCbor(dataDictionary: dataDictionary)
+        
+        return encodedData
+    }
+
+    // MARK: ImageConfirm
+    private func newtImageConfirm(hash: Data) -> Data? {
+        let dataDictionary: [String: Any] = ["confirm": true, "hash": NSNull()]
         let encodedData = encodeCbor(dataDictionary: dataDictionary)
         
         return encodedData
     }
     
-    // MARK: Boot
-    private func newtBoot(imageData: Data, packet: Packet) -> Data? {
-        let (_, buildId) = BlePeripheral.readInfo(imageData: imageData)
-        
-        let buildIdBase64 = buildId.base64EncodedString(options: [])
-        let dataDictionary: [String: Any] = [ "test": buildIdBase64]
-        let encodedData = encodeJson(dataDictionary: dataDictionary)
-        
-        return encodedData
-    }
-    
-    
-    private func newtBoot(version: String, packet: Packet) -> Data? {
-        let dataDictionary: [String: Any] = [ "test": version]
-        let encodedData = encodeJson(dataDictionary: dataDictionary)
+    // MARK: Echo
+    private func newtEcho(message: String) -> Data? {
+        let dataDictionary: [String: Any] = ["d": message]
+        let encodedData = encodeCbor(dataDictionary: dataDictionary)
         
         return encodedData
     }
@@ -553,9 +551,6 @@ extension BlePeripheral {
         
         // Create data to send
         let packetData = firmwareData.subdata(in: packetOffset..<packetOffset+bytesToSend)
-        
-        // Encode packetData
-        //let packetDataBase64 = packetData.base64EncodedString(options: [])
         var dataDictionary: [String: Any] = ["off": packetOffset, "data": packetData]
         if isFirstPacket {
             dataDictionary["len"] = firmwareSize
@@ -655,7 +650,7 @@ extension BlePeripheral {
             // Parse response
             switch command {
                 
-            case .imageList:
+            case .imageList, .imageTest, .imageConfirm:
                 parseResponseImageList(cbor: cbor)
                 
             case .echo:
@@ -667,13 +662,6 @@ extension BlePeripheral {
                 /*
                  case .taskStats:
                  parseResponseTaskStats(json)
-                 
-                 case .boot:
-                 parseResponseBoot(json)
-                 
-                 
-                 case .bootImage, .bootVersion:
-                 parseBasicJsonResponse(json)
                  */
                 
             default:
@@ -686,16 +674,7 @@ extension BlePeripheral {
     }
     
     // MARK: List
-    struct NewtImage {
-        var slot: Int
-        var version: String
-        var isConfirmed: Bool
-        var isPending: Bool
-        var isActive: Bool
-        var isBootable: Bool
-        var hash: String
-    }
-    
+ 
     private func parseResponseImageList(cbor: CBOR) {
         defer {
             newtRequestsQueue.next()
@@ -712,7 +691,7 @@ extension BlePeripheral {
             let pending = imageCbor["pending"].boolValue
             let active = imageCbor["active"].boolValue
             let bootable = imageCbor["bootable"].boolValue
-            let hash = imageCbor["hash"].stringValue
+            let hash = imageCbor["hash"].dataValue
             
             let image = NewtImage(slot: slot, version: version, isConfirmed: confirmed, isPending: pending, isActive: active, isBootable: bootable, hash: hash)
             images.append(image)
@@ -721,7 +700,6 @@ extension BlePeripheral {
         let completionHandler = newtRequestsQueue.first()?.completion
         completionHandler?(images, nil)
     }
-    
     
     private func parseEcho(cbor: CBOR) {
         defer {
@@ -750,23 +728,6 @@ extension BlePeripheral {
      completionHandler?(tasksJson, nil)
      }
      
-     // MARK: Boot
-     private func parseResponseBoot(_ json: JSON) {
-     defer {
-     newtRequestsQueue.next()
-     }
-     
-     let completionHandler = newtRequestsQueue.first()?.completion
-     guard verifyResponseCode(json, completionHandler: completionHandler) else {
-     return
-     }
-     
-     let mainImage = json["main"].string
-     let activeImage = json["active"].string
-     let testImage = json["test"].string
-     
-     completionHandler?((mainImage, activeImage, testImage), nil)
-     }
      */
     
     // MARK: Basic Command (Activate)
@@ -854,169 +815,7 @@ extension BlePeripheral {
     }
     
     
-    // MARK: - Image Structures and functions
-    // TODO: convert to Swift3 naming conventions
-    
-    private struct NewtImageHeader {
-        static let kHeaderSize: UInt16    = 32
-        static let kMagic: UInt32         = 0x96f3b83c
-        static let kMagicNone: UInt32     = 0xffffffff
-        static let kHashSize: UInt32      = 32
-        static let kTlvSize: UInt32       = 4
-    }
-    
-    private enum imgFlags : UInt32 {
-        case SHA256                 = 0x00000002    // Image contains hash TLV
-        case PKCS15_RSA2048_SHA256  = 0x00000004    // PKCS15 w/RSA and SHA
-        case ECDSA224_SHA256        = 0x00000008    // ECDSA256 over SHA256
-        
-        var code:UInt32 {
-            return rawValue
-        }
-    }
-    
-    
-    // Image trailer TLV types.
-    
-    private enum imgTlvType : UInt8 {
-        case SHA256   = 1 // SHA256 of image hdr and body
-        case RSA2048  = 2 // RSA2048 of hash output
-        case ECDSA224 = 3 // ECDSA of hash output
-        
-        var code:UInt8 {
-            return rawValue
-        }
-    }
-    
-    struct imgVersion {
-        var major: UInt8
-        var minor: UInt8
-        var revision: UInt16
-        var buildNum: UInt32
-        
-        init() {
-            self.major      = 0
-            self.minor      = 0
-            self.revision   = 0
-            self.buildNum   = 0
-        }
-        
-        var description: String {
-            return String.init(format: "%d.%d.%d", major, minor, revision)
-        }
-    }
-    
-    // Image header.  All fields are in little endian byte order.
-    private struct imgHeader {
-        var magic:UInt32
-        var tlvSize:UInt16  // Trailing TLVs
-        var keyId:UInt8
-        //uint8_t  _pad1;
-        var hdrSize:UInt16
-        //uint16_t _pad2;
-        var imgSize:UInt32  // Does not include header.
-        var flags:UInt32
-        var ver: imgVersion
-        //uint32_t _pad3;
-        
-        init?(magic:UInt32, tlvSize:UInt16,
-              keyId:UInt8, hdrSize:UInt16,
-              imgSize:UInt32, flags:UInt32,
-              ver:imgVersion) {
-            
-            self.magic    = magic
-            self.tlvSize  = tlvSize // Trailing TLVs
-            self.keyId    = keyId
-            //uint8_t  _pad1;
-            self.hdrSize  = hdrSize
-            //uint16_t _pad2;
-            self.imgSize  = imgSize // Does not include header.
-            self.flags     = flags
-            self.ver = ver
-        }
-        
-        init(imdata: Data) {
-            magic = imdata.scanValue(start: 0, length: 4)
-            tlvSize = imdata.scanValue(start: 4, length: 2)
-            keyId = imdata.scanValue(start: 6, length: 1)
-            //uint8_t  _pad1
-            hdrSize = imdata.scanValue(start: 8, length: 2)
-            //uint16_t _pad2;
-            imgSize = imdata.scanValue(start: 12, length: 4)
-            flags = imdata.scanValue(start: 16, length: 4)
-            ver = imgVersion()
-            ver.major = imdata.scanValue(start: 21, length: 1)
-            ver.minor = imdata.scanValue(start: 22, length: 1)
-            ver.revision = imdata.scanValue(start: 23, length: 2)
-            ver.buildNum = imdata.scanValue(start: 25, length: 4)
-        }
-    }
-    
-    // Image trailer TLV format. All fields in little endian.
-    private struct imgTlv {
-        var type: UInt8
-        //uint8_t  _pad;
-        var len: UInt16
-        
-        init?(type: UInt8, len: UInt16) {
-            self.type = type
-            self.len  = len
-        }
-        
-        init(imdata: Data) {
-            type = imdata.scanValue(start: 0, length: 1)
-            len = imdata.scanValue(start: 2, length: 2)
-        }
-    }
-    
-    static func readInfo(imageData data: Data) -> (version: imgVersion, hash: Data) {
-        var hdr: imgHeader
-        var tlv: imgTlv
-        var ver = imgVersion()
-        var hash = Data()
-        var error: Error?
-        
-        hdr = imgHeader(imdata: data)
-        
-        if hdr.magic == NewtImageHeader.kMagic {
-            ver = hdr.ver
-        }
-        else if (hdr.magic == 0xffffffff) {
-            error = NewtError.imageInvalid
-        }
-        else {
-            error = NewtError.imageInvalid
-        }
-        
-        if error == nil {
-            // Build ID is in a TLV after the image.
-            var dataOff = UInt32(hdr.hdrSize) + UInt32(hdr.imgSize)
-            let dataEnd = dataOff + UInt32(hdr.tlvSize)
-            
-            while (dataOff + NewtImageHeader.kTlvSize  <= dataEnd) {
-                let imdata = data.subdata(in: Int(dataOff)..<Int(dataOff)+Int(NewtImageHeader.kTlvSize))
-                tlv = imgTlv(imdata: imdata)
-                if (tlv.type == 0xff && tlv.len == 0xffff) {
-                    break;
-                }
-                
-                if (tlv.type != imgTlvType.SHA256.code || UInt32(tlv.len) != NewtImageHeader.kHashSize) {
-                    dataOff += NewtImageHeader.kTlvSize + UInt32(tlv.len)
-                    continue
-                }
-                
-                dataOff += NewtImageHeader.kTlvSize
-                if (dataOff + NewtImageHeader.kHashSize > dataEnd) {
-                    return (ver, Data())
-                }
-                
-                hash = data.subdata(in: Int(dataOff)..<Int(dataOff)+Int(NewtImageHeader.kHashSize))
-            }
-        }
-        
-        return (ver, hash)
-    }
-    
+      
     // MARK: - Utils
     static func newtShowErrorAlert(from controller: UIViewController, title: String? = "Error", error: Error) {
         let message: String?

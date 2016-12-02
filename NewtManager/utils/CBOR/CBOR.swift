@@ -11,7 +11,6 @@ public enum CBORError : Error {
     case incorrectUTF8String
 }
 
-
 public indirect enum CBOR : Equatable, Hashable,
 	ExpressibleByNilLiteral, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral,
 	ExpressibleByArrayLiteral, ExpressibleByDictionaryLiteral, ExpressibleByBooleanLiteral,
@@ -171,6 +170,12 @@ extension CBOR {
         case let data as Data:
             result = CBOR(data: data)
             
+        case let bool as Bool:
+            result = CBOR(booleanLiteral: bool)
+            
+        case is NSNull:
+            result = CBOR(nilLiteral:())
+            
         default:
             DLog("CBOR Init: unrecognized type")
             break
@@ -277,39 +282,44 @@ extension CBOR {
     public var string: String? {
         switch self {
         case let .utf8String(value): return value
-        default:
-            return nil
+        default: return nil
         }
     }
     
     //Non-optional string
     public var stringValue: String {
-        switch self {
-        case let .utf8String(value): return value
-        default: return ""
-        }
+       return string ?? ""
     }
 }
 
-// MARK: - ByteString
+// MARK: - ByteString, Data
 
 extension CBOR {
     
-    //Optional string
+    // Optional bytes
     public var byteString: [UInt8]? {
         switch self {
         case let .byteString(value): return value
-        default:
-            return nil
+        default: return nil
         }
     }
     
-    //Non-optional string
+    // Non-optional bytes
     public var byteStringValue: [UInt8] {
+        return byteString ?? [UInt8]()
+    }
+    
+    // Optional data
+    public var data: Data? {
         switch self {
-        case let .byteString(value): return value
-        default: return [UInt8]()
+        case let .byteString(value): return Data(value)
+        default:  return nil
         }
+    }
+    
+    // Non-Optional data
+    public var dataValue: Data {
+        return data ?? Data()
     }
 }
 
@@ -332,8 +342,7 @@ extension CBOR {
             return nil
         }
     }
-    
-    
+
     public var intValue: Int {
         return int ?? 0
     }
@@ -354,17 +363,14 @@ extension CBOR {
     // Optional [CBOR]
     public var array: [CBOR]? {
         switch self {
-        case let .array(value): return value.map{ CBOR(cbor: $0) }
+        case let .array(value): return value
         default: return nil
         }
     }
     
     // Non-optional [CBOR]
     public var arrayValue: [CBOR] {
-        switch self {
-        case let .array(value): return value
-        default: return []
-        }
+        return array ?? []
     }
  
 }
