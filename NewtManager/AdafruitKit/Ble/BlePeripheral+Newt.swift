@@ -243,8 +243,11 @@ extension BlePeripheral {
             var packet: Packet
             
             switch command {
-            case .imageList, .imageTest, .imageConfirm:
+            case .imageList:
                 packet = Packet(op: OpCode.read, flags: Flags.none, group: Group.image, seq: 0, id: GroupImage.list.code)
+                
+            case .imageTest, .imageConfirm:
+                packet = Packet(op: OpCode.write, flags: Flags.none, group: Group.image, seq: 0, id: GroupImage.list.code)
                 
             case .upload:
                 packet = NmgrRequest.uploadPacket
@@ -380,7 +383,7 @@ extension BlePeripheral {
     
     // MARK: - Execute Request
     private func newtExecuteRequest(request: NmgrRequest) {
-        guard  let newtCharacteristic = newtCharacteristic, let newtCharacteristicWriteType = newtCharacteristicWriteType else {
+        guard let newtCharacteristic = newtCharacteristic, let newtCharacteristicWriteType = newtCharacteristicWriteType else {
             DLog("Command Error: Peripheral not configured. Use setup()")
             request.completion?(nil, NewtError.invalidCharacteristic)
             newtRequestsQueue.next()
@@ -632,11 +635,16 @@ extension BlePeripheral {
         }
     }
     
-    // MARK: List
+    // MARK: List, Test, Confirm
  
     private func parseResponseImageList(cbor: CBOR) {
         defer {
             newtRequestsQueue.next()
+        }
+        
+        let completionHandler = newtRequestsQueue.first()?.completion
+        guard verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
+            return
         }
         
         var images = [NewtImage]()
@@ -656,7 +664,6 @@ extension BlePeripheral {
             images.append(image)
         }
         
-        let completionHandler = newtRequestsQueue.first()?.completion
         completionHandler?(images, nil)
     }
     
@@ -666,9 +673,12 @@ extension BlePeripheral {
             newtRequestsQueue.next()
         }
 
-        let echoResponse = cbor["r"].stringValue
-        
         let completionHandler = newtRequestsQueue.first()?.completion
+        guard verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
+            return
+        }
+        
+        let echoResponse = cbor["r"].stringValue
         completionHandler?(echoResponse, nil)
     }
     
@@ -683,9 +693,25 @@ extension BlePeripheral {
             return
         }
 
-        let tasksCbor = cbor["tasks"]//.dictionary
+        var taskStats = [NewtTaskStats]()
+        for (key, value) in cbor["tasks"].dictionaryValue {
+            
+            let name = key.stringValue
+            let state = value["state"].uIntValue
+            let runTime = value["runtime"].uIntValue
+            let priority = value["prio"].uIntValue
+            let tid = value["tid"].uIntValue
+            let stkUse = value["stkuse"].uIntValue
+            let nextCheckin = value["next_checkin"].uIntValue
+            let stkSiz = value["stksiz"].uIntValue
+            let lastCheckin = value["last_checkin"].uIntValue
+            let cswcnt = value["cswcnt"].uIntValue
+            
+            let taskStat = NewtTaskStats(name: name, state: state, runTime: runTime, priority: priority, tid: tid, stkUse: stkUse, nextCheckin: nextCheckin, stkSiz: stkSiz, lastCheckin: lastCheckin, cswcnt: cswcnt)
+            taskStats.append(taskStat)
+        }
         
-        completionHandler?(tasksCbor, nil)
+        completionHandler?(taskStats, nil)
     }
     
     // MARK: Basic Command
@@ -739,18 +765,22 @@ extension BlePeripheral {
     }
     
     // MARK: Utils
-    private func verifyResponseCode(cbor: CBOR, completionHandler: NewtRequestCompletionHandler?) -> Bool {
+    private func verifyResponseCode(cbor: CBOR, isMandatory: Bool = false, completionHandler: NewtRequestCompletionHandler?) -> Bool {
         
         guard let returnCodeRaw = cbor["rc"].uInt16 else {
-            DLog("parseResponse Error: rc not found")
-            completionHandler?(nil, NewtError.receivedResponseJsonMissingFields)
-            return false
+            if isMandatory {
+                DLog("parseResponse Error: rc not found")
+                completionHandler?(nil, NewtError.receivedResponseMissingFields)
+            }
+            return !isMandatory
         }
         
         guard let returnCode = ReturnCode(rawValue: returnCodeRaw) else {
-            DLog("parseResponse Error: rc invalid value")
-            completionHandler?(nil, NewtError.receviedResponseJsonInvalidValues)
-            return false
+            if isMandatory {
+                DLog("parseResponse Error: rc invalid value")
+                completionHandler?(nil, NewtError.receviedResponseInvalidValues)
+            }
+            return isMandatory
         }
         
         guard returnCode == .ok else {

@@ -384,6 +384,7 @@ extension CBOR {
 
 // MARK: - Int, Double, Float, Int8, Int16, Int32, Int64
 extension CBOR {
+    
     public var int: Int? {
         switch self {
         case let .unsignedInt(value): return Int(value)
@@ -392,7 +393,11 @@ extension CBOR {
             return nil
         }
     }
-
+    
+    public var intValue: Int {
+        return int ?? 0
+    }
+    
     public var uInt: UInt? {
         switch self {
         case let .unsignedInt(value): return value
@@ -400,17 +405,57 @@ extension CBOR {
             return nil
         }
     }
-
-    public var intValue: Int {
-        return int ?? 0
-    }
     
     public var uIntValue: UInt {
         return uInt ?? 0
     }
     
+    public var int8: Int8? {
+        return int != nil ? Int8(int!):nil
+    }
+    
+    public var int8Value: Int8 {
+        return int8 ?? 0
+    }
+    
+    public var uInt8: UInt8? {
+        return int != nil ? UInt8(int!):nil
+    }
+    
+    public var uInt8Value: UInt8 {
+        return uInt8 ?? 0
+    }
+    
+    public var int16: Int16? {
+        return int != nil ? Int16(int!):nil
+    }
+    
+    public var int16Value: Int16 {
+        return int16 ?? 0
+    }
+    
     public var uInt16: UInt16? {
         return int != nil ? UInt16(int!):nil
+    }
+    
+    public var uInt16Value: UInt16 {
+        return uInt16 ?? 0
+    }
+    
+    public var int32: Int32? {
+        return int != nil ? Int32(int!):nil
+    }
+    
+    public var int32Value: Int32 {
+        return int32 ?? 0
+    }
+    
+    public var uInt32: UInt32? {
+        return int != nil ? UInt32(int!):nil
+    }
+    
+    public var uInt32Value: UInt32 {
+        return uInt32 ?? 0
     }
 }
 

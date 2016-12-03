@@ -18,13 +18,26 @@ struct NewtImage {
     var hash: Data
 }
 
+struct NewtTaskStats {
+    var name: String
+    var state: UInt
+    var runTime: UInt
+    var priority: UInt
+    var tid: UInt
+    var stkUse: UInt
+    var nextCheckin: UInt
+    var stkSiz: UInt
+    var lastCheckin: UInt
+    var cswcnt: UInt
+}
+
 enum NewtError: Error {
     case invalidCharacteristic
     case enableNotifyFailed
     case receivedResponseIsNotAPacket
     case receivedResponseIsNotAJson(Error?)
-    case receivedResponseJsonMissingFields
-    case receviedResponseJsonInvalidValues
+    case receivedResponseMissingFields
+    case receviedResponseInvalidValues
     case receivedResultNotOk(String)
     case internalError
     case updateImageInvalid
@@ -38,8 +51,8 @@ enum NewtError: Error {
         case .enableNotifyFailed: return "Cannot enable notification on Newt characteristic"
         case .receivedResponseIsNotAPacket: return "Received response is not a packet"
         case .receivedResponseIsNotAJson(let error): return "Received invalid Json: \(error?.localizedDescription ?? "")"
-        case .receivedResponseJsonMissingFields: return "Received Json with missing fields"
-        case .receviedResponseJsonInvalidValues: return "Received Json with invalid values"
+        case .receivedResponseMissingFields: return "Received Json with missing fields"
+        case .receviedResponseInvalidValues: return "Received Json with invalid values"
         case .receivedResultNotOk(let message): return "Received incorrect result: \(message)"
         case .internalError: return "Internal error"
         case .updateImageInvalid: return "Upload image is invalid"
@@ -50,11 +63,3 @@ enum NewtError: Error {
     }
 }
 
-
-
-
-extension BlePeripheral {
- 
-    
-    
-}

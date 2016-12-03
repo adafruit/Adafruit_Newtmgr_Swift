@@ -29,7 +29,7 @@ class TaksViewController: NewtViewController {
         super.viewWillAppear(animated)
         
         if tasks == nil {
-            refreshTaks()
+            refreshTasks()
         }
     }
 
@@ -48,11 +48,11 @@ class TaksViewController: NewtViewController {
 
         // Refresh if no data was previously loaded and view is visible
         if tasks == nil && isViewLoaded && view.window != nil {
-            refreshTaks()
+            refreshTasks()
         }
     }
     
-    private func refreshTaks() {
+    private func refreshTasks() {
         guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
         }

@@ -300,7 +300,9 @@ class ImagesViewController: NewtViewController {
             guard error == nil else {
                 DLog("Set test image error: \(error!)")
                 
-                BlePeripheral.newtShowErrorAlert(from: context, title: "Set test image failed", error: error!)
+                DispatchQueue.main.async {
+                    BlePeripheral.newtShowErrorAlert(from: context, title: "Set test image failed", error: error!)
+                }
                 return
             }
 
@@ -333,8 +335,10 @@ class ImagesViewController: NewtViewController {
             
             guard error == nil else {
                 DLog("reset error: \(error!)")
-                
-                BlePeripheral.newtShowErrorAlert(from: context, title: "Reset device failed", error: error!)
+
+                DispatchQueue.main.async {
+                    BlePeripheral.newtShowErrorAlert(from: context, title: "Reset device failed", error: error!)
+                }
                 return
             }
             
@@ -372,7 +376,7 @@ extension ImagesViewController: UITableViewDataSource {
         var name: String {
             switch self {
             case .imageSlots: return "Image Slots"
-            case .imageUpdates: return "Image Updates"
+            case .imageUpdates: return "Image Uploads"
             }
         }
     }
@@ -521,12 +525,12 @@ extension ImagesViewController: ImageSlotTableViewCellDelegate {
     
     func onClickImageTest(index: Int) {
         guard let image = images?[index] else { return }
-        sendImageConfirmRequest(hash: index == 0 ? nil:image.hash, isTest: true, resetOnSuccess: false)
+        sendImageConfirmRequest(hash: image.hash, isTest: true, resetOnSuccess: false)
     }
     
     func onClickImageConfirm(index: Int) {
         guard let image = images?[index] else { return }
-        sendImageConfirmRequest(hash: image.hash, isTest: false, resetOnSuccess: false)
+        sendImageConfirmRequest(hash: index == 0 ? nil:image.hash, isTest: false, resetOnSuccess: false)
     }
     
     func onClickImageReset(index: Int) {
