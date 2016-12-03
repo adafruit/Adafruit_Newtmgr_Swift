@@ -35,8 +35,9 @@ class TasksTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func set(task: NewtTaskStats) {
+    func set(task: NewtTaskStats, color: UIColor) {
         priorityLabel.text = String(task.priority)
+        priorityLabel.backgroundColor = color
         nameLabel.text = task.name
         
         runTimeLabel.text = format(value: task.runTime)

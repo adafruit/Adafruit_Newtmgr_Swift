@@ -8,6 +8,7 @@
 
 import UIKit
 import MSWeakTimer
+import Charts
 
 class TaksViewController: NewtViewController {
 
@@ -15,19 +16,34 @@ class TaksViewController: NewtViewController {
     @IBOutlet weak var baseTableView: UITableView!
     private let refreshControl = UIRefreshControl()
     @IBOutlet weak var playButton: UIBarButtonItem!
+    @IBOutlet weak var chartView: PieChartView!
+    @IBOutlet weak var chartTitleLabel: UILabel!
  
     // Data
     fileprivate var taskStats: [NewtTaskStats]?
     fileprivate var refreshTimer: MSWeakTimer?
     fileprivate var isRefreshTimerPaused = true
     
+    fileprivate var chartColors = [UIColor]()
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        baseTableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)
         
         // Setup table refresh
         refreshControl.addTarget(self, action: #selector(onTableRefresh(_:)), for: UIControlEvents.valueChanged)
         baseTableView.addSubview(refreshControl)
         baseTableView.sendSubview(toBack: refreshControl)
+        
+        // Pie Chart
+        chartColors.append(contentsOf: ChartColorTemplates.colorful())
+        chartColors.append(contentsOf: ChartColorTemplates.joyful())
+    
+        chartView.rotationAngle = 270-50       // To avoid ugly starting lines
+        setupChart()
+        chartView.animate(xAxisDuration: 1.4)
     }
 
     override func didReceiveMemoryWarning() {
@@ -111,6 +127,78 @@ class TaksViewController: NewtViewController {
     }
 
     
+    // MARK: - PieChart
+    private func setupChart() {
+        
+        chartTitleLabel.text = "Stack Size"
+        chartView.legend.enabled = false
+        
+        chartView.chartDescription?.enabled = false
+        //chartView.legend.drawInside = true
+        
+        //chartView.maxAngle = 180                // Half chart
+        //chartView.rotationAngle = 180           // Rotate to make the half on the upper side
+        //chartView.centerTextOffset = CGPoint(x: 0, y: 0)
+        //        chartView.contentScaleFactor = 2.5
+        //chartView.holeRadiusPercent = 0.30
+
+        //chartView.extraTopOffset = 20
+       // chartView.extraBottomOffset = -20
+        
+        chartView.rotationEnabled = true
+        chartView.highlightPerTapEnabled = false
+        // chartView.drawSlicesUnderHoleEnabled = false
+        
+        chartView.entryLabelColor = UIColor.black
+
+        //chartView.usePercentValuesEnabled = true
+    }
+    
+    private func updateChart() {
+        guard let taskStats = taskStats else {
+            chartView.data = nil
+            return
+        }
+        
+        // Entries
+        var pieChartEntries = [PieChartDataEntry]()
+        for task in taskStats {
+                let value = Double(task.stackSize)
+                //DLog("value: \(value)")
+                let pieChartEntry = PieChartDataEntry(value: value, label: task.name)
+                
+                pieChartEntries.append(pieChartEntry)
+        }
+        
+        // DataSet
+        let dataSet = PieChartDataSet(values: pieChartEntries, label: "Runtime")
+        dataSet.sliceSpace = 2
+        dataSet.colors = chartColors
+        
+        dataSet.yValuePosition = .outsideSlice
+        dataSet.valueLinePart1OffsetPercentage = 0.8
+        dataSet.valueLinePart1Length = 0.5
+        dataSet.valueLinePart2Length = 0.5
+        dataSet.valueLineVariableLength = false
+
+        // Data
+        let data = PieChartData(dataSet: dataSet)
+        
+        /*
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .percent
+        numberFormatter.maximumFractionDigits = 1
+        numberFormatter.percentSymbol = "%"
+        let valueFormatter = DefaultValueFormatter(formatter: numberFormatter)
+        data.setValueFormatter(valueFormatter)
+        */
+        
+        data.setValueTextColor(UIColor.black)
+        data.setValueFont(UIFont.systemFont(ofSize: 12))
+        chartView.data = data
+        
+    }
+    
     // MARK: - UI
     func onTableRefresh(_ sender: AnyObject) {
         refreshTasks()
@@ -120,6 +208,7 @@ class TaksViewController: NewtViewController {
     private func updateUI() {
         // Reload table
         baseTableView.reloadData()
+        updateChart()
     }
     
     // MARK: - Actions
@@ -172,9 +261,10 @@ extension TaksViewController: UITableViewDataSource {
         guard let task = taskStats?[indexPath.row] else {
             return
         }
-        
+
+        let color = chartColors[indexPath.row % chartColors.count]
         let taskCell = cell as! TasksTableViewCell
-        taskCell.set(task: task)
+        taskCell.set(task: task, color: color)
     }
 }
 
