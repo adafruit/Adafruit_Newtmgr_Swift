@@ -229,7 +229,7 @@ class ImagesViewController: NewtViewController {
                     guard error == nil else {
                         DLog("upload error: \(error!)")
                         
-                        BlePeripheral.newtShowErrorAlert(from: context, title: "Upload image failed", error: error!)
+                        newtShowErrorAlert(from: context, title: "Upload image failed", error: error!)
                         return
                     }
 
@@ -277,7 +277,7 @@ class ImagesViewController: NewtViewController {
                 DLog("Set test image error: \(error!)")
                 
                 DispatchQueue.main.async {
-                    BlePeripheral.newtShowErrorAlert(from: context, title: "Set test image failed", error: error!)
+                    newtShowErrorAlert(from: context, title: "Set test image failed", error: error!)
                 }
                 return
             }
@@ -313,7 +313,7 @@ class ImagesViewController: NewtViewController {
                 DLog("reset error: \(error!)")
 
                 DispatchQueue.main.async {
-                    BlePeripheral.newtShowErrorAlert(from: context, title: "Reset device failed", error: error!)
+                    newtShowErrorAlert(from: context, title: "Reset device failed", error: error!)
                 }
                 return
             }

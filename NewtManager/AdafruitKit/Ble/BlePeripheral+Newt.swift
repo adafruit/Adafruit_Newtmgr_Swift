@@ -8,7 +8,7 @@
 
 import Foundation
 import CoreBluetooth
-import SwiftyJSON
+
 
 extension BlePeripheral {
     // Costants
@@ -549,24 +549,6 @@ extension BlePeripheral {
         return encodedData
     }
     
-    private func encodeJson(dataDictionary: Dictionary<String, Any>) -> Data? {
-        let json = JSON(dataDictionary)
-        
-        #if DEBUG
-            let payload = json.rawString(.utf8, options: [])
-            DLog("JSON payload: \(payload != nil ? payload!: "<empty>")")
-        #endif
-        
-        var encodedData: Data?
-        do {
-            encodedData = try json.rawData(options: [])
-        }
-        catch {
-            DLog("Error encoding packet: \(error)")
-        }
-        
-        return encodedData
-    }
     
     // MARK: - Receive Response
     private func newtReceivedData(data: Data?, error: Error?) {
@@ -802,19 +784,7 @@ extension BlePeripheral {
         completionHandler?(nil, error)
     }
     
+
     
-      
-    // MARK: - Utils
-    static func newtShowErrorAlert(from controller: UIViewController, title: String? = "Error", error: Error) {
-        let message: String?
-        if let newtError = error as? NewtError {
-            message = newtError.description
-        }
-        else {
-            message = error.localizedDescription
-        }
-        
-        showErrorAlert(from: controller, title: title, message: message)
-    }
 }
 

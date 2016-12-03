@@ -66,7 +66,7 @@ class CommandsViewController: NewtViewController {
                 guard error == nil else {
                     DLog("Error: \(error!)")
                     
-                    BlePeripheral.newtShowErrorAlert(from: context, title: "Error", error: error!)
+                    newtShowErrorAlert(from: context, title: "Error", error: error!)
                     return
                 }
                 

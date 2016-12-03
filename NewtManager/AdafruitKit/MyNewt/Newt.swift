@@ -6,7 +6,7 @@
 //  Copyright © 2016 Adafruit. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 struct NewtImage {
     var slot: Int
@@ -35,7 +35,7 @@ enum NewtError: Error {
     case invalidCharacteristic
     case enableNotifyFailed
     case receivedResponseIsNotAPacket
-    case receivedResponseIsNotAJson(Error?)
+    case receivedResponseIsNotACbor(Error?)
     case receivedResponseMissingFields
     case receviedResponseInvalidValues
     case receivedResultNotOk(String)
@@ -50,9 +50,9 @@ enum NewtError: Error {
         case .invalidCharacteristic: return "Newt characteristic is invalid"
         case .enableNotifyFailed: return "Cannot enable notification on Newt characteristic"
         case .receivedResponseIsNotAPacket: return "Received response is not a packet"
-        case .receivedResponseIsNotAJson(let error): return "Received invalid Json: \(error?.localizedDescription ?? "")"
-        case .receivedResponseMissingFields: return "Received Json with missing fields"
-        case .receviedResponseInvalidValues: return "Received Json with invalid values"
+        case .receivedResponseIsNotACbor(let error): return "Received invalid response: \(error?.localizedDescription ?? "")"
+        case .receivedResponseMissingFields: return "Received response with missing fields"
+        case .receviedResponseInvalidValues: return "Received response with invalid values"
         case .receivedResultNotOk(let message): return "Received incorrect result: \(message)"
         case .internalError: return "Internal error"
         case .updateImageInvalid: return "Upload image is invalid"
@@ -63,3 +63,16 @@ enum NewtError: Error {
     }
 }
 
+
+// MARK: - Utils
+func newtShowErrorAlert(from controller: UIViewController, title: String? = "Error", error: Error) {
+    let message: String?
+    if let newtError = error as? NewtError {
+        message = newtError.description
+    }
+    else {
+        message = error.localizedDescription
+    }
+    
+    showErrorAlert(from: controller, title: title, message: message)
+}
