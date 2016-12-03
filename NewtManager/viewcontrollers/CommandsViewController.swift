@@ -106,7 +106,7 @@ extension CommandsViewController: UITableViewDataSource {
         
         return cell!
     }
-    
+
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard let command = Commands(rawValue: indexPath.row) else { return }
         cell.textLabel!.text = command.name

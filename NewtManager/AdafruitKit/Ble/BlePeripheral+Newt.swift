@@ -35,7 +35,7 @@ extension BlePeripheral {
             objc_setAssociatedObject(self, &CustomPropertiesKeys.newtCharacteristic, newValue, .OBJC_ASSOCIATION_RETAIN)
         }
     }
-    
+
     private var newtCharacteristicWriteType: CBCharacteristicWriteType? {
         get {
             return objc_getAssociatedObject(self, &CustomPropertiesKeys.newtCharacteristicWriteType) as! CBCharacteristicWriteType?
@@ -43,7 +43,6 @@ extension BlePeripheral {
         set {
             objc_setAssociatedObject(self, &CustomPropertiesKeys.newtCharacteristicWriteType, newValue, .OBJC_ASSOCIATION_RETAIN)
         }
-        
     }
     
     private var newtRequestsQueue: CommandQueue<NmgrRequest> {
@@ -99,15 +98,32 @@ extension BlePeripheral {
     private enum Group: UInt16 {
         case `default`    = 0
         case image      = 1
+        case stats      = 2
         
         /*
-        case stats      = 2
         case config     = 3
         case logs       = 4
         case crash      = 5
         case peruser    = 64
         */
         var code: UInt16 {
+            return rawValue
+        }
+    }
+    
+    
+    private enum GroupDefault: UInt8 {
+        case echo           = 0
+        case taskStats      = 2
+        
+        /*
+         case ConsEchoCtrl   = 1
+         case Mpstats        = 3
+         case DatetimeStr    = 4
+         */
+        case reset          = 5
+        
+        var code: UInt8 {
             return rawValue
         }
     }
@@ -129,17 +145,10 @@ extension BlePeripheral {
             return rawValue
         }
     }
-    
-    private enum GroupDefault: UInt8 {
-        case echo           = 0
-        case taskStats      = 2
-        
-        /*
-        case ConsEchoCtrl   = 1
-        case Mpstats        = 3
-        case DatetimeStr    = 4
- */
-        case reset          = 5
+ 
+    private enum GroupStats: UInt8 {
+        case statDetails    = 0
+        case stats          = 1
         
         var code: UInt8 {
             return rawValue
@@ -224,6 +233,8 @@ extension BlePeripheral {
         case taskStats
         case reset
         case echo(message: String)
+        case stats
+        case stat(statId: String)
     }
     
     private struct NmgrRequest {
@@ -260,6 +271,13 @@ extension BlePeripheral {
                 
             case .echo:
                 packet = Packet(op: OpCode.write, flags: Flags.none, group: Group.default, seq: 0, id: GroupDefault.echo.code)
+                
+            case .stats:
+                packet = Packet(op: OpCode.read, flags: Flags.none, group: Group.stats, seq: 0, id: GroupStats.stats.code)
+
+            case .stat:
+                packet = Packet(op: OpCode.read, flags: Flags.none, group: Group.stats, seq: 0, id: GroupStats.statDetails.code)
+
             }
             
             return packet
@@ -281,6 +299,10 @@ extension BlePeripheral {
                 return "Reset"
             case .echo:
                 return "Echo"
+            case .stats:
+                return "Stats"
+            case .stat(let statId):
+                return "Stat: \(statId)"
             }
         }
     }
@@ -410,6 +432,9 @@ extension BlePeripheral {
             
         case .echo(let message):
             data = newtEcho(message: message)
+            
+        case .stat(let statId):
+            data = newtStat(statId: statId)
   
         default:
             data = nil
@@ -457,6 +482,14 @@ extension BlePeripheral {
     // MARK: Echo
     private func newtEcho(message: String) -> Data? {
         let dataDictionary: [String: Any] = ["d": message]
+        let encodedData = encodeCbor(dataDictionary: dataDictionary)
+        
+        return encodedData
+    }
+    
+    // MARK: Stats
+    private func newtStat(statId: String) -> Data? {
+        let dataDictionary: [String: Any] = ["name": statId]
         let encodedData = encodeCbor(dataDictionary: dataDictionary)
         
         return encodedData
@@ -608,6 +641,11 @@ extension BlePeripheral {
                 parseResponseUploadImage(cbor: cbor, imageData: imageData)
             case .taskStats:
                 parseResponseTaskStats(cbor: cbor)
+            case .stats:
+                parseResponseStats(cbor: cbor)
+            case .stat:
+                parseResponseStatDetails(cbor: cbor)
+            
             default:
                 parseBasicResponse(cbor: cbor)
             }
@@ -696,6 +734,43 @@ extension BlePeripheral {
         completionHandler?(taskStats, nil)
     }
     
+    // MARK: Stats
+    private func parseResponseStats(cbor: CBOR) {
+        defer {
+            newtRequestsQueue.next()
+        }
+        
+        let completionHandler = newtRequestsQueue.first()?.completion
+        guard verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
+            return
+        }
+        
+        let stats = cbor["stat_list"].arrayValue.map({$0.stringValue})
+        completionHandler?(stats, nil)
+    }
+    
+    // MARK: StatDetails
+    private func parseResponseStatDetails(cbor: CBOR) {
+        defer {
+            newtRequestsQueue.next()
+        }
+        
+        let completionHandler = newtRequestsQueue.first()?.completion
+        guard verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
+            return
+        }
+        
+        var stats = [NewtStatDetails]()
+        for (key, value) in cbor["fields"].dictionaryValue {
+            let statName = key.stringValue
+            let statValue = value.uIntValue
+
+            let statDetails = NewtStatDetails(name: statName, value: statValue)
+            stats.append(statDetails)
+        }
+        completionHandler?(stats, nil)
+    }
+    
     // MARK: Basic Command
     private func parseBasicResponse(cbor: CBOR) {
         defer {
@@ -745,7 +820,7 @@ extension BlePeripheral {
             }
         }
     }
-    
+
     // MARK: Utils
     private func verifyResponseCode(cbor: CBOR, isMandatory: Bool = false, completionHandler: NewtRequestCompletionHandler?) -> Bool {
         

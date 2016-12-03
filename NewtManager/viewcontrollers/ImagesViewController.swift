@@ -377,7 +377,7 @@ extension ImagesViewController: UITableViewDataSource {
         case .imageSlots:
             count = images?.count ?? 0
         case .imageUpdates:
-            count = (imagesInternal?.count ?? 0) + 1        // +1 "Upload an Image" button
+            count = (imagesInternal?.count ?? 0) + 1        // +1 "Upload a custom Image" button
         }
         return count
     }
@@ -429,7 +429,7 @@ extension ImagesViewController: UITableViewDataSource {
         case .imageUpdates:
             let imageInfo: ImageInfo? = indexPath.row < (imagesInternal?.count ?? 0) ? imagesInternal![indexPath.row]:nil
             cell.accessoryType = .disclosureIndicator
-            cell.textLabel!.text = imageInfo != nil ? imageInfo!.name : "Upload an image"
+            cell.textLabel!.text = imageInfo != nil ? imageInfo!.name : "Upload a custom image"
             cell.detailTextLabel!.text = imageInfo != nil ? imageInfo!.version : nil
             cell.selectionStyle = .default
         }

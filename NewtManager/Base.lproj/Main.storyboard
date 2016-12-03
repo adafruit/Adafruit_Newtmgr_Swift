@@ -243,6 +243,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="baseTableView" destination="Kxx-z6-vQw" id="ync-7d-jZp"/>
+                        <outlet property="chartContainerView" destination="qaN-Ac-fk2" id="85x-vR-ZSl"/>
                         <outlet property="chartTitleLabel" destination="a1d-9h-kXs" id="vil-3C-2qG"/>
                         <outlet property="chartView" destination="NlQ-H8-2LF" id="vok-Nz-1Yh"/>
                         <outlet property="playButton" destination="nIg-yR-2wS" id="kNZ-8E-O8W"/>
@@ -251,6 +252,95 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IS8-Kb-AGy" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2724" y="570.76461769115451"/>
+        </scene>
+        <!--Stats-->
+        <scene sceneID="cme-Qf-CZ2">
+            <objects>
+                <viewController id="DUw-Cg-Bjc" customClass="StatsViewController" customModule="NewtManager" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="tmn-r2-sqf"/>
+                        <viewControllerLayoutGuide type="bottom" id="uVb-Pc-aUC"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="V7j-wF-wYB">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="TQ7-ZB-7OZ">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="618"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <view key="tableFooterView" contentMode="scaleToFill" id="eGn-GS-bzA">
+                                    <rect key="frame" x="0.0" y="64" width="375" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                                <connections>
+                                    <outlet property="dataSource" destination="DUw-Cg-Bjc" id="bdI-N6-tRn"/>
+                                    <outlet property="delegate" destination="DUw-Cg-Bjc" id="H5n-p3-K4J"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="TQ7-ZB-7OZ" firstAttribute="leading" secondItem="V7j-wF-wYB" secondAttribute="leading" id="0Lq-tA-M7q"/>
+                            <constraint firstItem="uVb-Pc-aUC" firstAttribute="top" secondItem="TQ7-ZB-7OZ" secondAttribute="bottom" id="47P-ez-hY2"/>
+                            <constraint firstItem="TQ7-ZB-7OZ" firstAttribute="top" secondItem="V7j-wF-wYB" secondAttribute="top" id="UtS-28-eik"/>
+                            <constraint firstAttribute="trailing" secondItem="TQ7-ZB-7OZ" secondAttribute="trailing" id="bXc-Z6-uUl"/>
+                        </constraints>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Stats" image="tab_stats" id="3ek-cx-mMs"/>
+                    <navigationItem key="navigationItem" title="Stats" id="GAG-Kk-NkB"/>
+                    <connections>
+                        <outlet property="baseTableView" destination="TQ7-ZB-7OZ" id="HVS-pl-x7u"/>
+                        <segue destination="b5S-dV-aVb" kind="show" identifier="detailsSegue" id="Pcd-vf-9D1"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="p6r-td-sA0" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2712.8000000000002" y="1275.1124437781111"/>
+        </scene>
+        <!--Stats-->
+        <scene sceneID="eQ4-9D-78Q">
+            <objects>
+                <viewController id="b5S-dV-aVb" customClass="StatsDetailViewController" customModule="NewtManager" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Zko-5Q-c0m"/>
+                        <viewControllerLayoutGuide type="bottom" id="14G-2G-W3k"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="ead-Dk-JSP">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="0a1-rJ-Ceb">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="618"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <view key="tableFooterView" contentMode="scaleToFill" id="L9e-tv-dYi">
+                                    <rect key="frame" x="0.0" y="64" width="375" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                                <connections>
+                                    <outlet property="dataSource" destination="b5S-dV-aVb" id="N9y-rX-B4p"/>
+                                    <outlet property="delegate" destination="b5S-dV-aVb" id="G1K-Ta-M5Q"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="0a1-rJ-Ceb" firstAttribute="leading" secondItem="ead-Dk-JSP" secondAttribute="leading" id="2Ig-nA-edO"/>
+                            <constraint firstItem="0a1-rJ-Ceb" firstAttribute="top" secondItem="ead-Dk-JSP" secondAttribute="top" id="OxN-1E-pMy"/>
+                            <constraint firstAttribute="trailing" secondItem="0a1-rJ-Ceb" secondAttribute="trailing" id="kBB-Ed-cfb"/>
+                            <constraint firstItem="14G-2G-W3k" firstAttribute="top" secondItem="0a1-rJ-Ceb" secondAttribute="bottom" id="nLG-Bn-ZTa"/>
+                        </constraints>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Stats" image="tab_stats" id="pKZ-1j-QgM"/>
+                    <navigationItem key="navigationItem" title="Stats" id="TLJ-VZ-aY8"/>
+                    <connections>
+                        <outlet property="baseTableView" destination="0a1-rJ-Ceb" id="Zkd-3W-0Sr"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="amk-gj-lHf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3562" y="1278"/>
         </scene>
         <!--Task Detail-->
         <scene sceneID="tmo-w1-iDT">
@@ -676,6 +766,7 @@
                         <segue destination="gQh-fh-cdm" kind="relationship" relationship="viewControllers" id="xBt-wi-arZ"/>
                         <segue destination="OB6-nG-LC4" kind="relationship" relationship="viewControllers" id="5IF-8X-9EO"/>
                         <segue destination="ehV-gi-sPm" kind="relationship" relationship="viewControllers" id="s5Q-X3-fVO"/>
+                        <segue destination="DUw-Cg-Bjc" kind="relationship" relationship="viewControllers" id="9R8-DZ-dEm"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nst-Jz-T7S" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -689,6 +780,7 @@
         <image name="ic_play_circle_outline" width="24" height="24"/>
         <image name="tab_commands" width="36" height="36"/>
         <image name="tab_images" width="36" height="36"/>
+        <image name="tab_stats" width="36" height="36"/>
         <image name="tab_tasks" width="36" height="36"/>
     </resources>
 </document>

@@ -18,6 +18,7 @@ class TaksViewController: NewtViewController {
     @IBOutlet weak var playButton: UIBarButtonItem!
     @IBOutlet weak var chartView: PieChartView!
     @IBOutlet weak var chartTitleLabel: UILabel!
+    @IBOutlet weak var chartContainerView: UIView!
  
     // Data
     fileprivate var taskStats: [NewtTaskStats]?
@@ -30,7 +31,8 @@ class TaksViewController: NewtViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        baseTableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)
+        baseTableView.contentOffset = CGPoint.zero
+  //      baseTableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)
         
         // Setup table refresh
         refreshControl.addTarget(self, action: #selector(onTableRefresh(_:)), for: UIControlEvents.valueChanged)
@@ -44,6 +46,8 @@ class TaksViewController: NewtViewController {
         chartView.rotationAngle = 270-50       // To avoid ugly starting lines
         setupChart()
         chartView.animate(xAxisDuration: 1.4)
+        
+        updateUI()  
     }
 
     override func didReceiveMemoryWarning() {
@@ -59,7 +63,6 @@ class TaksViewController: NewtViewController {
         }
         
         isRefreshTimerPaused = false
-        
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -74,10 +77,11 @@ class TaksViewController: NewtViewController {
 
     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let taskViewController = segue.destination as? TaskViewController, let taskStats = taskStats, let selectedTaskIndex = baseTableView.indexPathForSelectedRow?.row {
-            taskViewController.task = taskStats[selectedTaskIndex]
+        super.prepare(for: segue, sender: sender)
+        
+        if let taskViewController = segue.destination as? TaskViewController, let taskStats = taskStats, let selectedIndex = baseTableView.indexPathForSelectedRow?.row {
+            taskViewController.task = taskStats[selectedIndex]
         }
     }
 
@@ -118,7 +122,6 @@ class TaksViewController: NewtViewController {
                 context.updateUI()
             }
         }
-        
     }
     
     private func setTaskStats(_ taskStats: [NewtTaskStats]) {
@@ -157,8 +160,10 @@ class TaksViewController: NewtViewController {
     private func updateChart() {
         guard let taskStats = taskStats else {
             chartView.data = nil
+            chartContainerView.isHidden = true
             return
         }
+        chartContainerView.isHidden = false
         
         // Entries
         var pieChartEntries = [PieChartDataEntry]()
@@ -249,12 +254,14 @@ extension TaksViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let reuseIdentifier = "TaskCell"
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
+        /*
         var cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier)
         if cell == nil {
             cell = UITableViewCell(style: .default, reuseIdentifier: reuseIdentifier)
         }
-        
-        return cell!
+        */
+        return cell
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {

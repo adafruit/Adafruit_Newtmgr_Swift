@@ -36,15 +36,18 @@ class NewtViewController: UIViewController {
     }
     
     
-    /*
+    
     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+
+        // If the segue is for a NewtViewController, propagate the blePeripheral automatically
+        if let newtViewController = segue.destination as? NewtViewController {
+            newtViewController.blePeripheral = blePeripheral
+        }
+
     }
-    */
+    
     
     func newtDidBecomeReady() {
         // To be overrided by subclasses

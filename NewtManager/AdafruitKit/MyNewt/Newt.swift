@@ -31,6 +31,11 @@ struct NewtTaskStats {
     var nextSanityCheckin: UInt
 }
 
+struct NewtStatDetails {
+    var name: String
+    var value: UInt
+}
+
 enum NewtError: Error {
     case invalidCharacteristic
     case enableNotifyFailed
