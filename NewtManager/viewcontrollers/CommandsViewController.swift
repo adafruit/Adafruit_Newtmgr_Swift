@@ -52,7 +52,7 @@ class CommandsViewController: NewtViewController {
         baseTableView.reloadData()
     }
     
-    fileprivate func sendRequest(for command: BlePeripheral.NmgrCommand) {
+    fileprivate func sendRequest(for command: NewtManager.Command) {
         guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
         }
@@ -66,7 +66,7 @@ class CommandsViewController: NewtViewController {
                 guard error == nil else {
                     DLog("Error: \(error!)")
                     
-                    newtShowErrorAlert(from: context, title: "Error", error: error!)
+                    NewtManager.newtShowErrorAlert(from: context, title: "Error", error: error!)
                     return
                 }
                 

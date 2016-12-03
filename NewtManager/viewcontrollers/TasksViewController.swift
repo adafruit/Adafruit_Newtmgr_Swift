@@ -21,7 +21,7 @@ class TaksViewController: NewtViewController {
     @IBOutlet weak var chartContainerView: UIView!
  
     // Data
-    fileprivate var taskStats: [NewtTaskStats]?
+    fileprivate var taskStats: [NewtManager.TaskStats]?
     fileprivate var refreshTimer: MSWeakTimer?
     fileprivate var isRefreshTimerPaused = true
     
@@ -114,7 +114,7 @@ class TaksViewController: NewtViewController {
                 }
             }
             
-            if let taskStats = taskStats as? [NewtTaskStats] {
+            if let taskStats = taskStats as? [NewtManager.TaskStats] {
                 context.setTaskStats(taskStats)
             }
             
@@ -124,7 +124,7 @@ class TaksViewController: NewtViewController {
         }
     }
     
-    private func setTaskStats(_ taskStats: [NewtTaskStats]) {
+    private func setTaskStats(_ taskStats: [NewtManager.TaskStats]) {
         let sortedTasks = taskStats.sorted(by: {$0.priority < $1.priority})
         self.taskStats = sortedTasks
     }
