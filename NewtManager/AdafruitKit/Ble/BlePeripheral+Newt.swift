@@ -236,7 +236,7 @@ extension BlePeripheral {
         case stats
         case stat(statId: String)
     }
-    
+
     private struct NmgrRequest {
         var command: NmgrCommand
         var progress: NewtRequestProgressHandler?
@@ -247,12 +247,12 @@ extension BlePeripheral {
             self.progress = progress
             self.completion = completion
         }
-        
+
         static let uploadPacket = Packet(op: OpCode.write, flags: Flags.none,  group: Group.image, seq: 0, id: GroupImage.upload.code)
-        
+
         var packet: Packet {
             var packet: Packet
-            
+
             switch command {
             case .imageList:
                 packet = Packet(op: OpCode.read, flags: Flags.none, group: Group.image, seq: 0, id: GroupImage.list.code)
@@ -340,7 +340,6 @@ extension BlePeripheral {
             
             let pktData = data.subdata(in: kDataOffset..<kDataOffset+Int(bytesReceived))
             
-            DLog("Received Nmgr Notification Response: Op:\(op) Flags:\(flagsValue) Len:\(bytesReceived) Group:\(groupValue) Seq:\(seq) Id:\(id) data:\(pktData)")
             guard  let opcode = OpCode(rawValue: op), let flags = Flags(rawValue: flagsValue), let group = Group(rawValue: groupValue) else {
                 DLog("Error: invalid NmgrResponse packet values")
                 return nil
@@ -585,33 +584,39 @@ extension BlePeripheral {
     
     // MARK: - Receive Response
     private func newtReceivedData(data: Data?, error: Error?) {
+        //DLog("Raw data: \(hexDescription(data: data ?? Data()))")
+        
+        // Check timeout
+        
+        
+        // Check data
         guard let data = data, error == nil else {
             DLog("Error reading newt data: \(error)")
             responseError(error: error)
             return
         }
         
+        // Check response is valid
         guard let response = NmgrResponse(data) else {
-            DLog("Error parsing newt data: \(decimalDescription(data: data))")
+            DLog("Error parsing newt data: \(hexDescription(data: data))")
             responseError(error: NewtError.receivedResponseIsNotAPacket)
             return
         }
         
+        // Get command
         guard let command = newtRequestsQueue.first()?.command else {
             DLog("Warning: newtReadData with no command")
             return
         }
         
         // Read data
-        #if DEBUG
-            DLog("Received data: \(hexDescription(data: response.packet.data))")
-        #endif
-        
+        DLog("Received: Op: \(response.packet.op) Flags: \(response.packet.flags) Len: \(response.packet.len) Group: \(response.packet.group) Seq: \(response.packet.seq) Id: \(response.packet.id) data: [\(hexDescription(data: response.packet.data))]")
         
         newtResponseCache.append(response.packet.data)
         
+        
         guard response.packet.flags == .responseComplete else {
-            DLog("waiting next packet...")
+            DLog("cache size: \(newtResponseCache.count). Waiting next packet...")
             return
         }
         
@@ -854,6 +859,8 @@ extension BlePeripheral {
         defer {
             newtRequestsQueue.next()
         }
+        
+        newtResponseCache.removeAll()
         
         let completionHandler = newtRequestsQueue.first()?.completion
         completionHandler?(nil, error)

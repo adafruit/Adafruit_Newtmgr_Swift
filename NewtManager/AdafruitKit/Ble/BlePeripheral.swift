@@ -137,7 +137,7 @@ class BlePeripheral: NSObject {
         let characteristic = service.characteristics?.first(where: {$0.uuid == uuid})
         return characteristic
     }
-    
+
     func characteristic(uuid: CBUUID, service: CBService, completion: ((CBCharacteristic?, Error?) -> Void)?) {
         
         if let discoveredCharacteristic = discoveredCharacteristic(uuid: uuid, service: service) {              // Characteristic was already discovered
@@ -153,7 +153,7 @@ class BlePeripheral: NSObject {
             })
         }
     }
-    
+
     func characteristic(uuid: CBUUID, serviceUuid: CBUUID, completion: ((CBCharacteristic?, Error?) -> Void)?) {
         if let discoveredService = discoveredService(uuid: uuid) {                                              // Service was already discovered
             characteristic(uuid: uuid, service: discoveredService, completion: completion)
@@ -186,10 +186,10 @@ class BlePeripheral: NSObject {
     }
 
     func writeAndCaptureNotify(data: Data, for characteristic: CBCharacteristic, type: CBCharacteristicWriteType, writeCompletion: ((Error?) -> Void)? = nil, readCharacteristic: CBCharacteristic, readTimeout: Double? = nil, readCompletion: CapturedReadCompletionHandler? = nil) {
-        let command = BleCommand(type: .writeCharacteristicAndWaitNofity, parameters: [characteristic, type, data, readCharacteristic, readCompletion as Any, readTimeout as Any], timeout: readTimeout, completion: writeCompletion)
+        let command = BleCommand(type: .writeCharacteristicAndWaitNofity, parameters: [characteristic, type, data, readCharacteristic, readCompletion as Any, readTimeout as Any], completion: writeCompletion)
         commandQueue.append(command)
     }
-    
+
     // MARK: - Command Queue
     fileprivate class BleCommand: Equatable {
         enum CommandType {
@@ -204,18 +204,18 @@ class BlePeripheral: NSObject {
         enum CommandError: Error {
             case invalidService
         }
-        
+
         var type: CommandType
         var parameters: [Any]?
         var completion: ((Error?) -> Void)?
         var isCancelled = false
-        
-        init(type: CommandType, parameters: [Any]?, timeout: Double? = nil, completion: ((Error?) -> Void)?) {
+
+        init(type: CommandType, parameters: [Any]?, completion: ((Error?) -> Void)?) {
             self.type = type
             self.parameters = parameters
             self.completion = completion
         }
-        
+
         func endExecution(withError error: Error?) {
             completion?(error)
         }
@@ -224,7 +224,7 @@ class BlePeripheral: NSObject {
             return left.type == right.type
         }
     }
-    
+
     private func executeCommand(command: BleCommand) {
 
         switch command.type {
@@ -240,7 +240,7 @@ class BlePeripheral: NSObject {
             write(with: command)
         }
     }
- 
+
     fileprivate func handlerIdentifier(from characteristic: CBCharacteristic) -> String {
         return "\(characteristic.service.uuid.uuidString)-\(characteristic.uuid.uuidString)"
     }

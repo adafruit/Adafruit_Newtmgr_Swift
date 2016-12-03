@@ -42,6 +42,8 @@ class CommandQueue<Element> {
     }
 
     func next() {
+        guard !queue.isEmpty else { return }
+        
         // Delete finished command and trigger next execution if needed
         queue.removeFirst()
         

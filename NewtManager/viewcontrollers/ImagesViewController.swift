@@ -195,8 +195,8 @@ class ImagesViewController: NewtViewController {
         alertController.addAction(okAction)
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
-        present(alertController, animated: true, completion: nil)
-      
+        view.window?.rootViewController?.present(alertController, animated: true, completion: nil)
+
     }
     
     // MARK: - Requests
