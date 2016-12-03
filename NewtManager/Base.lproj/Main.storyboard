@@ -234,7 +234,7 @@
         <!--Task Detail-->
         <scene sceneID="tmo-w1-iDT">
             <objects>
-                <viewController id="Ado-4U-nR0" sceneMemberID="viewController">
+                <viewController id="Ado-4U-nR0" customClass="TaskViewController" customModule="NewtManager" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="bDI-lG-Hiw"/>
                         <viewControllerLayoutGuide type="bottom" id="Ue5-i4-gUc"/>
@@ -242,13 +242,34 @@
                     <view key="view" contentMode="scaleToFill" id="rO7-Xh-F4U">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="wRQ-45-eKA">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="Ado-4U-nR0" id="Fkl-PT-oV8"/>
+                                    <outlet property="delegate" destination="Ado-4U-nR0" id="h5J-KZ-kOC"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="wRQ-45-eKA" firstAttribute="leading" secondItem="rO7-Xh-F4U" secondAttribute="leading" id="Bkw-Ft-wZE"/>
+                            <constraint firstItem="Ue5-i4-gUc" firstAttribute="top" secondItem="wRQ-45-eKA" secondAttribute="bottom" id="EMU-vW-MmJ"/>
+                            <constraint firstItem="wRQ-45-eKA" firstAttribute="top" secondItem="rO7-Xh-F4U" secondAttribute="top" id="TUo-xf-4Yn"/>
+                            <constraint firstAttribute="trailing" secondItem="wRQ-45-eKA" secondAttribute="trailing" id="voZ-Pd-yHo"/>
+                        </constraints>
                     </view>
+                    <toolbarItems/>
                     <navigationItem key="navigationItem" title="Task Detail" id="jyl-0Z-fbZ"/>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="baseTableView" destination="wRQ-45-eKA" id="M0Q-NH-b4S"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="owQ-cw-U8r" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3559" y="572"/>
+            <point key="canvasLocation" x="3557.5999999999999" y="571.66416791604206"/>
         </scene>
         <!--Debug Commands-->
         <scene sceneID="eRy-xz-fKO">

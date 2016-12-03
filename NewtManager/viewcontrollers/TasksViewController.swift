@@ -21,7 +21,6 @@ class TaksViewController: NewtViewController {
     fileprivate var refreshTimer: MSWeakTimer?
     fileprivate var isRefreshTimerPaused = true
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -57,16 +56,16 @@ class TaksViewController: NewtViewController {
         cancelRefreshTimer()
     }
 
-    /*
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        if let taskViewController = segue.destination as? TaskViewController, let taskStats = taskStats, let selectedTaskIndex = baseTableView.indexPathForSelectedRow?.row {
+            taskViewController.task = taskStats[selectedTaskIndex]
+        }
     }
-    */
-    
+
+    // MARK: - Newt
     override func newtDidBecomeReady() {
         super.newtDidBecomeReady()
         
@@ -153,6 +152,7 @@ class TaksViewController: NewtViewController {
     
 }
 
+// MARK: - UITableViewDataSource
 extension TaksViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return taskStats?.count ?? 0
@@ -178,10 +178,10 @@ extension TaksViewController: UITableViewDataSource {
     }
 }
 
+// MARK: - UITableViewDelegate
 extension TaksViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        
         tableView.deselectRow(at: indexPath, animated: true)
     }
 }
