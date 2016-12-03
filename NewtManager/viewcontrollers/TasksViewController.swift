@@ -7,17 +7,28 @@
 //
 
 import UIKit
+import MSWeakTimer
 
 class TaksViewController: NewtViewController {
 
     // UI
     @IBOutlet weak var baseTableView: UITableView!
+    private let refreshControl = UIRefreshControl()
+    @IBOutlet weak var playButton: UIBarButtonItem!
+ 
+    // Data
+    fileprivate var taskStats: [NewtTaskStats]?
+    fileprivate var refreshTimer: MSWeakTimer?
+    fileprivate var isRefreshTimerPaused = true
     
-    // 
-    fileprivate var tasks: [String]?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Setup table refresh
+        refreshControl.addTarget(self, action: #selector(onTableRefresh(_:)), for: UIControlEvents.valueChanged)
+        baseTableView.addSubview(refreshControl)
+        baseTableView.sendSubview(toBack: refreshControl)
     }
 
     override func didReceiveMemoryWarning() {
@@ -28,9 +39,22 @@ class TaksViewController: NewtViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if tasks == nil {
+        if taskStats == nil {
             refreshTasks()
         }
+        
+        isRefreshTimerPaused = false
+        
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        isRefreshTimerPaused = true
+    }
+    
+    deinit {
+        cancelRefreshTimer()
     }
 
     /*
@@ -45,9 +69,9 @@ class TaksViewController: NewtViewController {
     
     override func newtDidBecomeReady() {
         super.newtDidBecomeReady()
-
+        
         // Refresh if no data was previously loaded and view is visible
-        if tasks == nil && isViewLoaded && view.window != nil {
+        if taskStats == nil && isViewLoaded && view.window != nil {
             refreshTasks()
         }
     }
@@ -56,7 +80,7 @@ class TaksViewController: NewtViewController {
         guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
         }
-
+        
         peripheral.newtSendRequest(with: .taskStats) { [weak self] (taskStats, error) in
             guard let context = self else {
                 return
@@ -64,36 +88,74 @@ class TaksViewController: NewtViewController {
             
             if error != nil {
                 DLog("Error TasksStats: \(error!)")
-                context.tasks = nil
+                context.taskStats = nil
                 
                 DispatchQueue.main.async {
                     showErrorAlert(from: context, title: "Error", message: "Error retrieving tasks stats")
                 }
             }
-
-            /*
-            if let taskStats = taskStats as? [String] {
-                DLog("TasksStats: \(taskStats.joined(separator: ", "))")
-                context.tasks = imageVersionStrings
+            
+            if let taskStats = taskStats as? [NewtTaskStats] {
+                context.setTaskStats(taskStats)
             }
- */
             
             DispatchQueue.main.async {
                 context.updateUI()
             }
         }
- 
+        
+    }
+    
+    private func setTaskStats(_ taskStats: [NewtTaskStats]) {
+        let sortedTasks = taskStats.sorted(by: {$0.priority < $1.priority})
+        self.taskStats = sortedTasks
+    }
+
+    
+    // MARK: - UI
+    func onTableRefresh(_ sender: AnyObject) {
+        refreshTasks()
+        refreshControl.endRefreshing()
     }
     
     private func updateUI() {
         // Reload table
         baseTableView.reloadData()
     }
+    
+    // MARK: - Actions
+    @IBAction func onClickPlay(_ sender: Any) {
+     
+        if refreshTimer == nil {
+            let kTimeInterval = 0.5
+            isRefreshTimerPaused = false
+            refreshTimer = MSWeakTimer.scheduledTimer(withTimeInterval: kTimeInterval, target: self, selector: #selector(refreshFired), userInfo: nil, repeats: true, dispatchQueue: .main)
+            
+            playButton.image = UIImage(named: "ic_pause_circle_outline")
+        }
+        else {
+            playButton.image = UIImage(named: "ic_play_circle_outline")
+
+           cancelRefreshTimer()
+        }
+    }
+    
+    private func cancelRefreshTimer() {
+        refreshTimer?.invalidate()
+        refreshTimer = nil
+    }
+    
+    @objc func refreshFired(timer: MSWeakTimer) {
+        guard !isRefreshTimerPaused else { return }
+        
+        refreshTasks()
+    }
+    
 }
 
 extension TaksViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tasks?.count ?? 0
+        return taskStats?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -107,14 +169,20 @@ extension TaksViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let taskName = tasks![indexPath.row]
-        cell.accessoryType = .disclosureIndicator
-        cell.textLabel!.text = taskName
+        guard let task = taskStats?[indexPath.row] else {
+            return
+        }
+        
+        let taskCell = cell as! TasksTableViewCell
+        taskCell.set(task: task)
     }
 }
 
 extension TaksViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+
+        
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 

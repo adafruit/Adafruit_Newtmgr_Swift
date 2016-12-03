@@ -18,14 +18,9 @@ class ImagesViewController: NewtViewController {
     @IBOutlet weak var baseTableView: UITableView!
     private let refreshControl = UIRefreshControl()
  
-    // Boot info
-    fileprivate var mainImage: String?
-    fileprivate var activeImage: String?
-    fileprivate var testImage: String?
+    // Slots
     fileprivate var images: [NewtImage]?
     fileprivate var isImageInfoHidden = [Bool]()
-    
-    // Slots
     
     // Image Upload
     fileprivate struct ImageInfo {
@@ -36,6 +31,7 @@ class ImagesViewController: NewtViewController {
     fileprivate var imagesInternal: [ImageInfo]?
     private var uploadProgressViewController: UploadProgressViewController?
     fileprivate var isUploadCancelled = false
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,25 +70,6 @@ class ImagesViewController: NewtViewController {
         }
     }
     
-    /*
-    fileprivate func showImageOptions(image: NewtImage) {
-        let message = "Would you like to test it and reset the device?"
-        let alertController = UIAlertController(title: "Boot version \(image.version)", message: message, preferredStyle: .alert)
-        let testAction = UIAlertAction(title: "Only Test", style: .default, handler: { [unowned self] alertAction in
-            self.sendImageTestRequest(hash: image.hash, resetOnSuccess: false)
-            //self.sendBootRequest(version: version)
-        })
-        alertController.addAction(testAction)
-        let testAndRebootAction = UIAlertAction(title: "Test and Reset", style: .default, handler: { [unowned self] alertAction in
-            self.sendImageTestRequest(hash: image.hash, resetOnSuccess: true)
-        })
-        alertController.addAction(testAndRebootAction)
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        alertController.addAction(cancelAction)
-        present(alertController, animated: true, completion: nil)
-    }
- */
-    
     // MARK: - Image List
     private func refreshImageList() {
         guard let peripheral = blePeripheral, peripheral.isNewtReady else {
@@ -124,9 +101,8 @@ class ImagesViewController: NewtViewController {
                 context.updateUI()
             }
         }
-        
     }
-    
+
     private func setNewtImages(_ newtImages: [NewtImage]) {
         DLog("images: \(newtImages.map({"\($0.slot)-\($0.version)"}).joined(separator: ", ") )")
         let sortedImages = newtImages.sorted(by: {$0.slot < $1.slot})

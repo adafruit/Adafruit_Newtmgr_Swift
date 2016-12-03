@@ -700,14 +700,14 @@ extension BlePeripheral {
             let state = value["state"].uIntValue
             let runTime = value["runtime"].uIntValue
             let priority = value["prio"].uIntValue
-            let tid = value["tid"].uIntValue
-            let stkUse = value["stkuse"].uIntValue
-            let nextCheckin = value["next_checkin"].uIntValue
-            let stkSiz = value["stksiz"].uIntValue
-            let lastCheckin = value["last_checkin"].uIntValue
-            let cswcnt = value["cswcnt"].uIntValue
+            let taskId = value["tid"].uIntValue
+            let contextSwichCount = value["cswcnt"].uIntValue
+            let stackUsed = value["stkuse"].uIntValue
+            let stackSize = value["stksiz"].uIntValue
+            let lastSanityCheckin = value["last_checkin"].uIntValue
+            let nextSanityCheckin = value["next_checkin"].uIntValue
             
-            let taskStat = NewtTaskStats(name: name, state: state, runTime: runTime, priority: priority, tid: tid, stkUse: stkUse, nextCheckin: nextCheckin, stkSiz: stkSiz, lastCheckin: lastCheckin, cswcnt: cswcnt)
+            let taskStat = NewtTaskStats(taskId: taskId, name: name, priority: priority, state: state, runTime: runTime, contextSwichCount: contextSwichCount, stackSize: stackSize, stackUsed: stackUsed, lastSanityCheckin: lastSanityCheckin, nextSanityCheckin: nextSanityCheckin)
             taskStats.append(taskStat)
         }
         

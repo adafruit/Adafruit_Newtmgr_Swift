@@ -19,16 +19,16 @@ struct NewtImage {
 }
 
 struct NewtTaskStats {
+    var taskId: UInt
     var name: String
+    var priority: UInt
     var state: UInt
     var runTime: UInt
-    var priority: UInt
-    var tid: UInt
-    var stkUse: UInt
-    var nextCheckin: UInt
-    var stkSiz: UInt
-    var lastCheckin: UInt
-    var cswcnt: UInt
+    var contextSwichCount: UInt
+    var stackSize: UInt
+    var stackUsed: UInt
+    var lastSanityCheckin: UInt
+    var nextSanityCheckin: UInt
 }
 
 enum NewtError: Error {
