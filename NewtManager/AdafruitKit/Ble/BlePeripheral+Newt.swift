@@ -1,5 +1,5 @@
 //
-//  NewtManager.swift
+//  NewtHandler.swift
 //  NewtManager
 //
 //  Created by Antonio García on 14/10/2016.
@@ -19,9 +19,9 @@ extension BlePeripheral {
     private struct CustomPropertiesKeys {
         static var newtCharacteristic: CBCharacteristic?
         static var newtCharacteristicWriteType: CBCharacteristicWriteType?
-        static var newtState: NewtManager?
+        static var newtHandler: NewtHandler?
     }
-    
+
     fileprivate var newtCharacteristic: CBCharacteristic? {
         get {
             return objc_getAssociatedObject(self, &CustomPropertiesKeys.newtCharacteristic) as! CBCharacteristic?
@@ -40,20 +40,20 @@ extension BlePeripheral {
         }
     }
     
-    fileprivate var newtState: NewtManager {
+    fileprivate var newtHandler: NewtHandler {
         get {
-            var state = objc_getAssociatedObject(self, &CustomPropertiesKeys.newtState) as! NewtManager?
-            if state == nil {
-                state = NewtManager()
-                self.newtState = state!
+            var handler = objc_getAssociatedObject(self, &CustomPropertiesKeys.newtHandler) as! NewtHandler?
+            if handler == nil {
+                handler = NewtHandler()
+                self.newtHandler = handler!
             }
-            return state!
+            return handler!
         }
         set {
-            objc_setAssociatedObject(self, &CustomPropertiesKeys.newtState, newValue, .OBJC_ASSOCIATION_RETAIN)
+            objc_setAssociatedObject(self, &CustomPropertiesKeys.newtHandler, newValue, .OBJC_ASSOCIATION_RETAIN)
         }
     }
-    
+
     enum NewtError: Error {
         case invalidCharacteristic
         case enableNotifyFailed
@@ -68,8 +68,8 @@ extension BlePeripheral {
     
     // MARK: - Initialization
     func newtInit(completion: ((Error?) -> Void)?) {
-        newtState.delegate = self
-        newtState.start()
+        newtHandler.delegate = self
+        newtHandler.start()
         
         // Get newt communications characteristic
         characteristic(uuid: BlePeripheral.kNewtCharacteristicUUID, serviceUuid: BlePeripheral.kNewtServiceUUID) { [unowned self] (characteristic, error) in
@@ -80,7 +80,7 @@ extension BlePeripheral {
                 
                 // Enable notifications
                 self.setNotify(for: characteristic, enabled: true, handler: { [unowned self] (error) in
-                    self.newtState.newtReceivedData(data: characteristic.value, error: error)
+                    self.newtHandler.newtReceivedData(data: characteristic.value, error: error)
                     }, completion: { error in
                         completion?(error != nil ? error : (characteristic.isNotifying ? nil : NewtError.enableNotifyFailed))
                 })
@@ -100,7 +100,7 @@ extension BlePeripheral {
         defer {
             newtCharacteristic = nil
             newtCharacteristicWriteType = nil
-            newtState.stop()
+            newtHandler.stop()
         }
         
         if !wasDisconnected, let characteristic = newtCharacteristic {
@@ -110,14 +110,14 @@ extension BlePeripheral {
     }
     
     // MARK: - Commands 
-    func newtSendRequest(with command: NewtManager.Command, progress: NewtManager.RequestProgressHandler? = nil, completion: NewtManager.RequestCompletionHandler?) {
-            newtState.sendRequest(with: command, progress: progress, completion: completion)
+    func newtSendRequest(with command: NewtHandler.Command, progress: NewtHandler.RequestProgressHandler? = nil, completion: NewtHandler.RequestCompletionHandler?) {
+            newtHandler.sendRequest(with: command, progress: progress, completion: completion)
     }
    
 }
 
 extension BlePeripheral: NewtStateDelegate {
-    func onNewtWrite(data: Data, completion: NewtManager.RequestCompletionHandler?) {
+    func onNewtWrite(data: Data, completion: NewtHandler.RequestCompletionHandler?) {
         guard let newtCharacteristic = newtCharacteristic, let newtCharacteristicWriteType = newtCharacteristicWriteType else {
             DLog("Command Error: Peripheral not configured. Use setup()")
             completion?(nil, NewtError.invalidCharacteristic)

@@ -19,7 +19,7 @@ class ImagesViewController: NewtViewController {
     private let refreshControl = UIRefreshControl()
  
     // Slots
-    fileprivate var images: [NewtManager.Image]?
+    fileprivate var images: [NewtHandler.Image]?
     fileprivate var isImageInfoHidden = [Bool]()
     
     // Image Upload
@@ -93,7 +93,7 @@ class ImagesViewController: NewtViewController {
                 }
             }
 
-            if let newtImages = newtImages as? [NewtManager.Image] {
+            if let newtImages = newtImages as? [NewtHandler.Image] {
                 context.setNewtImages(newtImages)
             }
 
@@ -103,7 +103,7 @@ class ImagesViewController: NewtViewController {
         }
     }
 
-    private func setNewtImages(_ newtImages: [NewtManager.Image]) {
+    private func setNewtImages(_ newtImages: [NewtHandler.Image]) {
         // DLog("images: \(newtImages.map({"\($0.slot)-\($0.version)"}).joined(separator: ", ") )")
         let sortedImages = newtImages.sorted(by: {$0.slot < $1.slot})
         images = sortedImages
@@ -125,7 +125,7 @@ class ImagesViewController: NewtViewController {
             imagesInternal = [ImageInfo]()
             for firmwareFileName in firmwareFileNames {
                 if let url = urlFrom(bundleFileName: firmwareFileName, subdirectory: ImagesViewController.kInternalFirmwareSubdirectory), let data = dataFrom(url: url) {
-                    let (version, hash) = NewtManager.Image.readInfo(imageData: data)
+                    let (version, hash) = NewtHandler.Image.readInfo(imageData: data)
                     DLog("Firmware: \(firmwareFileName): v\(version.major).\(version.minor).\(version.revision).\(version.buildNum) hash: \(hash)")
                     let imageInfo = ImageInfo(name: firmwareFileName, version: version.description, hash: hash)
                     imagesInternal!.append(imageInfo)
@@ -229,7 +229,7 @@ class ImagesViewController: NewtViewController {
                     guard error == nil else {
                         DLog("upload error: \(error!)")
                         
-                        NewtManager.newtShowErrorAlert(from: context, title: "Upload image failed", error: error!)
+                        NewtHandler.newtShowErrorAlert(from: context, title: "Upload image failed", error: error!)
                         return
                     }
 
@@ -266,7 +266,7 @@ class ImagesViewController: NewtViewController {
             return
         }
         
-        let command: NewtManager.Command = isTest ? .imageTest(hash: hash!): .imageConfirm(hash: hash)
+        let command: NewtHandler.Command = isTest ? .imageTest(hash: hash!): .imageConfirm(hash: hash)
         
         peripheral.newtSendRequest(with: command) { [weak self]  (newtImages, error) in
             guard let context = self else {
@@ -277,7 +277,7 @@ class ImagesViewController: NewtViewController {
                 DLog("Set test image error: \(error!)")
                 
                 DispatchQueue.main.async {
-                    NewtManager.newtShowErrorAlert(from: context, title: "Set test image failed", error: error!)
+                    NewtHandler.newtShowErrorAlert(from: context, title: "Set test image failed", error: error!)
                 }
                 return
             }
@@ -285,7 +285,7 @@ class ImagesViewController: NewtViewController {
             // Success. Reset device
             DLog("Set \(isTest ? "test":"confirm") image: successful")
             
-            if let newtImages = newtImages as? [NewtManager.Image] {
+            if let newtImages = newtImages as? [NewtHandler.Image] {
                 context.setNewtImages(newtImages)
             }
             
@@ -313,7 +313,7 @@ class ImagesViewController: NewtViewController {
                 DLog("reset error: \(error!)")
 
                 DispatchQueue.main.async {
-                    NewtManager.newtShowErrorAlert(from: context, title: "Reset device failed", error: error!)
+                    NewtHandler.newtShowErrorAlert(from: context, title: "Reset device failed", error: error!)
                 }
                 return
             }

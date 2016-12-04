@@ -17,7 +17,7 @@ class TaskViewController: UIViewController {
     fileprivate static let kItemNames = ["Priority", "Task ID", "Runtime", "Context Switches", "Stack Size", "Stack Used", "Last Sanity Check", "Next Sanity Check"]
     private let numberFormatter = NumberFormatter()
 
-    var task: NewtManager.TaskStats?
+    var task: NewtHandler.TaskStats?
     
     override func viewDidLoad() {
         super.viewDidLoad()

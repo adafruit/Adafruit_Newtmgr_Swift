@@ -1,5 +1,5 @@
 //
-//  NewtManager.swift
+//  NewtHandler.swift
 //  NewtManager
 //
 //  Created by Antonio García on 02/12/2016.
@@ -10,77 +10,13 @@ import UIKit
 
 
 protocol NewtStateDelegate: class {
-    func onNewtWrite(data: Data, completion: NewtManager.RequestCompletionHandler?)
+    func onNewtWrite(data: Data, completion: NewtHandler.RequestCompletionHandler?)
 }
 
-class NewtManager {
-    
-    // Types
-    typealias RequestCompletionHandler = ((_ data: Any?, _ error: Error?) -> Void)
-    typealias RequestProgressHandler = ((_ progress: Float) -> Bool)    // Return value indicates if the operation should be cancelled
-    
-    // Data Structures
-    enum Command {
-        case imageList
-        case imageTest(hash: Data)
-        case imageConfirm(hash: Data?)
-        case upload(imageData: Data)
-        case taskStats
-        case reset
-        case echo(message: String)
-        case stats
-        case stat(statId: String)
-    }
-    
-    struct TaskStats {
-        var taskId: UInt
-        var name: String
-        var priority: UInt
-        var state: UInt
-        var runTime: UInt
-        var contextSwichCount: UInt
-        var stackSize: UInt
-        var stackUsed: UInt
-        var lastSanityCheckin: UInt
-        var nextSanityCheckin: UInt
-    }
-    
-    struct StatDetails {
-        var name: String
-        var value: UInt
-    }
-    
-    enum NewtError: Error {
-        case receivedResponseIsNotAPacket
-        case receivedResponseIsNotACbor(Error?)
-        case receivedResponseMissingFields
-        case receviedResponseInvalidValues
-        case receivedResultNotOk(String)
-        case internalError
-        case updateImageInvalid
-        case imageInvalid
-        case userCancelled
-        case waitingForReponse
-        
-        var description: String {
-            switch self {
-            case .receivedResponseIsNotAPacket: return "Received response is not a packet"
-            case .receivedResponseIsNotACbor(let error): return "Received invalid response: \(error?.localizedDescription ?? "")"
-            case .receivedResponseMissingFields: return "Received response with missing fields"
-            case .receviedResponseInvalidValues: return "Received response with invalid values"
-            case .receivedResultNotOk(let message): return "Received incorrect result: \(message)"
-            case .internalError: return "Internal error"
-            case .updateImageInvalid: return "Upload image is invalid"
-            case .imageInvalid: return "Image invalid"
-            case .userCancelled: return "Cancelled"
-            case .waitingForReponse: return "Waiting for previous command"
-            }
-        }
-    }
-
+class NewtHandler {
     
     // MARK: - Packet
-    struct Packet {
+    private struct Packet {
         enum Flags: UInt8 {
             case none               = 0
             case responseComplete   = 1
@@ -235,7 +171,7 @@ class NewtManager {
         }
     }
     
-    struct Request {
+    private struct Request {
         var command: Command
         var progress: RequestProgressHandler?
         var completion: RequestCompletionHandler?
@@ -283,7 +219,7 @@ class NewtManager {
     }
 
     
-    struct Response {
+    private struct Response {
         var packet: Packet!
         
         var description: String {
@@ -331,7 +267,7 @@ class NewtManager {
     
     // MARK: - 
     
-    private var newtRequestsQueue: CommandQueue<NewtManager.Request>  =  CommandQueue<NewtManager.Request>()
+    private var newtRequestsQueue: CommandQueue<NewtHandler.Request>  =  CommandQueue<NewtHandler.Request>()
     private var newtResponseCache = Data()
 
     weak var delegate: NewtStateDelegate?
@@ -351,17 +287,17 @@ class NewtManager {
     }
     
     // MARK: - Send Request
-    func sendRequest(with command: NewtManager.Command, progress: NewtManager.RequestProgressHandler? = nil, completion: NewtManager.RequestCompletionHandler?) {
-        let request = NewtManager.Request(command: command, progress: progress, completion: completion)
+    func sendRequest(with command: NewtHandler.Command, progress: NewtHandler.RequestProgressHandler? = nil, completion: NewtHandler.RequestCompletionHandler?) {
+        let request = NewtHandler.Request(command: command, progress: progress, completion: completion)
         newtRequestsQueue.append(request)
     }
     
     // MARK: - Execute Request
-    private func executeRequest(request: NewtManager.Request) {
+    private func executeRequest(request: NewtHandler.Request) {
         
         guard newtResponseCache.isEmpty else {
             DLog("Error: trying to send command while waiting for response")
-            request.completion?(nil, NewtManager.NewtError.waitingForReponse)
+            request.completion?(nil, NewtHandler.NewtError.waitingForReponse)
             newtRequestsQueue.next()
             return
         }
@@ -370,7 +306,7 @@ class NewtManager {
         switch request.command {
         case let .imageTest(hash: hash):
             let dataDictionary: [String: Any] = ["confirm": false, "hash": hash]
-            data = NewtManager.encodeCbor(dataDictionary: dataDictionary)
+            data = NewtHandler.encodeCbor(dataDictionary: dataDictionary)
             
         case let .imageConfirm(hash: hash):
             var dataDictionary: [String: Any] = ["confirm": true]
@@ -380,18 +316,18 @@ class NewtManager {
             else {
                 dataDictionary["hash"] = NSNull()
             }
-            data = NewtManager.encodeCbor(dataDictionary: dataDictionary)
+            data = NewtHandler.encodeCbor(dataDictionary: dataDictionary)
             
         case .upload(let imageData):
             data = newtUpload(imageData: imageData, progress: request.progress, completion: request.completion)
             
         case .echo(let message):
             let dataDictionary: [String: Any] = ["d": message]
-            data = NewtManager.encodeCbor(dataDictionary: dataDictionary)
+            data = NewtHandler.encodeCbor(dataDictionary: dataDictionary)
             
         case .stat(let statId):
             let dataDictionary: [String: Any] = ["name": statId]
-            data = NewtManager.encodeCbor(dataDictionary: dataDictionary)
+            data = NewtHandler.encodeCbor(dataDictionary: dataDictionary)
             
         default:
             data = nil
@@ -410,9 +346,9 @@ class NewtManager {
     }
     
     // MARK: Upload
-    private func newtUpload(imageData: Data, progress: NewtManager.RequestProgressHandler?, completion: NewtManager.RequestCompletionHandler?) -> Data? {
+    private func newtUpload(imageData: Data, progress: NewtHandler.RequestProgressHandler?, completion: NewtHandler.RequestCompletionHandler?) -> Data? {
         guard imageData.count >= 32 else {
-            completion?(nil, NewtManager.NewtError.updateImageInvalid)
+            completion?(nil, NewtHandler.NewtError.updateImageInvalid)
             newtRequestsQueue.next()
             return nil
         }
@@ -422,7 +358,7 @@ class NewtManager {
     }
     
     
-    private func newtUploadPacketData(from imageData: Data, offset dataOffset: Int, progress: NewtManager.RequestProgressHandler?, completion: NewtManager.RequestCompletionHandler?) -> Data? {
+    private func newtUploadPacketData(from imageData: Data, offset dataOffset: Int, progress: NewtHandler.RequestProgressHandler?, completion: NewtHandler.RequestCompletionHandler?) -> Data? {
         
         // Update progress
         var isCancelled = false
@@ -434,7 +370,7 @@ class NewtManager {
         var packetData: Data? = nil
         
         if isCancelled {                                // Cancelled
-            completion?(nil, NewtManager.NewtError.userCancelled)
+            completion?(nil, NewtHandler.NewtError.userCancelled)
             newtRequestsQueue.next()
         }
         else if imageData.count - dataOffset <= 0 {     // Finished
@@ -442,14 +378,14 @@ class NewtManager {
             newtRequestsQueue.next()
         }
         else {                                          // Create packet data
-            packetData = NewtManager.createUploadPacketData(with: imageData, packetOffset: dataOffset)
+            packetData = NewtHandler.createUploadPacketData(with: imageData, packetOffset: dataOffset)
         }
         
         return packetData
     }
 
     
-    static func createUploadPacketData(with firmwareData: Data, packetOffset: Int) -> Data? {
+    private static func createUploadPacketData(with firmwareData: Data, packetOffset: Int) -> Data? {
         
         // Calculate bytes to send
         //let kMaxPacketSize = 56 // 76
@@ -514,9 +450,9 @@ class NewtManager {
         }
         
         // Check response is valid
-        guard let response = NewtManager.Response(data) else {
+        guard let response = NewtHandler.Response(data) else {
             DLog("Error parsing newt data: \(hexDescription(data: data))")
-            responseError(error: NewtManager.NewtError.receivedResponseIsNotAPacket)
+            responseError(error: NewtHandler.NewtError.receivedResponseIsNotAPacket)
             return
         }
         
@@ -577,18 +513,17 @@ class NewtManager {
     }
     
     // MARK: List, Test, Confirm
-    
     private func parseResponseImageList(cbor: CBOR) {
         defer {
             newtRequestsQueue.next()
         }
         
         let completionHandler = newtRequestsQueue.first()?.completion
-        guard NewtManager.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
+        guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
             return
         }
         
-        var images: [NewtManager.Image] = []
+        var images: [NewtHandler.Image] = []
         
         // Decode CBOR response
         let imagesCbor = cbor["images"]
@@ -601,7 +536,7 @@ class NewtManager {
             let bootable = imageCbor["bootable"].boolValue
             let hash = imageCbor["hash"].dataValue
             
-            let image = NewtManager.Image(slot: slot, version: version, isConfirmed: confirmed, isPending: pending, isActive: active, isBootable: bootable, hash: hash)
+            let image = NewtHandler.Image(slot: slot, version: version, isConfirmed: confirmed, isPending: pending, isActive: active, isBootable: bootable, hash: hash)
             images.append(image)
         }
         
@@ -615,7 +550,7 @@ class NewtManager {
         }
         
         let completionHandler = newtRequestsQueue.first()?.completion
-        guard NewtManager.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
+        guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
             return
         }
         
@@ -630,11 +565,11 @@ class NewtManager {
         }
         
         let completionHandler = newtRequestsQueue.first()?.completion
-        guard NewtManager.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
+        guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
             return
         }
         
-        var taskStats: [NewtManager.TaskStats] = []
+        var taskStats: [NewtHandler.TaskStats] = []
         for (key, value) in cbor["tasks"].dictionaryValue {
             
             let name = key.stringValue
@@ -648,7 +583,7 @@ class NewtManager {
             let lastSanityCheckin = value["last_checkin"].uIntValue
             let nextSanityCheckin = value["next_checkin"].uIntValue
             
-            let taskStat = NewtManager.TaskStats(taskId: taskId, name: name, priority: priority, state: state, runTime: runTime, contextSwichCount: contextSwichCount, stackSize: stackSize, stackUsed: stackUsed, lastSanityCheckin: lastSanityCheckin, nextSanityCheckin: nextSanityCheckin)
+            let taskStat = NewtHandler.TaskStats(taskId: taskId, name: name, priority: priority, state: state, runTime: runTime, contextSwichCount: contextSwichCount, stackSize: stackSize, stackUsed: stackUsed, lastSanityCheckin: lastSanityCheckin, nextSanityCheckin: nextSanityCheckin)
             taskStats.append(taskStat)
         }
         
@@ -662,7 +597,7 @@ class NewtManager {
         }
         
         let completionHandler = newtRequestsQueue.first()?.completion
-        guard NewtManager.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
+        guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
             return
         }
         
@@ -677,16 +612,16 @@ class NewtManager {
         }
         
         let completionHandler = newtRequestsQueue.first()?.completion
-        guard NewtManager.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
+        guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
             return
         }
         
-        var stats: [NewtManager.StatDetails] = []
+        var stats: [NewtHandler.StatDetails] = []
         for (key, value) in cbor["fields"].dictionaryValue {
             let statName = key.stringValue
             let statValue = value.uIntValue
             
-            let statDetails = NewtManager.StatDetails(name: statName, value: statValue)
+            let statDetails = NewtHandler.StatDetails(name: statName, value: statValue)
             stats.append(statDetails)
         }
         completionHandler?(stats, nil)
@@ -699,7 +634,7 @@ class NewtManager {
         }
         
         let completionHandler = newtRequestsQueue.first()?.completion
-        guard NewtManager.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
+        guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
             return
         }
         
@@ -711,7 +646,7 @@ class NewtManager {
     private func parseResponseUploadImage(cbor: CBOR, imageData: Data) {
         let request = newtRequestsQueue.first()
         
-        guard NewtManager.verifyResponseCode(cbor: cbor, completionHandler: request?.completion) else {
+        guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: request?.completion) else {
             newtRequestsQueue.next()
             return
         }
@@ -719,9 +654,9 @@ class NewtManager {
         let offset = cbor["off"].intValue
         if let writeData = newtUploadPacketData(from: imageData, offset: offset, progress: request?.progress, completion: request?.completion) {
             
-            let requestPacketData = NewtManager.Request.uploadPacket.encode(data: writeData)
+            let requestPacketData = NewtHandler.Request.uploadPacket.encode(data: writeData)
             
-            DLog("Send Command: Op:\(NewtManager.Request.uploadPacket.op.rawValue) Flags:\(NewtManager.Request.uploadPacket.flags.rawValue) Len:\(writeData.count) Group:\(NewtManager.Request.uploadPacket.group.rawValue) Seq:\(NewtManager.Request.uploadPacket.seq) Id:\(NewtManager.Request.uploadPacket.id) Data:[\(hexDescription(data: writeData))]")
+            DLog("Send Command: Op:\(NewtHandler.Request.uploadPacket.op.rawValue) Flags:\(NewtHandler.Request.uploadPacket.flags.rawValue) Len:\(writeData.count) Group:\(NewtHandler.Request.uploadPacket.group.rawValue) Seq:\(NewtHandler.Request.uploadPacket.seq) Id:\(NewtHandler.Request.uploadPacket.id) Data:[\(hexDescription(data: writeData))]")
                         
             delegate?.onNewtWrite(data: requestPacketData) { [weak self] (_, error) in
                 if error != nil {
@@ -746,7 +681,7 @@ class NewtManager {
     
     
     // MARK: - Utils
-    static func verifyResponseCode(cbor: CBOR, isMandatory: Bool = false, completionHandler: RequestCompletionHandler?) -> Bool {
+    private static func verifyResponseCode(cbor: CBOR, isMandatory: Bool = false, completionHandler: RequestCompletionHandler?) -> Bool {
         
         guard let returnCodeRaw = cbor["rc"].uInt16 else {
             if isMandatory {

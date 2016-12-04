@@ -15,7 +15,7 @@ class StatsDetailViewController: NewtViewController {
     private let refreshControl = UIRefreshControl()
     
     // Data
-    fileprivate var stats: [NewtManager.StatDetails]?
+    fileprivate var stats: [NewtHandler.StatDetails]?
     private let numberFormatter = NumberFormatter()
 
     var statId: String?
@@ -86,7 +86,7 @@ class StatsDetailViewController: NewtViewController {
                 }
             }
             
-            if let stats = stats as? [NewtManager.StatDetails] {
+            if let stats = stats as? [NewtHandler.StatDetails] {
                 //DLog("Stats: \(stats.joined(separator: ", "))")
                 context.setStats(stats)
             }
@@ -97,7 +97,7 @@ class StatsDetailViewController: NewtViewController {
         }
     }
     
-    private func setStats(_ stats: [NewtManager.StatDetails]) {
+    private func setStats(_ stats: [NewtHandler.StatDetails]) {
         let sortedStats = stats.sorted(by: {$0.name < $1.name})
         self.stats = sortedStats
     }

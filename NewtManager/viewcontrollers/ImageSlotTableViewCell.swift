@@ -27,7 +27,7 @@ class ImageSlotTableViewCell: UITableViewCell {
     @IBOutlet weak var expandInfoButton: UIButton!
     
     private var cellIndex: Int = -1
-    private var newtImage: NewtManager.Image?
+    private var newtImage: NewtHandler.Image?
     private var isInfoHidden = true
     
     
@@ -98,7 +98,7 @@ class ImageSlotTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func set(id: Int, image: NewtManager.Image, isInfoHidden: Bool) {
+    func set(id: Int, image: NewtHandler.Image, isInfoHidden: Bool) {
         cellIndex = id
         self.newtImage = image
         slotIdLabel.text = id == 0 ? "Main Slot" : "Temporary Slot"
@@ -143,7 +143,7 @@ class ImageSlotTableViewCell: UITableViewCell {
     }
     
     
-    private func status(image: NewtManager.Image) -> Status {
+    private func status(image: NewtHandler.Image) -> Status {
         
         guard image.isBootable else { return .notBootable }
         
@@ -161,7 +161,7 @@ class ImageSlotTableViewCell: UITableViewCell {
         }
     }
     
-    private func availableActions(image: NewtManager.Image) -> [ImageAction] {
+    private func availableActions(image: NewtHandler.Image) -> [ImageAction] {
         var result = [ImageAction]()
         
         if image.isActive && !image.isConfirmed {

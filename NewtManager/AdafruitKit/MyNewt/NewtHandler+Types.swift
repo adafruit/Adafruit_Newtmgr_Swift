@@ -10,7 +10,74 @@ import Foundation
 
 
 
-extension NewtManager {
+extension NewtHandler {
+    // Alias
+    typealias RequestCompletionHandler = ((_ data: Any?, _ error: Error?) -> Void)
+    typealias RequestProgressHandler = ((_ progress: Float) -> Bool)    // Return value indicates if the operation should be cancelled
+    
+    // MARK: - Command
+    enum Command {
+        case imageList
+        case imageTest(hash: Data)
+        case imageConfirm(hash: Data?)
+        case upload(imageData: Data)
+        case taskStats
+        case reset
+        case echo(message: String)
+        case stats
+        case stat(statId: String)
+    }
+    
+    // MARK: - TaskStats
+    struct TaskStats {
+        var taskId: UInt
+        var name: String
+        var priority: UInt
+        var state: UInt
+        var runTime: UInt
+        var contextSwichCount: UInt
+        var stackSize: UInt
+        var stackUsed: UInt
+        var lastSanityCheckin: UInt
+        var nextSanityCheckin: UInt
+    }
+    
+    // MARK: - StatDetails
+    struct StatDetails {
+        var name: String
+        var value: UInt
+    }
+    
+    // MARK: - NewtError
+    enum NewtError: Error {
+        case receivedResponseIsNotAPacket
+        case receivedResponseIsNotACbor(Error?)
+        case receivedResponseMissingFields
+        case receviedResponseInvalidValues
+        case receivedResultNotOk(String)
+        case internalError
+        case updateImageInvalid
+        case imageInvalid
+        case userCancelled
+        case waitingForReponse
+        
+        var description: String {
+            switch self {
+            case .receivedResponseIsNotAPacket: return "Received response is not a packet"
+            case .receivedResponseIsNotACbor(let error): return "Received invalid response: \(error?.localizedDescription ?? "")"
+            case .receivedResponseMissingFields: return "Received response with missing fields"
+            case .receviedResponseInvalidValues: return "Received response with invalid values"
+            case .receivedResultNotOk(let message): return "Received incorrect result: \(message)"
+            case .internalError: return "Internal error"
+            case .updateImageInvalid: return "Upload image is invalid"
+            case .imageInvalid: return "Image invalid"
+            case .userCancelled: return "Cancelled"
+            case .waitingForReponse: return "Waiting for previous command"
+            }
+        }
+    }
+    
+    // MARK: - Image
     struct Image {
         var slot: Int
         var version: String
@@ -20,9 +87,6 @@ extension NewtManager {
         var isBootable: Bool
         var hash: Data
         
-        // MARK: - Image Structures and functions
-        // TODO: convert to Swift3 naming conventions
-        
         private struct NewtImageHeader {
             static let kHeaderSize: UInt16    = 32
             static let kMagic: UInt32         = 0x96f3b83c
@@ -31,12 +95,12 @@ extension NewtManager {
             static let kTlvSize: UInt32       = 4
         }
         
-        private enum imgFlags : UInt32 {
+        private enum imgFlags: UInt32 {
             case SHA256                 = 0x00000002    // Image contains hash TLV
             case PKCS15_RSA2048_SHA256  = 0x00000004    // PKCS15 w/RSA and SHA
             case ECDSA224_SHA256        = 0x00000008    // ECDSA256 over SHA256
             
-            var code:UInt32 {
+            var code: UInt32 {
                 return rawValue
             }
         }
@@ -47,7 +111,7 @@ extension NewtManager {
             case RSA2048  = 2 // RSA2048 of hash output
             case ECDSA224 = 3 // ECDSA of hash output
             
-            var code:UInt8 {
+            var code: UInt8 {
                 return rawValue
             }
         }
@@ -72,18 +136,18 @@ extension NewtManager {
         
         // Image header.  All fields are in little endian byte order.
         private struct imgHeader {
-            var magic:UInt32
-            var tlvSize:UInt16  // Trailing TLVs
-            var keyId:UInt8
+            var magic: UInt32
+            var tlvSize: UInt16  // Trailing TLVs
+            var keyId: UInt8
             //uint8_t  _pad1;
-            var hdrSize:UInt16
+            var hdrSize: UInt16
             //uint16_t _pad2;
-            var imgSize:UInt32  // Does not include header.
-            var flags:UInt32
+            var imgSize: UInt32  // Does not include header.
+            var flags :UInt32
             var ver: imgVersion
             //uint32_t _pad3;
             
-            init?(magic:UInt32, tlvSize:UInt16, keyId:UInt8, hdrSize:UInt16, imgSize:UInt32, flags:UInt32, ver:imgVersion) {
+            init?(magic: UInt32, tlvSize: UInt16, keyId: UInt8, hdrSize: UInt16, imgSize: UInt32, flags: UInt32, ver: imgVersion) {
                 self.magic    = magic
                 self.tlvSize  = tlvSize // Trailing TLVs
                 self.keyId    = keyId
