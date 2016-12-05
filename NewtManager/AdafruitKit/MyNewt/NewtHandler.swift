@@ -22,7 +22,7 @@ class NewtHandler {
     private struct Packet {
         enum Flags: UInt8 {
             case none               = 0
-            case responseComplete   = 1
+//            case responseComplete   = 1
             
             var code: UInt8 {
                 return rawValue
@@ -128,9 +128,7 @@ class NewtHandler {
         
         var op: OpCode
         var flags: Flags
-        var len: UInt16 {
-            return UInt16(data.count)
-        }
+        var len: UInt16
         var group: Group
         var seq: UInt8
         var id: UInt8
@@ -138,12 +136,13 @@ class NewtHandler {
         
         // MARK:
         init (op: OpCode, group: Group, id: UInt8) {
-            self = Packet(op: op, flags: .none, group: group, seq: 0, id: id)
+            self = Packet(op: op, flags: .none, len: 0, group: group, seq: 0, id: id)
         }
         
-        init(op: OpCode, flags: Flags, group: Group, seq:UInt8, id: UInt8, data: Data = Data()) {
+        init(op: OpCode, flags: Flags, len: UInt16, group: Group, seq:UInt8, id: UInt8, data: Data = Data()) {
             self.op    = op
             self.flags = flags
+            self.len = len
             self.group = group
             self.seq   = seq
             self.id    = id
@@ -242,38 +241,46 @@ class NewtHandler {
         private static func decode(data: Data) -> Packet? {
             let op: UInt8 = data.scanValue(start: 0, length: 1)
             let flagsValue: UInt8 = data.scanValue(start: 1, length: 1)
-            var bytesReceived: UInt16 = data.scanValue(start: 2, length: 2)
-            bytesReceived = (UInt16(bytesReceived)).byteSwapped
+            var responseLength: UInt16 = data.scanValue(start: 2, length: 2)
+            responseLength = (UInt16(responseLength)).byteSwapped
             var groupValue: UInt16 = data.scanValue(start: 4, length: 2)
             groupValue = (UInt16(groupValue)).byteSwapped
             let seq: UInt8 = data.scanValue(start: 6, length: 1)
             let id: UInt8 = data.scanValue(start: 7, length: 1)
             
             let kDataOffset = 8
+            /*
             if Int(bytesReceived) > data.count-kDataOffset {
                 DLog("Warning: received lenght is bigger that packet size")
                 bytesReceived = min(bytesReceived, UInt16(data.count-kDataOffset))
             }
-            
+ 
             let pktData = data.subdata(in: kDataOffset..<kDataOffset+Int(bytesReceived))
+             */
+            let size = min(kDataOffset+Int(responseLength), data.count)
+            let pktData = data.subdata(in: kDataOffset..<size)
             
-            guard  let opcode = Packet.OpCode(rawValue: op), let flags = Packet.Flags(rawValue: flagsValue), let group = Packet.Group(rawValue: groupValue) else {
+            guard let opcode = Packet.OpCode(rawValue: op), let flags = Packet.Flags(rawValue: flagsValue), let group = Packet.Group(rawValue: groupValue) else {
                 DLog("Error: invalid Response packet values")
                 return nil
             }
             
-            let packet = Packet(op: opcode, flags: flags, /*len: bytesReceived, */group: group, seq: seq, id: id, data: pktData)
+            let packet = Packet(op: opcode, flags: flags, len: responseLength, group: group, seq: seq, id: id, data: pktData)
+            
+            /*
             if bytesReceived != packet.len {
                 DLog("Warning: mismatch in packet lenght reported")
-            }
+            }*/
             return packet
         }
     }
     
     // MARK: - 
     
-    private var newtRequestsQueue: CommandQueue<NewtHandler.Request>  =  CommandQueue<NewtHandler.Request>()
+    private var newtRequestsQueue: CommandQueue<Request>  =  CommandQueue<Request>()
+    
     private var newtResponseCache = Data()
+    private var reponseTotalLenght: UInt16?
 
     private var requestTimeoutTimer: MSWeakTimer?
     
@@ -284,12 +291,17 @@ class NewtHandler {
     }
     
     func start() {
-        newtResponseCache.removeAll()
+        resetResponse()
 
     }
     
     func stop() {
         newtRequestsQueue.removeAll()
+        resetResponse()
+    }
+    
+    private func resetResponse() {
+        reponseTotalLenght = nil
         newtResponseCache.removeAll()
     }
     
@@ -362,12 +374,12 @@ class NewtHandler {
     }
     
     @objc func requestTimeoutFired(timer: MSWeakTimer) {
-        DLog("Error: Newt Request Timeout")
+        DLog("Error: Newt Request Timeout. Bytes received before timeout: \(newtResponseCache.count)")
         cancelRequetsTimeoutTimer()
         
         let request = timer.userInfo() as! NewtHandler.Request
         request.completion?(nil, NewtError.requestTimeout)
-        newtResponseCache.removeAll()
+        resetResponse()
         newtRequestsQueue.next()
     }
     
@@ -472,18 +484,11 @@ class NewtHandler {
         
         // Cancel timeout
         cancelRequetsTimeoutTimer()
-        
+
         // Check data
         guard let data = data, error == nil else {
             DLog("Error reading newt data: \(error)")
             responseError(error: error)
-            return
-        }
-        
-        // Check response is valid
-        guard let response = NewtHandler.Response(data) else {
-            DLog("Error parsing newt data: \(hexDescription(data: data))")
-            responseError(error: NewtHandler.NewtError.receivedResponseIsNotAPacket)
             return
         }
         
@@ -494,11 +499,30 @@ class NewtHandler {
         }
         
         // Read data
-        DLog("Received: Op: \(response.packet.op) Flags: \(response.packet.flags) Len: \(response.packet.len) Group: \(response.packet.group) Seq: \(response.packet.seq) Id: \(response.packet.id) data: [\(hexDescription(data: response.packet.data))]")
+        if newtResponseCache.count == 0 {     // Fist packet should contain the header
+            // Check response is valid
+            guard let response = NewtHandler.Response(data) else {
+                DLog("Error parsing newt data: \(hexDescription(data: data))")
+                responseError(error: NewtError.receivedResponseWihtoutHeader)
+                return
+            }
+            
+            DLog("Received: Op: \(response.packet.op) Flags: \(response.packet.flags) Len: \(response.packet.len) Group: \(response.packet.group) Seq: \(response.packet.seq) Id: \(response.packet.id) data: [\(hexDescription(data: response.packet.data))]")
+            
+            reponseTotalLenght = response.packet.len
+            newtResponseCache.append(response.packet.data)
+        }
+        else {      // Is not the first packet
+            newtResponseCache.append(data)
+        }
         
-        newtResponseCache.append(response.packet.data)
-
-        guard response.packet.flags == .responseComplete else {
+        guard let reponseTotalLenght = reponseTotalLenght else {
+            DLog("Error: response length undefined")
+            responseError(error: NewtError.internalError)
+            return
+        }
+        
+        guard newtResponseCache.count >= Int(reponseTotalLenght) else {
             DLog("cache size: \(newtResponseCache.count). Waiting next packet...")
             // Reinstate timeout
             startRequestTimeoutTimer(request: request)
@@ -515,7 +539,7 @@ class NewtHandler {
         }
         
         // Remove cached data
-        newtResponseCache.removeAll()
+        resetResponse()
         
         // Process response
         if let cbor = cbor {
@@ -706,7 +730,7 @@ class NewtHandler {
             newtRequestsQueue.next()
         }
         
-        newtResponseCache.removeAll()
+        resetResponse()
         
         let completionHandler = newtRequestsQueue.first()?.completion
         completionHandler?(nil, error)

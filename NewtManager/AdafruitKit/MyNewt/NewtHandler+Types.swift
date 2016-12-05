@@ -50,7 +50,7 @@ extension NewtHandler {
 
     // MARK: - NewtError
     enum NewtError: Error {
-        case receivedResponseIsNotAPacket
+        case receivedResponseWihtoutHeader
         case receivedResponseIsNotACbor(Error?)
         case receivedResponseMissingFields
         case receviedResponseInvalidValues
@@ -64,7 +64,7 @@ extension NewtHandler {
         
         var description: String {
             switch self {
-            case .receivedResponseIsNotAPacket: return "Received response is not a packet"
+            case .receivedResponseWihtoutHeader: return "Received response wihtout header"
             case .receivedResponseIsNotACbor(let error): return "Received invalid response: \(error?.localizedDescription ?? "")"
             case .receivedResponseMissingFields: return "Received response with missing fields"
             case .receviedResponseInvalidValues: return "Received response with invalid values"
