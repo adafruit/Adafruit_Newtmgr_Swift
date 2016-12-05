@@ -27,12 +27,14 @@ class TaksViewController: NewtViewController {
     
     fileprivate var chartColors = [UIColor]()
 
+    fileprivate var tasksChartViewController: TasksChartViewController?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        baseTableView.contentOffset = CGPoint.zero
-  //      baseTableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)
+//        baseTableView.contentOffset = CGPoint.zero
+        baseTableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)
         
         // Setup table refresh
         refreshControl.addTarget(self, action: #selector(onTableRefresh(_:)), for: UIControlEvents.valueChanged)
@@ -42,6 +44,7 @@ class TaksViewController: NewtViewController {
         // Pie Chart
         chartColors.append(contentsOf: ChartColorTemplates.colorful())
         chartColors.append(contentsOf: ChartColorTemplates.joyful())
+        tasksChartViewController?.chartColors = chartColors
     
         chartView.rotationAngle = 270-50       // To avoid ugly starting lines
         setupChart()
@@ -82,6 +85,9 @@ class TaksViewController: NewtViewController {
         
         if let taskViewController = segue.destination as? TaskViewController, let taskStats = taskStats, let selectedIndex = baseTableView.indexPathForSelectedRow?.row {
             taskViewController.task = taskStats[selectedIndex]
+        }
+        else if let tasksChartViewController = segue.destination as? TasksChartViewController {
+            self.tasksChartViewController = tasksChartViewController
         }
     }
 
@@ -157,7 +163,33 @@ class TaksViewController: NewtViewController {
         //chartView.usePercentValuesEnabled = true
     }
     
-    private func updateChart() {
+    private func updateCharts() {
+        // Pie Chart
+        // updatePieChart()
+        
+        
+        // Stcak Usage Chart
+        guard let taskStats = taskStats else { return }
+        
+        var stackItems: [StackUsage] = []
+        var runtimeItems: [UInt] = []
+        for task in taskStats {
+            let used = task.stackUsed
+            let total = task.stackSize
+            
+            stackItems.append(StackUsage(used: used, total: total))
+            
+            runtimeItems.append(task.runTime)
+        }
+        
+        tasksChartViewController?.stackItems = stackItems
+
+        // Runtime Data
+        tasksChartViewController?.runtimeItems = runtimeItems
+        
+    }
+    
+    private func updatePieChart() {
         guard let taskStats = taskStats else {
             chartView.data = nil
             chartContainerView.isHidden = true
@@ -213,7 +245,7 @@ class TaksViewController: NewtViewController {
     private func updateUI() {
         // Reload table
         baseTableView.reloadData()
-        updateChart()
+        updateCharts()
     }
     
     // MARK: - Actions

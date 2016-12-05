@@ -38,7 +38,6 @@ class TaskViewController: UIViewController {
     }
 }
 
-
 // MARK: - UITableViewDataSource
 extension TaskViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2657" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="0Pv-Tp-9gs">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2659" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="0Pv-Tp-9gs">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -67,40 +67,50 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qaN-Ac-fk2">
-                                <rect key="frame" x="0.0" y="64" width="375" height="180"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="160"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NlQ-H8-2LF" customClass="PieChartView" customModule="Charts">
-                                        <rect key="frame" x="0.0" y="16" width="375" height="164"/>
+                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NlQ-H8-2LF" customClass="PieChartView" customModule="Charts">
+                                        <rect key="frame" x="0.0" y="16" width="375" height="144"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </view>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PieChart Title" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a1d-9h-kXs">
+                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PieChart Title" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a1d-9h-kXs">
                                         <rect key="frame" x="0.0" y="4" width="375" height="16"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="13"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FgV-Nv-siM">
+                                        <rect key="frame" x="0.0" y="20" width="375" height="160"/>
+                                        <connections>
+                                            <segue destination="6xS-4R-FzN" kind="embed" identifier="" id="bZy-iY-GmD"/>
+                                        </connections>
+                                    </containerView>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstItem="a1d-9h-kXs" firstAttribute="top" secondItem="qaN-Ac-fk2" secondAttribute="top" constant="4" id="0lg-Rk-Uyb"/>
                                     <constraint firstItem="NlQ-H8-2LF" firstAttribute="top" secondItem="qaN-Ac-fk2" secondAttribute="top" constant="16" id="DYc-Lv-YYn"/>
+                                    <constraint firstItem="FgV-Nv-siM" firstAttribute="top" secondItem="qaN-Ac-fk2" secondAttribute="top" id="Ekl-VR-TeA"/>
                                     <constraint firstItem="a1d-9h-kXs" firstAttribute="leading" secondItem="qaN-Ac-fk2" secondAttribute="leading" id="Xxq-7l-Jba"/>
                                     <constraint firstAttribute="bottom" secondItem="NlQ-H8-2LF" secondAttribute="bottom" id="YGD-Kk-363"/>
+                                    <constraint firstAttribute="bottom" secondItem="FgV-Nv-siM" secondAttribute="bottom" id="fbo-Ck-S3P"/>
+                                    <constraint firstItem="FgV-Nv-siM" firstAttribute="leading" secondItem="qaN-Ac-fk2" secondAttribute="leading" id="ozu-HW-pxu"/>
                                     <constraint firstAttribute="trailing" secondItem="NlQ-H8-2LF" secondAttribute="trailing" id="r7L-Md-BPz"/>
+                                    <constraint firstAttribute="trailing" secondItem="FgV-Nv-siM" secondAttribute="trailing" id="tPt-Jr-6Bw"/>
                                     <constraint firstAttribute="trailing" secondItem="a1d-9h-kXs" secondAttribute="trailing" id="ufc-XM-5CQ"/>
-                                    <constraint firstAttribute="height" constant="180" id="wlm-Jm-iKg"/>
+                                    <constraint firstAttribute="height" constant="160" id="wlm-Jm-iKg"/>
                                     <constraint firstItem="NlQ-H8-2LF" firstAttribute="leading" secondItem="qaN-Ac-fk2" secondAttribute="leading" id="zLn-mU-5HS"/>
                                 </constraints>
                             </view>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="88" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="Kxx-z6-vQw">
-                                <rect key="frame" x="0.0" y="244" width="375" height="374"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="76" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="Kxx-z6-vQw">
+                                <rect key="frame" x="0.0" y="224" width="375" height="394"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="TaskCell" id="EfO-pg-XLz" customClass="TasksTableViewCell" customModule="NewtManager" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="56" width="375" height="88"/>
+                                        <rect key="frame" x="0.0" y="56" width="375" height="76"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="EfO-pg-XLz" id="RGK-bS-73c">
-                                            <rect key="frame" x="0.0" y="0.0" width="342" height="87"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="342" height="75"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="XXX" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r4w-E2-01r">
@@ -772,6 +782,95 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nst-Jz-T7S" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1929" y="144"/>
+        </scene>
+        <!--Tasks Chart View Controller-->
+        <scene sceneID="HvP-aP-SNI">
+            <objects>
+                <viewController id="6xS-4R-FzN" customClass="TasksChartViewController" customModule="NewtManager" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ie7-PK-s5j">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="160"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="STACK USAGE" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3tP-Dl-pS6">
+                                <rect key="frame" x="16" y="10" width="343" height="16"/>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="13"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dqI-Qe-CsH" customClass="StackUsageChartView" customModule="NewtManager" customModuleProvider="target">
+                                <rect key="frame" x="16" y="28" width="343" height="56"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="RUNTIME" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZWS-xw-keF">
+                                <rect key="frame" x="16" y="90" width="343" height="16"/>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="13"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dCv-PC-Cma" customClass="RuntimeChartView" customModule="NewtManager" customModuleProvider="target">
+                                <rect key="frame" x="16" y="108" width="299" height="20"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="aHr-P2-SjT"/>
+                                </constraints>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="TOTAL" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qoE-1g-X1N">
+                                <rect key="frame" x="319" y="112.5" width="40" height="12"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="GGT-dh-5SE"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="10"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NDX-cf-lNp" customClass="RuntimeChartView" customModule="NewtManager" customModuleProvider="target">
+                                <rect key="frame" x="16" y="130" width="299" height="20"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="pkm-F1-Y4J"/>
+                                </constraints>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="DELTA" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yMi-RS-Ap2">
+                                <rect key="frame" x="319" y="134.5" width="40" height="12"/>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="10"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="NDX-cf-lNp" firstAttribute="leading" secondItem="ie7-PK-s5j" secondAttribute="leadingMargin" id="7s6-Of-QZo"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="qoE-1g-X1N" secondAttribute="trailing" id="BU7-qE-dvp"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="yMi-RS-Ap2" secondAttribute="trailing" id="DZT-HU-hGB"/>
+                            <constraint firstItem="3tP-Dl-pS6" firstAttribute="top" secondItem="ie7-PK-s5j" secondAttribute="topMargin" constant="10" id="FQD-Qr-ANc"/>
+                            <constraint firstItem="dqI-Qe-CsH" firstAttribute="leading" secondItem="ie7-PK-s5j" secondAttribute="leadingMargin" id="Fpc-Uj-X0e"/>
+                            <constraint firstItem="qoE-1g-X1N" firstAttribute="centerY" secondItem="dCv-PC-Cma" secondAttribute="centerY" id="OHu-Cu-ecy"/>
+                            <constraint firstItem="qoE-1g-X1N" firstAttribute="leading" secondItem="dCv-PC-Cma" secondAttribute="trailing" constant="4" id="S5s-Cb-sA3"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="3tP-Dl-pS6" secondAttribute="trailing" id="Toq-K5-0ae"/>
+                            <constraint firstItem="dqI-Qe-CsH" firstAttribute="top" secondItem="3tP-Dl-pS6" secondAttribute="bottom" constant="2" id="UMF-Wj-woV"/>
+                            <constraint firstAttribute="bottom" secondItem="NDX-cf-lNp" secondAttribute="bottom" constant="10" id="YCC-y6-usv"/>
+                            <constraint firstItem="ZWS-xw-keF" firstAttribute="trailing" secondItem="ie7-PK-s5j" secondAttribute="trailingMargin" id="avR-5j-vzZ"/>
+                            <constraint firstItem="ZWS-xw-keF" firstAttribute="leading" secondItem="ie7-PK-s5j" secondAttribute="leadingMargin" id="bGq-o2-n1R"/>
+                            <constraint firstItem="dCv-PC-Cma" firstAttribute="top" secondItem="ZWS-xw-keF" secondAttribute="bottom" constant="2" id="ezQ-Y4-WzH"/>
+                            <constraint firstItem="ZWS-xw-keF" firstAttribute="top" secondItem="dqI-Qe-CsH" secondAttribute="bottom" constant="6" id="fce-C6-RuI"/>
+                            <constraint firstItem="dCv-PC-Cma" firstAttribute="leading" secondItem="ie7-PK-s5j" secondAttribute="leadingMargin" id="g3I-4f-9Do"/>
+                            <constraint firstItem="NDX-cf-lNp" firstAttribute="trailing" secondItem="dCv-PC-Cma" secondAttribute="trailing" id="ipy-gb-7jh"/>
+                            <constraint firstItem="yMi-RS-Ap2" firstAttribute="leading" secondItem="qoE-1g-X1N" secondAttribute="leading" id="qao-uj-6MS"/>
+                            <constraint firstItem="3tP-Dl-pS6" firstAttribute="leading" secondItem="ie7-PK-s5j" secondAttribute="leadingMargin" id="rxG-zT-fSq"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="dqI-Qe-CsH" secondAttribute="trailing" id="tQp-5E-3ZD"/>
+                            <constraint firstItem="yMi-RS-Ap2" firstAttribute="centerY" secondItem="NDX-cf-lNp" secondAttribute="centerY" id="xkq-q4-CXm"/>
+                            <constraint firstItem="NDX-cf-lNp" firstAttribute="top" secondItem="dCv-PC-Cma" secondAttribute="bottom" constant="2" id="yCJ-tg-KyY"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="runtimeChartView" destination="dCv-PC-Cma" id="cNX-Lc-WOX"/>
+                        <outlet property="runtimeDeltaChartView" destination="NDX-cf-lNp" id="yDy-Zn-Mbo"/>
+                        <outlet property="stackUsageChartView" destination="dqI-Qe-CsH" id="kwW-tL-tT2"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tYG-QI-Dnp" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3558" y="56"/>
         </scene>
     </scenes>
     <resources>

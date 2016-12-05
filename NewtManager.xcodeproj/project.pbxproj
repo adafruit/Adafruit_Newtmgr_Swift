@@ -37,6 +37,10 @@
 		A950EB201DB04C6F005FC305 /* MainNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB1F1DB04C6F005FC305 /* MainNavigationViewController.swift */; };
 		A950EB221DB0534D005FC305 /* TasksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB211DB0534D005FC305 /* TasksViewController.swift */; };
 		A95CE57B1DB68252008C234E /* CommandsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95CE57A1DB68252008C234E /* CommandsViewController.swift */; };
+		A991712E1DF5E18B00CB8C5D /* StackUsageChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A991712D1DF5E18B00CB8C5D /* StackUsageChartView.swift */; };
+		A99171301DF5E34B00CB8C5D /* TasksChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A991712F1DF5E34B00CB8C5D /* TasksChartViewController.swift */; };
+		A99171321DF5EE6F00CB8C5D /* UIColor+LighterDarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99171311DF5EE6F00CB8C5D /* UIColor+LighterDarker.swift */; };
+		A99171341DF6041A00CB8C5D /* RuntimeChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99171331DF6041A00CB8C5D /* RuntimeChartView.swift */; };
 		A995CDB51DF2511300A5291B /* TasksTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A995CDB41DF2511300A5291B /* TasksTableViewCell.swift */; };
 		A995CDB71DF25D6600A5291B /* TaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A995CDB61DF25D6600A5291B /* TaskViewController.swift */; };
 		A9E707A11DF2D90500E1B1D8 /* StatsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E707A01DF2D90500E1B1D8 /* StatsViewController.swift */; };
@@ -85,6 +89,10 @@
 		A95CE57A1DB68252008C234E /* CommandsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandsViewController.swift; sourceTree = "<group>"; };
 		A95CE57E1DB6BB48008C234E /* NewtManager.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NewtManager.entitlements; sourceTree = "<group>"; };
 		A98F88FC1DEB4FDC00DD8800 /* NewtManager-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NewtManager-Bridging-Header.h"; sourceTree = "<group>"; };
+		A991712D1DF5E18B00CB8C5D /* StackUsageChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StackUsageChartView.swift; sourceTree = "<group>"; };
+		A991712F1DF5E34B00CB8C5D /* TasksChartViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksChartViewController.swift; sourceTree = "<group>"; };
+		A99171311DF5EE6F00CB8C5D /* UIColor+LighterDarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+LighterDarker.swift"; sourceTree = "<group>"; };
+		A99171331DF6041A00CB8C5D /* RuntimeChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuntimeChartView.swift; sourceTree = "<group>"; };
 		A995CDB41DF2511300A5291B /* TasksTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksTableViewCell.swift; sourceTree = "<group>"; };
 		A995CDB61DF25D6600A5291B /* TaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskViewController.swift; sourceTree = "<group>"; };
 		A9A5EC551DB1253700566005 /* Synchronize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Synchronize.swift; sourceTree = "<group>"; };
@@ -215,6 +223,7 @@
 			children = (
 				A94F25651DF0448D00F46930 /* CBOR */,
 				A9A5EC551DB1253700566005 /* Synchronize.swift */,
+				A99171311DF5EE6F00CB8C5D /* UIColor+LighterDarker.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -231,6 +240,9 @@
 				A94F25941DF1ACC300F46930 /* ImageSlotTableViewCell.swift */,
 				A92CC7451DB52083002124EF /* UploadProgressViewController.swift */,
 				A950EB211DB0534D005FC305 /* TasksViewController.swift */,
+				A991712F1DF5E34B00CB8C5D /* TasksChartViewController.swift */,
+				A991712D1DF5E18B00CB8C5D /* StackUsageChartView.swift */,
+				A99171331DF6041A00CB8C5D /* RuntimeChartView.swift */,
 				A995CDB41DF2511300A5291B /* TasksTableViewCell.swift */,
 				A995CDB61DF25D6600A5291B /* TaskViewController.swift */,
 				A9E707A01DF2D90500E1B1D8 /* StatsViewController.swift */,
@@ -350,7 +362,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		75838A2578EDEA4524A98AC2 /* [CP] Copy Pods Resources */ = {
@@ -400,10 +412,13 @@
 				A94F258B1DF0936500F46930 /* LogHelper.swift in Sources */,
 				A995CDB51DF2511300A5291B /* TasksTableViewCell.swift in Sources */,
 				A94F25701DF0452700F46930 /* CBOREncoder.swift in Sources */,
+				A99171321DF5EE6F00CB8C5D /* UIColor+LighterDarker.swift in Sources */,
 				A950EB201DB04C6F005FC305 /* MainNavigationViewController.swift in Sources */,
 				A94F256B1DF0448D00F46930 /* CBORDecoder.swift in Sources */,
+				A991712E1DF5E18B00CB8C5D /* StackUsageChartView.swift in Sources */,
 				A950EB021DB00351005FC305 /* AppDelegate.swift in Sources */,
 				A94F25871DF0936500F46930 /* AlertUtils.swift in Sources */,
+				A99171301DF5E34B00CB8C5D /* TasksChartViewController.swift in Sources */,
 				A94F258A1DF0936500F46930 /* DataConversions.swift in Sources */,
 				A94F25861DF0936500F46930 /* UartManager.swift in Sources */,
 				A94F25851DF0936500F46930 /* UartLogManager.swift in Sources */,
@@ -423,6 +438,7 @@
 				A92CC7461DB52083002124EF /* UploadProgressViewController.swift in Sources */,
 				A950EB1C1DB01424005FC305 /* ScannerViewController.swift in Sources */,
 				A94F256D1DF0448D00F46930 /* Util.swift in Sources */,
+				A99171341DF6041A00CB8C5D /* RuntimeChartView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
