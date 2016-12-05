@@ -58,11 +58,11 @@ class CommandsViewController: NewtViewController {
         }
         
         peripheral.newtSendRequest(with: command) { [weak self] (result, error) in
-            DispatchQueue.main.async {
                 guard let context = self else {
                     return
                 }
                 
+            DispatchQueue.main.async {
                 guard error == nil else {
                     DLog("Error: \(error!)")
                     

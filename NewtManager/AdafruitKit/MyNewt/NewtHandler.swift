@@ -7,13 +7,16 @@
 //
 
 import UIKit
-
+import MSWeakTimer
 
 protocol NewtStateDelegate: class {
     func onNewtWrite(data: Data, completion: NewtHandler.RequestCompletionHandler?)
 }
 
 class NewtHandler {
+    // Config
+    private static let kDefaultRequestTimeout: TimeInterval = 1.0     // in seconds
+    
     
     // MARK: - Packet
     private struct Packet {
@@ -175,11 +178,13 @@ class NewtHandler {
         var command: Command
         var progress: RequestProgressHandler?
         var completion: RequestCompletionHandler?
+        var timeout: TimeInterval?
         
-        init(command: Command, progress: RequestProgressHandler?, completion: RequestCompletionHandler?) {
+        init(command: Command, progress: RequestProgressHandler?, completion: RequestCompletionHandler?, timeout: TimeInterval? = NewtHandler.kDefaultRequestTimeout) {
             self.command = command
             self.progress = progress
             self.completion = completion
+            self.timeout = timeout
         }
         
         static let uploadPacket = Packet(op: Packet.OpCode.write, group: Packet.Group.image, id: Packet.GroupImage.upload.code)
@@ -270,6 +275,8 @@ class NewtHandler {
     private var newtRequestsQueue: CommandQueue<NewtHandler.Request>  =  CommandQueue<NewtHandler.Request>()
     private var newtResponseCache = Data()
 
+    private var requestTimeoutTimer: MSWeakTimer?
+    
     weak var delegate: NewtStateDelegate?
     
     init() {
@@ -337,12 +344,36 @@ class NewtHandler {
         
         DLog("Send Command: Op:\(request.packet.op.rawValue) Flags:\(request.packet.flags.rawValue) Len:\(data?.count ?? 0) Group:\(request.packet.group.rawValue) Seq:\(request.packet.seq) Id:\(request.packet.id) Data:[\(data != nil ? hexDescription(data: data!):"")]")
         
+        startRequestTimeoutTimer(request: request)
+
         delegate?.onNewtWrite(data: requestPacketData) { [weak self] (_, error) in
             if error != nil {
+                self?.cancelRequetsTimeoutTimer()
                 request.completion?(nil, error)
                 self?.newtRequestsQueue.next()
             }
         }
+    }
+    
+    private func startRequestTimeoutTimer(request: NewtHandler.Request) {
+        if let timeout = request.timeout {
+            requestTimeoutTimer = MSWeakTimer.scheduledTimer(withTimeInterval: timeout, target: self, selector: #selector(requestTimeoutFired), userInfo: request, repeats: false, dispatchQueue: .global(qos: .background))
+        }
+    }
+    
+    @objc func requestTimeoutFired(timer: MSWeakTimer) {
+        DLog("Error: Newt Request Timeout")
+        cancelRequetsTimeoutTimer()
+        
+        let request = timer.userInfo() as! NewtHandler.Request
+        request.completion?(nil, NewtError.requestTimeout)
+        newtResponseCache.removeAll()
+        newtRequestsQueue.next()
+    }
+    
+    private func cancelRequetsTimeoutTimer() {
+        requestTimeoutTimer?.invalidate()
+        requestTimeoutTimer = nil
     }
     
     // MARK: Upload
@@ -439,8 +470,8 @@ class NewtHandler {
     func newtReceivedData(data: Data?, error: Error?) {
         //DLog("Raw data: \(hexDescription(data: data ?? Data()))")
         
-        // Check timeout
-        
+        // Cancel timeout
+        cancelRequetsTimeoutTimer()
         
         // Check data
         guard let data = data, error == nil else {
@@ -457,8 +488,8 @@ class NewtHandler {
         }
         
         // Get command
-        guard let command = newtRequestsQueue.first()?.command else {
-            DLog("Warning: newtReadData with no command")
+        guard let request = newtRequestsQueue.first() else {
+            DLog("Warning: newtReadData with no request")
             return
         }
         
@@ -466,9 +497,11 @@ class NewtHandler {
         DLog("Received: Op: \(response.packet.op) Flags: \(response.packet.flags) Len: \(response.packet.len) Group: \(response.packet.group) Seq: \(response.packet.seq) Id: \(response.packet.id) data: [\(hexDescription(data: response.packet.data))]")
         
         newtResponseCache.append(response.packet.data)
-        
+
         guard response.packet.flags == .responseComplete else {
             DLog("cache size: \(newtResponseCache.count). Waiting next packet...")
+            // Reinstate timeout
+            startRequestTimeoutTimer(request: request)
             return
         }
         
@@ -489,7 +522,7 @@ class NewtHandler {
             DLog("Received CBOR: \(cbor)")
             
             // Parse response
-            switch command {
+            switch request.command {
             case .imageList, .imageTest, .imageConfirm:
                 parseResponseImageList(cbor: cbor)
             case .echo:

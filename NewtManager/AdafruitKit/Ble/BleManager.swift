@@ -96,7 +96,7 @@ class BleManager: NSObject {
     
     
     // MARK: - Connection Management
-    func connect(to peripheral: BlePeripheral, timeout: Double? = nil, shouldNotifyOnConnection: Bool = false, shouldNotifyOnDisconnection: Bool = false, shouldNotifyOnNotification: Bool = false) {
+    func connect(to peripheral: BlePeripheral, timeout: TimeInterval? = nil, shouldNotifyOnConnection: Bool = false, shouldNotifyOnDisconnection: Bool = false, shouldNotifyOnNotification: Bool = false) {
         
         centralManagerPoweredOnSemaphore.wait()
         centralManagerPoweredOnSemaphore.signal()

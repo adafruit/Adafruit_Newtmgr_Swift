@@ -47,7 +47,7 @@ extension NewtHandler {
         var name: String
         var value: UInt
     }
-    
+
     // MARK: - NewtError
     enum NewtError: Error {
         case receivedResponseIsNotAPacket
@@ -60,6 +60,7 @@ extension NewtHandler {
         case imageInvalid
         case userCancelled
         case waitingForReponse
+        case requestTimeout
         
         var description: String {
             switch self {
@@ -73,6 +74,7 @@ extension NewtHandler {
             case .imageInvalid: return "Image invalid"
             case .userCancelled: return "Cancelled"
             case .waitingForReponse: return "Waiting for previous command"
+            case .requestTimeout: return "Request timeout"
             }
         }
     }
