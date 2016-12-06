@@ -22,6 +22,12 @@ class RuntimeChartView: UIView {
         }
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        setNeedsDisplay()
+    }
+    
     override func draw(_ rect: CGRect) {
         guard let chartColors = chartColors, let items = items, let context = UIGraphicsGetCurrentContext() else { return }
         context.setAllowsAntialiasing(true)

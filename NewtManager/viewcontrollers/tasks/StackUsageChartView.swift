@@ -28,6 +28,12 @@ class StackUsageChartView: UIView {
         }
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        setNeedsDisplay()
+    }
+    
     override func draw(_ rect: CGRect) {
         guard let chartColors = chartColors, let usageData = items, let context = UIGraphicsGetCurrentContext() else { return }
         context.setAllowsAntialiasing(true)

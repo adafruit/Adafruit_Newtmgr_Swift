@@ -30,7 +30,7 @@ class TaksViewController: NewtViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        baseTableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)
+        baseTableView.contentInset = UIEdgeInsets(top: -10, left: 0, bottom: 0, right: 0)
 
         // Setup table refresh
         refreshControl.addTarget(self, action: #selector(onTableRefresh(_:)), for: UIControlEvents.valueChanged)
@@ -142,7 +142,6 @@ class TaksViewController: NewtViewController {
         taskViewController?.task = task
     }
 
-    
 
     // MARK: - Charts
     private func updateCharts() {
