@@ -188,7 +188,19 @@ extension BlePeripheral {
 
         } while offset < data.count
     }
+    
+    // MARK: - Utils
+    
+    func isUartAdvertised() -> Bool {
+        
+        var isUartAdvertised = false
+        if let serviceUUIds = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID] {
+            isUartAdvertised = serviceUUIds.contains(BlePeripheral.kUartServiceUUID)
+        }
+        return isUartAdvertised
+    }
 }
+
 
 // MARK: - Data + CRC
 extension Data {

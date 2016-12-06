@@ -35,6 +35,8 @@ class ImagesViewController: NewtViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //navigationController?.navigationBar.topItem?.prompt = "Test"
 
         // Table View self-sizing
         baseTableView.rowHeight = UITableViewAutomaticDimension
@@ -195,7 +197,7 @@ class ImagesViewController: NewtViewController {
         alertController.addAction(okAction)
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
-        view.window?.rootViewController?.present(alertController, animated: true, completion: nil)
+        present(alertController, animated: true, completion: nil)
 
     }
     
@@ -236,19 +238,6 @@ class ImagesViewController: NewtViewController {
                     // Success. Ask if should activate
                     DLog("Upload successful")
 
-                    /*
-                    let message = "Image has been succesfully uploaded.\nWould you like to activate it and reset the device?"
-                    let alertController = UIAlertController(title: "Upload successful", message: message, preferredStyle: .alert)
-                    let okAction = UIAlertAction(title: "Activate", style: .default, handler: { [unowned context] alertAction in
-                        DLog("Error: Implement me")
-                        
-                        //context.sendBootRequest(imageData: imageData)
-                    })
-                    alertController.addAction(okAction)
-                    let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-                    alertController.addAction(cancelAction)
-                    context.present(alertController, animated: true, completion: nil)
-                    */
 
                     // Refresh Image List
                     context.refreshImageList()
@@ -257,7 +246,7 @@ class ImagesViewController: NewtViewController {
         }
     }
     
-    fileprivate func sendImageConfirmRequest(hash: Data?, isTest: Bool,  resetOnSuccess: Bool) {
+    fileprivate func sendImageConfirmRequest(hash: Data?, isTest: Bool) {
         guard let peripheral = blePeripheral, peripheral.isNewtReady else {
             return
         }
@@ -278,7 +267,7 @@ class ImagesViewController: NewtViewController {
                 
                 DispatchQueue.main.async {
                     NewtHandler.newtShowErrorAlert(from: context, title: "Set test image failed", error: error!)
-                    context.updateUI()
+                    context.refreshImageList()
                 }
                 return
             }
@@ -292,10 +281,19 @@ class ImagesViewController: NewtViewController {
             
             DispatchQueue.main.async {
                 context.updateUI()
-            }
-
-            if resetOnSuccess {
-                context.sendResetRequest()
+                
+                if isTest {
+                    // Ask user if automatically reset
+                    let message = "Image marked to be tested on the next device reset (note that the device will take longer to boot)\nWould you like to reset the device now?"
+                    let alertController = UIAlertController(title:"Test image", message: message, preferredStyle: .alert)
+                    let okAction = UIAlertAction(title: "Reset", style: .default, handler: { [unowned context] alertAction in
+                        context.sendResetRequest()
+                    })
+                    alertController.addAction(okAction)
+                    let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+                    alertController.addAction(cancelAction)
+                    context.present(alertController, animated: true, completion: nil)
+                }
             }
         }
     }
@@ -499,16 +497,26 @@ extension ImagesViewController: ImageSlotTableViewCellDelegate {
     }
     
     func onClickImageTest(index: Int) {
+        
         guard let image = images?[index] else { return }
-        sendImageConfirmRequest(hash: image.hash, isTest: true, resetOnSuccess: false)
+        sendImageConfirmRequest(hash: image.hash, isTest: true)
     }
     
     func onClickImageConfirm(index: Int) {
         guard let image = images?[index] else { return }
-        sendImageConfirmRequest(hash: index == 0 ? nil:image.hash, isTest: false, resetOnSuccess: false)
+        sendImageConfirmRequest(hash: index == 0 ? nil:image.hash, isTest: false)
     }
     
     func onClickImageReset(index: Int) {
-        sendResetRequest()
+        // Ask user if automatically reset
+        let message = "Note that the device will take some time to boot\nWould you like to reset the device now?"
+        let alertController = UIAlertController(title:"Reset", message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Reset", style: .default, handler: { [unowned self] alertAction in
+            self.sendResetRequest()
+        })
+        alertController.addAction(okAction)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
     }
 }

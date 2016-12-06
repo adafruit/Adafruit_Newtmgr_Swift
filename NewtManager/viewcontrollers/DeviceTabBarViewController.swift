@@ -58,6 +58,12 @@ class DeviceTabBarViewController: UITabBarController {
                 }
             }
         }
+        
+        #if DEBUG
+        #else
+            // Remove Debug commands view
+            viewControllers?.removeLast()
+        #endif
     }
 
     override func didReceiveMemoryWarning() {
