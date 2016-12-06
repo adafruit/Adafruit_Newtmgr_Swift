@@ -53,7 +53,6 @@ class StackUsageChartView: UIView {
                 let totalColor = chartColors[i%chartColors.count]
                 let usageColor = chartColors[i%chartColors.count].lighter()
                 
-                
                 // Used
                 let rectangleUsed = CGRect(x: offsetX, y: 0, width: usageWidth, height: rect.size.height)
                 context.setFillColor(totalColor.cgColor)

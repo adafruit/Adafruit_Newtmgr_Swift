@@ -8,16 +8,30 @@
 
 import UIKit
 
+protocol TaskViewControllerDelegate: class {
+    func onClickPlayPause()
+    func onTaskDetailWillAppear()
+    func onTaskDetailDidDissapear()
+}
+
 class TaskViewController: UIViewController {
 
     // UI
     @IBOutlet weak var baseTableView: UITableView!
+    @IBOutlet weak var playButton: UIBarButtonItem!
 
     // Data
     fileprivate static let kItemNames = ["Priority", "Task ID", "Runtime", "Context Switches", "Stack Size", "Stack Used", "Last Sanity Check", "Next Sanity Check"]
     private let numberFormatter = NumberFormatter()
 
-    var task: NewtHandler.TaskStats?
+    var task: NewtHandler.TaskStats? {
+        didSet {
+            DispatchQueue.main.async { [weak self] in
+                self?.baseTableView?.reloadData()
+            }
+        }
+    }
+    weak var delegate: TaskViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +41,19 @@ class TaskViewController: UIViewController {
         self.title = task?.name
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        delegate?.onTaskDetailWillAppear()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+       
+        delegate?.onTaskDetailDidDissapear()
+    }
+
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -36,6 +63,15 @@ class TaskViewController: UIViewController {
         let number =  NSNumber(value: value)
         return (numberFormatter.string(from: number) ?? "" )
     }
+    
+    func setPlaying(_ enabled: Bool) {
+        playButton.image = UIImage(named: enabled ? "ic_pause_circle_outline":"ic_play_circle_outline")
+    }
+    
+    @IBAction func onClickPlay(_ sender: Any) {
+        delegate?.onClickPlayPause()
+    }
+    
 }
 
 // MARK: - UITableViewDataSource
@@ -81,7 +117,6 @@ extension TaskViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension TaskViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         
         tableView.deselectRow(at: indexPath, animated: true)
     }

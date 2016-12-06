@@ -16,48 +16,49 @@ class TaksViewController: NewtViewController {
     @IBOutlet weak var baseTableView: UITableView!
     private let refreshControl = UIRefreshControl()
     @IBOutlet weak var playButton: UIBarButtonItem!
-    @IBOutlet weak var chartView: PieChartView!
-    @IBOutlet weak var chartTitleLabel: UILabel!
     @IBOutlet weak var chartContainerView: UIView!
  
     // Data
     fileprivate var taskStats: [NewtHandler.TaskStats]?
-    fileprivate var refreshTimer: MSWeakTimer?
-    fileprivate var isRefreshTimerPaused = true
-    
+    fileprivate var autoRefresh: AutoRefresh!
     fileprivate var chartColors = [UIColor]()
 
     fileprivate var tasksChartViewController: TasksChartViewController?
-    
+    private weak var taskViewController: TaskViewController?
+    fileprivate var selectedTaskIndex: Int?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
 //        baseTableView.contentOffset = CGPoint.zero
         baseTableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)
-        
+
         // Setup table refresh
         refreshControl.addTarget(self, action: #selector(onTableRefresh(_:)), for: UIControlEvents.valueChanged)
         baseTableView.addSubview(refreshControl)
         baseTableView.sendSubview(toBack: refreshControl)
-        
+
         // Pie Chart
         chartColors.append(contentsOf: ChartColorTemplates.colorful())
         chartColors.append(contentsOf: ChartColorTemplates.joyful())
         tasksChartViewController?.chartColors = chartColors
-    
+
+/*
         chartView.rotationAngle = 270-50       // To avoid ugly starting lines
         setupChart()
         chartView.animate(xAxisDuration: 1.4)
-        
-        updateUI()  
+  */
+
+        autoRefresh = AutoRefresh(onFired: refreshTasks)
+        tasksChartViewController?.hideRunTimeDelta(true)
+        updateUI()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-  
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -65,26 +66,29 @@ class TaksViewController: NewtViewController {
             refreshTasks()
         }
         
-        isRefreshTimerPaused = false
+        autoRefresh.isPaused = false
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        isRefreshTimerPaused = true
+        autoRefresh.isPaused = true && taskViewController == nil
     }
     
     deinit {
-        cancelRefreshTimer()
+        autoRefresh.stop()
     }
-
+    
     // MARK: - Navigation
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
         
         if let taskViewController = segue.destination as? TaskViewController, let taskStats = taskStats, let selectedIndex = baseTableView.indexPathForSelectedRow?.row {
+            self.taskViewController = taskViewController
             taskViewController.task = taskStats[selectedIndex]
+            taskViewController.setPlaying(autoRefresh.isStarted)
+            taskViewController.delegate = self
         }
         else if let tasksChartViewController = segue.destination as? TasksChartViewController {
             self.tasksChartViewController = tasksChartViewController
@@ -133,36 +137,15 @@ class TaksViewController: NewtViewController {
     private func setTaskStats(_ taskStats: [NewtHandler.TaskStats]) {
         let sortedTasks = taskStats.sorted(by: {$0.priority < $1.priority})
         self.taskStats = sortedTasks
+        
+        // Update child (if pushed)
+        guard let selectedTaskIndex = selectedTaskIndex else { return }
+        taskViewController?.task = taskStats[selectedTaskIndex]
     }
 
     
-    // MARK: - PieChart
-    private func setupChart() {
-        
-        chartTitleLabel.text = "Stack Size"
-        chartView.legend.enabled = false
-        
-        chartView.chartDescription?.enabled = false
-        //chartView.legend.drawInside = true
-        
-        //chartView.maxAngle = 180                // Half chart
-        //chartView.rotationAngle = 180           // Rotate to make the half on the upper side
-        //chartView.centerTextOffset = CGPoint(x: 0, y: 0)
-        //        chartView.contentScaleFactor = 2.5
-        //chartView.holeRadiusPercent = 0.30
 
-        //chartView.extraTopOffset = 20
-       // chartView.extraBottomOffset = -20
-        
-        chartView.rotationEnabled = true
-        chartView.highlightPerTapEnabled = false
-        // chartView.drawSlicesUnderHoleEnabled = false
-        
-        chartView.entryLabelColor = UIColor.black
-
-        //chartView.usePercentValuesEnabled = true
-    }
-    
+    // MARK: - Charts
     private func updateCharts() {
         // Pie Chart
         // updatePieChart()
@@ -188,6 +171,34 @@ class TaksViewController: NewtViewController {
         tasksChartViewController?.runtimeItems = runtimeItems
         
     }
+/*
+    // MARK: - PieChart
+    private func setupChart() {
+        
+        chartTitleLabel.text = "Stack Size"
+        chartView.legend.enabled = false
+        
+        chartView.chartDescription?.enabled = false
+        //chartView.legend.drawInside = true
+        
+        //chartView.maxAngle = 180                // Half chart
+        //chartView.rotationAngle = 180           // Rotate to make the half on the upper side
+        //chartView.centerTextOffset = CGPoint(x: 0, y: 0)
+        //        chartView.contentScaleFactor = 2.5
+        //chartView.holeRadiusPercent = 0.30
+        
+        //chartView.extraTopOffset = 20
+        // chartView.extraBottomOffset = -20
+        
+        chartView.rotationEnabled = true
+        chartView.highlightPerTapEnabled = false
+        // chartView.drawSlicesUnderHoleEnabled = false
+        
+        chartView.entryLabelColor = UIColor.black
+        
+        //chartView.usePercentValuesEnabled = true
+    }
+    
     
     private func updatePieChart() {
         guard let taskStats = taskStats else {
@@ -235,6 +246,7 @@ class TaksViewController: NewtViewController {
         chartView.data = data
         
     }
+   */
     
     // MARK: - UI
     func onTableRefresh(_ sender: AnyObject) {
@@ -248,34 +260,22 @@ class TaksViewController: NewtViewController {
         updateCharts()
     }
     
-    // MARK: - Actions
+    // MARK: - Auto Refresh
     @IBAction func onClickPlay(_ sender: Any) {
-     
-        if refreshTimer == nil {
-            let kTimeInterval = 0.5
-            isRefreshTimerPaused = false
-            refreshTimer = MSWeakTimer.scheduledTimer(withTimeInterval: kTimeInterval, target: self, selector: #selector(refreshFired), userInfo: nil, repeats: true, dispatchQueue: .main)
-            
+        
+        if !autoRefresh.isStarted {
+            autoRefresh.start()
             playButton.image = UIImage(named: "ic_pause_circle_outline")
+            tasksChartViewController?.hideRunTimeDelta(false)
+            taskViewController?.setPlaying(true)
         }
         else {
+            autoRefresh.stop()
             playButton.image = UIImage(named: "ic_play_circle_outline")
-
-           cancelRefreshTimer()
+            tasksChartViewController?.hideRunTimeDelta(true)
+            taskViewController?.setPlaying(false)            
         }
     }
-    
-    private func cancelRefreshTimer() {
-        refreshTimer?.invalidate()
-        refreshTimer = nil
-    }
-    
-    @objc func refreshFired(timer: MSWeakTimer) {
-        guard !isRefreshTimerPaused else { return }
-        
-        refreshTasks()
-    }
-    
 }
 
 // MARK: - UITableViewDataSource
@@ -287,12 +287,6 @@ extension TaksViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let reuseIdentifier = "TaskCell"
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
-        /*
-        var cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier)
-        if cell == nil {
-            cell = UITableViewCell(style: .default, reuseIdentifier: reuseIdentifier)
-        }
-        */
         return cell
     }
     
@@ -311,7 +305,23 @@ extension TaksViewController: UITableViewDataSource {
 extension TaksViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
+        selectedTaskIndex = indexPath.row
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+}
+
+// MARK: - TaskViewControllerDelegate
+extension TaksViewController: TaskViewControllerDelegate {
+    func onClickPlayPause() {
+        onClickPlay(self)
+    }
+    
+    func onTaskDetailWillAppear() {
+        autoRefresh.isPaused = false
+    }
+    
+    func onTaskDetailDidDissapear() {
+        autoRefresh.isPaused = true && view.window == nil
     }
 }
 

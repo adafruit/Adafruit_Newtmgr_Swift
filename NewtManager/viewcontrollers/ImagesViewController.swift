@@ -278,6 +278,7 @@ class ImagesViewController: NewtViewController {
                 
                 DispatchQueue.main.async {
                     NewtHandler.newtShowErrorAlert(from: context, title: "Set test image failed", error: error!)
+                    context.updateUI()
                 }
                 return
             }

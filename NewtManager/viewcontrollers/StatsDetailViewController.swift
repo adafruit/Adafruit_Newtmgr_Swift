@@ -13,10 +13,12 @@ class StatsDetailViewController: NewtViewController {
     // UI
     @IBOutlet weak var baseTableView: UITableView!
     private let refreshControl = UIRefreshControl()
-    
+    @IBOutlet weak var playButton: UIBarButtonItem!
+ 
     // Data
     fileprivate var stats: [NewtHandler.StatDetails]?
     private let numberFormatter = NumberFormatter()
+    fileprivate var autoRefresh: AutoRefresh!
 
     var statId: String?
     
@@ -25,19 +27,30 @@ class StatsDetailViewController: NewtViewController {
         
         numberFormatter.numberStyle = .decimal
 
-        
         // Setup table refresh
         refreshControl.addTarget(self, action: #selector(onTableRefresh(_:)), for: UIControlEvents.valueChanged)
         baseTableView.addSubview(refreshControl)
         baseTableView.sendSubview(toBack: refreshControl)
+        
+        // AutoRefresh
+        autoRefresh = AutoRefresh(onFired: refreshStat)
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if stats == nil, let statId = statId {
-            refresh(statId: statId)
+        if stats == nil {
+            refreshStat()
         }
+        
+        autoRefresh.isPaused = false
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        autoRefresh.isPaused = true
     }
     
     override func didReceiveMemoryWarning() {
@@ -45,30 +58,23 @@ class StatsDetailViewController: NewtViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
-    
-    
+    deinit {
+        autoRefresh.stop()
+    }
+
     // MARK: - Newt
     override func newtDidBecomeReady() {
         super.newtDidBecomeReady()
         
         // Refresh if no data was previously loaded and view is visible
-        if stats == nil && isViewLoaded && view.window != nil, let statId = statId  {
-            refresh(statId: statId)
+        if stats == nil && isViewLoaded && view.window != nil  {
+            refreshStat()
         }
     }
+
     
-    private func refresh(statId: String) {
-        guard let peripheral = blePeripheral, peripheral.isNewtReady else {
+    private func refreshStat() {
+        guard let peripheral = blePeripheral, peripheral.isNewtReady, let statId = statId else {
             return
         }
         
@@ -110,9 +116,7 @@ class StatsDetailViewController: NewtViewController {
     // MARK: - UI
     func onTableRefresh(_ sender: AnyObject) {
         
-        if let statId = statId {
-            refresh(statId: statId)
-        }
+        refreshStat()
         refreshControl.endRefreshing()
     }
     
@@ -121,6 +125,21 @@ class StatsDetailViewController: NewtViewController {
         baseTableView.reloadData()
     }
     
+    
+    // MARK: - Auto Refresh
+    @IBAction func onClickPlay(_ sender: Any) {
+        
+        if !autoRefresh.isStarted {
+            autoRefresh.start()
+            playButton.image = UIImage(named: "ic_pause_circle_outline")
+            //taskViewController?.setPlaying(true)
+        }
+        else {
+            autoRefresh.stop()
+            playButton.image = UIImage(named: "ic_play_circle_outline")
+            // taskViewController?.setPlaying(false)
+        }
+    }
    
 }
 

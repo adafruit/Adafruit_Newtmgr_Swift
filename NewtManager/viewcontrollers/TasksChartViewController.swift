@@ -13,6 +13,7 @@ class TasksChartViewController: UIViewController {
     @IBOutlet weak var stackUsageChartView: StackUsageChartView!
     @IBOutlet weak var runtimeChartView: RuntimeChartView!
     @IBOutlet weak var runtimeDeltaChartView: RuntimeChartView!
+    @IBOutlet weak var runtimeDeltaLabel: UILabel!
 
     var stackItems: [StackUsage]? {
         get {
@@ -37,11 +38,11 @@ class TasksChartViewController: UIViewController {
             if var deltaValues = deltaValues, let newValue = newValue, deltaValues.count >= newValue.count {
                 for i in 0..<newValue.count {
                     deltaValues[i] = max(0, newValue[i] - deltaValues[i])
-                    DLog("delta: \(deltaValues[i])")
+                    //DLog("delta: \(deltaValues[i])")
                 }
                 
                 runtimeDeltaChartView.items = deltaValues
-                DLog("---")
+                //DLog("---")
             }
             else {
                 runtimeDeltaChartView.items = nil
@@ -83,5 +84,10 @@ class TasksChartViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
+    
+    func hideRunTimeDelta(_ isHidden: Bool) {
+        runtimeDeltaChartView.isHidden = isHidden
+        runtimeDeltaLabel.isHidden = isHidden
+    }
 
 }

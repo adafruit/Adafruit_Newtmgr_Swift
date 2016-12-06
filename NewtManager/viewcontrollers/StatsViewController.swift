@@ -16,28 +16,27 @@ class StatsViewController: NewtViewController {
 
     // Data
     fileprivate var stats: [String]?
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Setup table refresh
         refreshControl.addTarget(self, action: #selector(onTableRefresh(_:)), for: UIControlEvents.valueChanged)
         baseTableView.addSubview(refreshControl)
         baseTableView.sendSubview(toBack: refreshControl)
     }
 
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         if stats == nil {
             refreshStats()
         }
-        
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     
@@ -51,8 +50,6 @@ class StatsViewController: NewtViewController {
         }
     }
 
-
-    
     // MARK: - Newt
     override func newtDidBecomeReady() {
         super.newtDidBecomeReady()
@@ -108,6 +105,9 @@ class StatsViewController: NewtViewController {
         // Reload table
         baseTableView.reloadData()
     }
+    
+  
+
 }
 
 // MARK: - UITableViewDataSource

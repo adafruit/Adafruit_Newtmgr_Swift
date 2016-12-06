@@ -433,7 +433,7 @@ class NewtHandler {
         // Calculate bytes to send
         //let kMaxPacketSize = 56 // 76
         let isFirstPacket = packetOffset == 0
-        let maxPacketSize =  153 - (isFirstPacket ? 7:0)
+        let maxPacketSize =  155 - (isFirstPacket ? 8+7:0)          // TODO: calculate correct maximun packet size
         
         let firmwareSize = firmwareData.count
         let remainingBytes = firmwareSize - packetOffset

@@ -124,13 +124,6 @@ extension NewtHandler {
             var revision: UInt16
             var buildNum: UInt32
             
-            init() {
-                self.major      = 0
-                self.minor      = 0
-                self.revision   = 0
-                self.buildNum   = 0
-            }
-            
             var description: String {
                 return String.init(format: "%d.%d.%d", major, minor, revision)
             }
@@ -170,11 +163,11 @@ extension NewtHandler {
                 //uint16_t _pad2;
                 imgSize = imdata.scanValue(start: 12, length: 4)
                 flags = imdata.scanValue(start: 16, length: 4)
-                ver = imgVersion()
-                ver.major = imdata.scanValue(start: 21, length: 1)
-                ver.minor = imdata.scanValue(start: 22, length: 1)
-                ver.revision = imdata.scanValue(start: 23, length: 2)
-                ver.buildNum = imdata.scanValue(start: 25, length: 4)
+                let major: UInt8 = imdata.scanValue(start: 20, length: 1)
+                let minor: UInt8 = imdata.scanValue(start: 21, length: 1)
+                let revision: UInt16 = imdata.scanValue(start: 22, length: 2)
+                let buildNum: UInt32 = imdata.scanValue(start: 24, length: 4)
+                ver = imgVersion(major: major, minor: minor, revision: revision, buildNum: buildNum)
             }
         }
         
@@ -198,7 +191,7 @@ extension NewtHandler {
         static func readInfo(imageData data: Data) -> (version: imgVersion, hash: Data) {
             var hdr: imgHeader
             var tlv: imgTlv
-            var ver = imgVersion()
+            var ver = imgVersion(major: 0, minor: 0, revision: 0, buildNum: 0)
             var hash = Data()
             var error: Error?
             
