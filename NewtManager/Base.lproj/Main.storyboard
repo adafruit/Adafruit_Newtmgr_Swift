@@ -959,6 +959,7 @@
                                     </label>
                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Ki-Na-OEQ">
                                         <rect key="frame" x="318" y="138" width="51" height="31"/>
+                                        <color key="onTintColor" red="0.0044619552791118622" green="0.47934281826019287" blue="0.99908357858657837" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <connections>
                                             <action selector="onFilterSettingsUnnamedChanged:" destination="tmV-ux-96y" eventType="valueChanged" id="gmD-0o-qnn"/>
                                         </connections>
@@ -978,6 +979,7 @@
                                     </label>
                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="njI-li-JAc">
                                         <rect key="frame" x="318" y="183" width="51" height="31"/>
+                                        <color key="onTintColor" red="0.0044619552791118622" green="0.47934281826019287" blue="0.99908357858657837" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <connections>
                                             <action selector="onFilterSettingsUartChanged:" destination="tmV-ux-96y" eventType="valueChanged" id="PnA-Nm-05B"/>
                                         </connections>
@@ -1038,7 +1040,7 @@
                                         <rect key="frame" x="0.0" y="28" width="375" height="400"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="tMz-xH-IxQ" id="nkF-zz-gXA">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="400"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="399"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="hkl-vv-m7C">
@@ -1373,12 +1375,18 @@
                                     <outlet property="delegate" destination="tmV-ux-96y" id="RD4-cn-pKC"/>
                                 </connections>
                             </tableView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="9Kc-Tp-jFB">
+                                <rect key="frame" x="169" y="322" width="37" height="37"/>
+                                <color key="color" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="ssm-nh-2zH" secondAttribute="trailing" id="9JV-V0-Bsi"/>
                             <constraint firstItem="TSh-Dq-ZT3" firstAttribute="top" secondItem="ssm-nh-2zH" secondAttribute="bottom" id="Dgs-el-I8c"/>
                             <constraint firstItem="3iA-5t-kSF" firstAttribute="leading" secondItem="cxJ-tC-tt4" secondAttribute="leading" id="EJO-Uf-Why"/>
+                            <constraint firstItem="9Kc-Tp-jFB" firstAttribute="centerX" secondItem="ssm-nh-2zH" secondAttribute="centerX" id="Thj-uW-F23"/>
+                            <constraint firstItem="9Kc-Tp-jFB" firstAttribute="top" secondItem="ssm-nh-2zH" secondAttribute="top" constant="20" id="YEf-RJ-05z"/>
                             <constraint firstItem="ssm-nh-2zH" firstAttribute="top" secondItem="3iA-5t-kSF" secondAttribute="bottom" constant="8" id="nue-lV-NEh"/>
                             <constraint firstItem="ssm-nh-2zH" firstAttribute="leading" secondItem="cxJ-tC-tt4" secondAttribute="leading" id="ovs-5E-OYF"/>
                             <constraint firstAttribute="trailing" secondItem="3iA-5t-kSF" secondAttribute="trailing" id="qzH-4y-Uqf"/>
@@ -1398,6 +1406,7 @@
                         <outlet property="filtersTitleLabel" destination="daH-Yc-1CE" id="lS6-1H-iJ9"/>
                         <outlet property="filtersUartSwitch" destination="njI-li-JAc" id="p75-j3-VD6"/>
                         <outlet property="filtersUnnamedSwitch" destination="9Ki-Na-OEQ" id="Do7-VJ-RI6"/>
+                        <outlet property="scanningWaitView" destination="9Kc-Tp-jFB" id="0f3-1D-gLx"/>
                         <segue destination="ynT-P4-Vze" kind="show" identifier="showDetailSegue" id="Y6f-zB-aTE"/>
                     </connections>
                 </viewController>

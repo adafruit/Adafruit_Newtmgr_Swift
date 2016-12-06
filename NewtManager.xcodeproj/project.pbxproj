@@ -223,9 +223,9 @@
 			isa = PBXGroup;
 			children = (
 				A94F25731DF0936500F46930 /* BleManager.swift */,
+				A94F25761DF0936500F46930 /* BlePeripheral.swift */,
 				A94F25741DF0936500F46930 /* BlePeripheral+Newt.swift */,
 				A94F25751DF0936500F46930 /* BlePeripheral+Uart.swift */,
-				A94F25761DF0936500F46930 /* BlePeripheral.swift */,
 				A94F25771DF0936500F46930 /* Sensor.swift */,
 				A94F25781DF0936500F46930 /* UartLogManager.swift */,
 				A94F25791DF0936500F46930 /* UartManager.swift */,

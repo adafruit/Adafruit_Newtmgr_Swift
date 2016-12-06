@@ -25,6 +25,7 @@ class ScannerViewController: UIViewController {
     @IBOutlet weak var filterRssiValueLabel: UILabel!
     @IBOutlet weak var filtersUnnamedSwitch: UISwitch!
     @IBOutlet weak var filtersUartSwitch: UISwitch!
+    @IBOutlet weak var scanningWaitView: UIView!
 
     // Data
     private let refreshControl = UIRefreshControl()
@@ -118,6 +119,14 @@ class ScannerViewController: UIViewController {
     }
     
     private func didDiscoverPeripheral(notification: Notification) {
+        /*
+        #if DEBUG
+            let peripheralUuid = notification.userInfo?[BleManager.NotificationUserInfoKey.uuid.rawValue] as? UUID
+            let peripheral = BleManager.sharedInstance.peripherals().first(where: {$0.identifier == peripheralUuid})
+            DLog("didDiscoverPeripheral: \(peripheral?.name ?? "")")
+        #endif
+          */
+        
         // Update current scanning state
         updateScannedPeripherals()
     }
@@ -265,7 +274,6 @@ class ScannerViewController: UIViewController {
         filtersUartSwitch.isOn = peripheralList.isOnlyUartEnabled
         updateFilters()
     }
-
     
     // MARK: - UI
     private func updateScannedPeripherals() {
@@ -275,6 +283,7 @@ class ScannerViewController: UIViewController {
         
         // Select the previously selected row
         let peripherals = peripheralList.filteredPeripherals(forceUpdate: false)
+        scanningWaitView.isHidden = peripherals.count > 0
         if let selectedPeripheral = selectedPeripheral, let selectedRow = peripherals.index(of: selectedPeripheral) {
             baseTableView.selectRow(at: IndexPath(row: selectedRow, section: 0), animated: false, scrollPosition: .none)
         }
