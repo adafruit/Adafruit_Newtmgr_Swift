@@ -25,12 +25,11 @@ class TaksViewController: NewtViewController {
 
     fileprivate var tasksChartViewController: TasksChartViewController?
     private weak var taskViewController: TaskViewController?
-    fileprivate var selectedTaskIndex: Int?
+    fileprivate var selectedTaskId: UInt?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        baseTableView.contentOffset = CGPoint.zero
         baseTableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)
 
         // Setup table refresh
@@ -139,8 +138,8 @@ class TaksViewController: NewtViewController {
         self.taskStats = sortedTasks
         
         // Update child (if pushed)
-        guard let selectedTaskIndex = selectedTaskIndex else { return }
-        taskViewController?.task = taskStats[selectedTaskIndex]
+        guard let selectedTaskId = selectedTaskId, let task = taskStats.first(where: {$0.taskId == selectedTaskId}) else { return }
+        taskViewController?.task = task
     }
 
     
@@ -262,7 +261,7 @@ class TaksViewController: NewtViewController {
     
     // MARK: - Auto Refresh
     @IBAction func onClickPlay(_ sender: Any) {
-        
+
         if !autoRefresh.isStarted {
             autoRefresh.start()
             playButton.image = UIImage(named: "ic_pause_circle_outline")
@@ -304,8 +303,8 @@ extension TaksViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension TaksViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
-        selectedTaskIndex = indexPath.row
+        
+        selectedTaskId = taskStats?[indexPath.row].taskId
         tableView.deselectRow(at: indexPath, animated: true)
     }
 }

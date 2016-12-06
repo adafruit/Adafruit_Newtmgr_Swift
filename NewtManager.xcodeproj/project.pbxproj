@@ -148,11 +148,11 @@
 		A94A90781DF6FE6C0030398F /* tasks */ = {
 			isa = PBXGroup;
 			children = (
-				A94A90791DF6FE6C0030398F /* RuntimeChartView.swift */,
-				A94A907A1DF6FE6C0030398F /* StackUsageChartView.swift */,
-				A94A907B1DF6FE6C0030398F /* TasksChartViewController.swift */,
-				A94A907C1DF6FE6C0030398F /* TasksTableViewCell.swift */,
 				A94A907D1DF6FE6C0030398F /* TasksViewController.swift */,
+				A94A907C1DF6FE6C0030398F /* TasksTableViewCell.swift */,
+				A94A907B1DF6FE6C0030398F /* TasksChartViewController.swift */,
+				A94A907A1DF6FE6C0030398F /* StackUsageChartView.swift */,
+				A94A90791DF6FE6C0030398F /* RuntimeChartView.swift */,
 				A94A907E1DF6FE6C0030398F /* TaskViewController.swift */,
 			);
 			path = tasks;
@@ -271,9 +271,9 @@
 				A9FACDA81DB2AE0F00061E70 /* DeviceTabBarViewController.swift */,
 				A9FACDAA1DB2AE3000061E70 /* NewtViewController.swift */,
 				A95CE57A1DB68252008C234E /* CommandsViewController.swift */,
+				A94A90781DF6FE6C0030398F /* tasks */,
 				A94A90711DF6FE6C0030398F /* images */,
 				A94A90751DF6FE6C0030398F /* stats */,
-				A94A90781DF6FE6C0030398F /* tasks */,
 			);
 			path = viewcontrollers;
 			sourceTree = "<group>";
