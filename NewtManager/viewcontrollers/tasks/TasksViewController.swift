@@ -145,13 +145,17 @@ class TaksViewController: NewtViewController {
 
     // MARK: - Charts
     private func updateCharts() {
+        guard let taskStats = taskStats else {
+            chartContainerView.isHidden = true
+            return
+        }
+        chartContainerView.isHidden = false
+        
         // Pie Chart
         // updatePieChart()
         
         
-        // Stcak Usage Chart
-        guard let taskStats = taskStats else { return }
-        
+        // Stack Usage Chart
         var stackItems: [StackUsage] = []
         var runtimeItems: [UInt] = []
         for task in taskStats {

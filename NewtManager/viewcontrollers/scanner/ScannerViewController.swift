@@ -11,7 +11,7 @@ import UIKit
 class ScannerViewController: UIViewController {
     // Config
     static let kFiltersPanelClosedHeight: CGFloat = 44
-    static let kFiltersPanelOpenHeight: CGFloat = 226
+    static let kFiltersPanelOpenHeight: CGFloat = 180 // 226
     
     // UI
     @IBOutlet weak var baseTableView: UITableView!
@@ -24,7 +24,7 @@ class ScannerViewController: UIViewController {
     @IBOutlet weak var filtersRssiSlider: UISlider!
     @IBOutlet weak var filterRssiValueLabel: UILabel!
     @IBOutlet weak var filtersUnnamedSwitch: UISwitch!
-    @IBOutlet weak var filtersUartSwitch: UISwitch!
+//    @IBOutlet weak var filtersUartSwitch: UISwitch!
     @IBOutlet weak var scanningWaitView: UIView!
 
     // Data
@@ -70,7 +70,7 @@ class ScannerViewController: UIViewController {
         filtersNameTextField.text = peripheralList.filterName ?? ""
         setRssiSlider(value: peripheralList.rssiFilterValue)
         filtersUnnamedSwitch.isOn = peripheralList.isUnnamedEnabled
-        filtersUartSwitch.isOn = peripheralList.isOnlyUartEnabled
+        //filtersUartSwitch.isOn = peripheralList.isOnlyUartEnabled
         
         // Ble Notifications
         registerNotifications(enabled: true)
@@ -174,6 +174,7 @@ class ScannerViewController: UIViewController {
     
     // MARK: - Navigation
     fileprivate func showPeripheralDetails() {
+        // Segue
         performSegue(withIdentifier: "showDetailSegue", sender: self)
     }
     
@@ -185,18 +186,22 @@ class ScannerViewController: UIViewController {
         if let viewController = segue.destination as? DeviceTabBarViewController {
             viewController.blePeripheral = selectedPeripheral
         }
-        else  if segue.identifier == "filterNameSettingsSegue"  {
-            if let controller = segue.destination.popoverPresentationController {
-                controller.delegate = self
-                
-                let filterNameSettingsViewController = segue.destination as! FilterTextSettingsViewController
-                filterNameSettingsViewController.peripheralList = peripheralList
-                filterNameSettingsViewController.onSettingsChanged = { [unowned self] in
-                    self.updateFilters()
-                }
+        else if segue.identifier == "filterNameSettingsSegue", let controller = segue.destination.popoverPresentationController  {
+            controller.delegate = self
+
+            if let sourceView = sender as? UIView {
+                // Fix centering on iOS9, iOS10: http://stackoverflow.com/questions/30064595/popover-doesnt-center-on-button
+                controller.sourceRect = sourceView.bounds
             }
+
+            
+            let filterNameSettingsViewController = segue.destination as! FilterTextSettingsViewController
+            filterNameSettingsViewController.peripheralList = peripheralList
+            filterNameSettingsViewController.onSettingsChanged = { [unowned self] in
+                self.updateFilters()
+            }
+            
         }
-        
     }
     
     // MARK: - Filters
@@ -271,8 +276,13 @@ class ScannerViewController: UIViewController {
         filtersNameTextField.text = peripheralList.filterName ?? ""
         setRssiSlider(value: peripheralList.rssiFilterValue)
         filtersUnnamedSwitch.isOn = peripheralList.isUnnamedEnabled
-        filtersUartSwitch.isOn = peripheralList.isOnlyUartEnabled
+//        filtersUartSwitch.isOn = peripheralList.isOnlyUartEnabled
         updateFilters()
+    }
+    
+    
+    @IBAction func onClickFilterNameSettings(_ sender: Any) {
+        performSegue(withIdentifier: "filterNameSettingsSegue", sender: sender)
     }
     
     // MARK: - UI
@@ -312,9 +322,10 @@ extension ScannerViewController: UITableViewDataSource {
         peripheralCell.connectButton.isHidden = true
         peripheralCell.accessoryType = .disclosureIndicator
         
+        /*
         peripheralCell.onConnect = { [unowned self] in
             self.showPeripheralDetails()
-        }
+        }*/
         
         // Detail Subview
         let isDetailViewOpen = false //row == tableRowOpen
@@ -331,8 +342,11 @@ extension ScannerViewController: UITableViewDataSource {
 extension ScannerViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        // Dismiss keyboard
+        filtersNameTextField.resignFirstResponder()
+        
+        // Connect to selected peripheral
         let peripheral = peripheralList.filteredPeripherals(forceUpdate: false)[indexPath.row]
-
         selectedPeripheral = peripheral
         BleManager.sharedInstance.connect(to: peripheral)
     }
@@ -341,8 +355,8 @@ extension ScannerViewController: UITableViewDelegate {
 // MARK: - UIPopoverPresentationControllerDelegate
 extension ScannerViewController: UIPopoverPresentationControllerDelegate {
     
-    func adaptivePresentationStyleForPresentationController(PC: UIPresentationController) -> UIModalPresentationStyle {
-        // This *forces* a popover to be displayed on the iPhone
+    func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+        // This forces a popover to be displayed on the iPhone
         if traitCollection.verticalSizeClass != .compact {
             return .none
         }
@@ -353,5 +367,13 @@ extension ScannerViewController: UIPopoverPresentationControllerDelegate {
     
     func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
         DLog("selector dismissed")
+    }
+}
+
+// MARK: - UITextFieldDelegate
+extension ScannerViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }

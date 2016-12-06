@@ -81,9 +81,10 @@ class PeripheralList {
         var peripherals = BleManager.sharedInstance.peripherals().sorted(by: {$0.name ?? kUnnamedSortingString < $1.name ?? kUnnamedSortingString})
         
         // Apply filters
+        /*
         if isOnlyUartEnabled {
             peripherals = peripherals.filter({$0.isUartAdvertised()})
-        }
+        }*/
         
         if !isUnnamedEnabled {
             peripherals = peripherals.filter({$0.name != nil})

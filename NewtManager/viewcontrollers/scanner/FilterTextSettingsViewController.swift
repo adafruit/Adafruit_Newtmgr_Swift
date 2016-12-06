@@ -12,7 +12,7 @@ class FilterTextSettingsViewController: UIViewController {
 
     @IBOutlet weak var baseTableView: UITableView!
     
-    weak var peripheralList: PeripheralList!
+    weak var peripheralList: PeripheralList?
     var onSettingsChanged: (()->())?
     
     override func viewDidLoad() {
@@ -55,17 +55,19 @@ extension FilterTextSettingsViewController: UITableViewDataSource {
         var title: String
         var accesoryType: UITableViewCellAccessoryType
         
-        switch indexPath.section {
-        case 0:
-            title = row == 0 ? "Name contains" : "Name equals"
-            accesoryType = (row == 0 && !peripheralList.isFilterNameExact) || (row == 1 && peripheralList.isFilterNameExact) ? .checkmark : .none
-        default:
-            title = row == 0 ? "Matching case" : "Ignoring case"
-            accesoryType = (row == 0 && !peripheralList.isFilterNameCaseInsensitive) || (row == 1 && peripheralList.isFilterNameCaseInsensitive) ? .checkmark : .none
+        if let peripheralList = peripheralList {
+            switch indexPath.section {
+            case 0:
+                title = row == 0 ? "Name contains" : "Name equals"
+                accesoryType = (row == 0 && !peripheralList.isFilterNameExact) || (row == 1 && peripheralList.isFilterNameExact) ? .checkmark : .none
+            default:
+                title = row == 0 ? "Matching case" : "Ignoring case"
+                accesoryType = (row == 0 && !peripheralList.isFilterNameCaseInsensitive) || (row == 1 && peripheralList.isFilterNameCaseInsensitive) ? .checkmark : .none
+            }
+            
+            cell!.textLabel?.text = title
+            cell!.accessoryType = accesoryType
         }
-        
-        cell!.textLabel?.text = title
-        cell!.accessoryType = accesoryType
         
         return cell!
     }
@@ -74,6 +76,8 @@ extension FilterTextSettingsViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension FilterTextSettingsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let peripheralList = peripheralList else { return }
+        
         let row = indexPath.row
         switch indexPath.section {
         case 0:
