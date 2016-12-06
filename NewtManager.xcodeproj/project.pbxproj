@@ -8,9 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		620781DE7336F4A748F2B17B /* Pods_NewtManager.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22A1C0FEAE5AF77CC589BD13 /* Pods_NewtManager.framework */; };
-		A92CC7461DB52083002124EF /* UploadProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92CC7451DB52083002124EF /* UploadProgressViewController.swift */; };
 		A946D0D91DB31E0400D731B2 /* firmware in Resources */ = {isa = PBXBuildFile; fileRef = A946D0D81DB31E0400D731B2 /* firmware */; };
 		A94A906A1DF64CF90030398F /* AutoRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94A90691DF64CF90030398F /* AutoRefresh.swift */; };
+		A94A907F1DF6FE6C0030398F /* ImageSlotTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94A90721DF6FE6C0030398F /* ImageSlotTableViewCell.swift */; };
+		A94A90801DF6FE6C0030398F /* ImagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94A90731DF6FE6C0030398F /* ImagesViewController.swift */; };
+		A94A90811DF6FE6C0030398F /* UploadProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94A90741DF6FE6C0030398F /* UploadProgressViewController.swift */; };
+		A94A90821DF6FE6C0030398F /* StatsDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94A90761DF6FE6C0030398F /* StatsDetailViewController.swift */; };
+		A94A90831DF6FE6C0030398F /* StatsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94A90771DF6FE6C0030398F /* StatsViewController.swift */; };
+		A94A90841DF6FE6C0030398F /* RuntimeChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94A90791DF6FE6C0030398F /* RuntimeChartView.swift */; };
+		A94A90851DF6FE6C0030398F /* StackUsageChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94A907A1DF6FE6C0030398F /* StackUsageChartView.swift */; };
+		A94A90861DF6FE6C0030398F /* TasksChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94A907B1DF6FE6C0030398F /* TasksChartViewController.swift */; };
+		A94A90871DF6FE6C0030398F /* TasksTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94A907C1DF6FE6C0030398F /* TasksTableViewCell.swift */; };
+		A94A90881DF6FE6C0030398F /* TasksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94A907D1DF6FE6C0030398F /* TasksViewController.swift */; };
+		A94A90891DF6FE6C0030398F /* TaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94A907E1DF6FE6C0030398F /* TaskViewController.swift */; };
 		A94F256A1DF0448D00F46930 /* CBOR.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F25661DF0448D00F46930 /* CBOR.swift */; };
 		A94F256B1DF0448D00F46930 /* CBORDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F25671DF0448D00F46930 /* CBORDecoder.swift */; };
 		A94F256C1DF0448D00F46930 /* CBORInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F25681DF0448D00F46930 /* CBORInputStream.swift */; };
@@ -29,25 +39,15 @@
 		A94F258A1DF0936500F46930 /* DataConversions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F257E1DF0936500F46930 /* DataConversions.swift */; };
 		A94F258B1DF0936500F46930 /* LogHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F257F1DF0936500F46930 /* LogHelper.swift */; };
 		A94F25901DF1A26C00F46930 /* NewtHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F258F1DF1A26C00F46930 /* NewtHandler.swift */; };
-		A94F25951DF1ACC300F46930 /* ImageSlotTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F25941DF1ACC300F46930 /* ImageSlotTableViewCell.swift */; };
 		A950EB021DB00351005FC305 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB011DB00351005FC305 /* AppDelegate.swift */; };
 		A950EB071DB00351005FC305 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A950EB051DB00351005FC305 /* Main.storyboard */; };
 		A950EB091DB00351005FC305 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A950EB081DB00351005FC305 /* Assets.xcassets */; };
 		A950EB0C1DB00351005FC305 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A950EB0A1DB00351005FC305 /* LaunchScreen.storyboard */; };
 		A950EB1C1DB01424005FC305 /* ScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB1B1DB01424005FC305 /* ScannerViewController.swift */; };
 		A950EB201DB04C6F005FC305 /* MainNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB1F1DB04C6F005FC305 /* MainNavigationViewController.swift */; };
-		A950EB221DB0534D005FC305 /* TasksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB211DB0534D005FC305 /* TasksViewController.swift */; };
 		A95CE57B1DB68252008C234E /* CommandsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95CE57A1DB68252008C234E /* CommandsViewController.swift */; };
-		A991712E1DF5E18B00CB8C5D /* StackUsageChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A991712D1DF5E18B00CB8C5D /* StackUsageChartView.swift */; };
-		A99171301DF5E34B00CB8C5D /* TasksChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A991712F1DF5E34B00CB8C5D /* TasksChartViewController.swift */; };
 		A99171321DF5EE6F00CB8C5D /* UIColor+LighterDarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99171311DF5EE6F00CB8C5D /* UIColor+LighterDarker.swift */; };
-		A99171341DF6041A00CB8C5D /* RuntimeChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99171331DF6041A00CB8C5D /* RuntimeChartView.swift */; };
-		A995CDB51DF2511300A5291B /* TasksTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A995CDB41DF2511300A5291B /* TasksTableViewCell.swift */; };
-		A995CDB71DF25D6600A5291B /* TaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A995CDB61DF25D6600A5291B /* TaskViewController.swift */; };
-		A9E707A11DF2D90500E1B1D8 /* StatsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E707A01DF2D90500E1B1D8 /* StatsViewController.swift */; };
-		A9E707A31DF2F55C00E1B1D8 /* StatsDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E707A21DF2F55C00E1B1D8 /* StatsDetailViewController.swift */; };
 		A9E707A51DF335E500E1B1D8 /* NewtHandler+Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E707A41DF335E500E1B1D8 /* NewtHandler+Types.swift */; };
-		A9EB79D11DB2FD9A00635A6D /* ImagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EB79D01DB2FD9A00635A6D /* ImagesViewController.swift */; };
 		A9FACDA91DB2AE0F00061E70 /* DeviceTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FACDA81DB2AE0F00061E70 /* DeviceTabBarViewController.swift */; };
 		A9FACDAB1DB2AE3000061E70 /* NewtViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FACDAA1DB2AE3000061E70 /* NewtViewController.swift */; };
 /* End PBXBuildFile section */
@@ -56,9 +56,19 @@
 		22A1C0FEAE5AF77CC589BD13 /* Pods_NewtManager.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NewtManager.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		248D6317AE0B051C55E9F7D9 /* Pods-NewtManager.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NewtManager.release.xcconfig"; path = "Pods/Target Support Files/Pods-NewtManager/Pods-NewtManager.release.xcconfig"; sourceTree = "<group>"; };
 		2F6D5EE2A6A578F5257A3873 /* Pods-NewtManager.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NewtManager.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NewtManager/Pods-NewtManager.debug.xcconfig"; sourceTree = "<group>"; };
-		A92CC7451DB52083002124EF /* UploadProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadProgressViewController.swift; sourceTree = "<group>"; };
 		A946D0D81DB31E0400D731B2 /* firmware */ = {isa = PBXFileReference; lastKnownFileType = folder; path = firmware; sourceTree = "<group>"; };
 		A94A90691DF64CF90030398F /* AutoRefresh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoRefresh.swift; sourceTree = "<group>"; };
+		A94A90721DF6FE6C0030398F /* ImageSlotTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSlotTableViewCell.swift; sourceTree = "<group>"; };
+		A94A90731DF6FE6C0030398F /* ImagesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagesViewController.swift; sourceTree = "<group>"; };
+		A94A90741DF6FE6C0030398F /* UploadProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadProgressViewController.swift; sourceTree = "<group>"; };
+		A94A90761DF6FE6C0030398F /* StatsDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatsDetailViewController.swift; sourceTree = "<group>"; };
+		A94A90771DF6FE6C0030398F /* StatsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatsViewController.swift; sourceTree = "<group>"; };
+		A94A90791DF6FE6C0030398F /* RuntimeChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuntimeChartView.swift; sourceTree = "<group>"; };
+		A94A907A1DF6FE6C0030398F /* StackUsageChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StackUsageChartView.swift; sourceTree = "<group>"; };
+		A94A907B1DF6FE6C0030398F /* TasksChartViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksChartViewController.swift; sourceTree = "<group>"; };
+		A94A907C1DF6FE6C0030398F /* TasksTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksTableViewCell.swift; sourceTree = "<group>"; };
+		A94A907D1DF6FE6C0030398F /* TasksViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksViewController.swift; sourceTree = "<group>"; };
+		A94A907E1DF6FE6C0030398F /* TaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskViewController.swift; sourceTree = "<group>"; };
 		A94F25661DF0448D00F46930 /* CBOR.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBOR.swift; sourceTree = "<group>"; };
 		A94F25671DF0448D00F46930 /* CBORDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBORDecoder.swift; sourceTree = "<group>"; };
 		A94F25681DF0448D00F46930 /* CBORInputStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBORInputStream.swift; sourceTree = "<group>"; };
@@ -78,7 +88,6 @@
 		A94F257E1DF0936500F46930 /* DataConversions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataConversions.swift; sourceTree = "<group>"; };
 		A94F257F1DF0936500F46930 /* LogHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogHelper.swift; sourceTree = "<group>"; };
 		A94F258F1DF1A26C00F46930 /* NewtHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewtHandler.swift; sourceTree = "<group>"; };
-		A94F25941DF1ACC300F46930 /* ImageSlotTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSlotTableViewCell.swift; sourceTree = "<group>"; };
 		A950EAFE1DB00351005FC305 /* NewtManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewtManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A950EB011DB00351005FC305 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A950EB061DB00351005FC305 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -87,21 +96,12 @@
 		A950EB0D1DB00351005FC305 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A950EB1B1DB01424005FC305 /* ScannerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScannerViewController.swift; sourceTree = "<group>"; };
 		A950EB1F1DB04C6F005FC305 /* MainNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainNavigationViewController.swift; sourceTree = "<group>"; };
-		A950EB211DB0534D005FC305 /* TasksViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksViewController.swift; sourceTree = "<group>"; };
 		A95CE57A1DB68252008C234E /* CommandsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandsViewController.swift; sourceTree = "<group>"; };
 		A95CE57E1DB6BB48008C234E /* NewtManager.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NewtManager.entitlements; sourceTree = "<group>"; };
 		A98F88FC1DEB4FDC00DD8800 /* NewtManager-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NewtManager-Bridging-Header.h"; sourceTree = "<group>"; };
-		A991712D1DF5E18B00CB8C5D /* StackUsageChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StackUsageChartView.swift; sourceTree = "<group>"; };
-		A991712F1DF5E34B00CB8C5D /* TasksChartViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksChartViewController.swift; sourceTree = "<group>"; };
 		A99171311DF5EE6F00CB8C5D /* UIColor+LighterDarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+LighterDarker.swift"; sourceTree = "<group>"; };
-		A99171331DF6041A00CB8C5D /* RuntimeChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuntimeChartView.swift; sourceTree = "<group>"; };
-		A995CDB41DF2511300A5291B /* TasksTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksTableViewCell.swift; sourceTree = "<group>"; };
-		A995CDB61DF25D6600A5291B /* TaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskViewController.swift; sourceTree = "<group>"; };
 		A9A5EC551DB1253700566005 /* Synchronize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Synchronize.swift; sourceTree = "<group>"; };
-		A9E707A01DF2D90500E1B1D8 /* StatsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatsViewController.swift; sourceTree = "<group>"; };
-		A9E707A21DF2F55C00E1B1D8 /* StatsDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatsDetailViewController.swift; sourceTree = "<group>"; };
 		A9E707A41DF335E500E1B1D8 /* NewtHandler+Types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NewtHandler+Types.swift"; sourceTree = "<group>"; };
-		A9EB79D01DB2FD9A00635A6D /* ImagesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagesViewController.swift; sourceTree = "<group>"; };
 		A9FACDA81DB2AE0F00061E70 /* DeviceTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceTabBarViewController.swift; sourceTree = "<group>"; };
 		A9FACDAA1DB2AE3000061E70 /* NewtViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewtViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -124,6 +124,38 @@
 				A946D0D81DB31E0400D731B2 /* firmware */,
 			);
 			path = resources;
+			sourceTree = "<group>";
+		};
+		A94A90711DF6FE6C0030398F /* images */ = {
+			isa = PBXGroup;
+			children = (
+				A94A90721DF6FE6C0030398F /* ImageSlotTableViewCell.swift */,
+				A94A90731DF6FE6C0030398F /* ImagesViewController.swift */,
+				A94A90741DF6FE6C0030398F /* UploadProgressViewController.swift */,
+			);
+			path = images;
+			sourceTree = "<group>";
+		};
+		A94A90751DF6FE6C0030398F /* stats */ = {
+			isa = PBXGroup;
+			children = (
+				A94A90761DF6FE6C0030398F /* StatsDetailViewController.swift */,
+				A94A90771DF6FE6C0030398F /* StatsViewController.swift */,
+			);
+			path = stats;
+			sourceTree = "<group>";
+		};
+		A94A90781DF6FE6C0030398F /* tasks */ = {
+			isa = PBXGroup;
+			children = (
+				A94A90791DF6FE6C0030398F /* RuntimeChartView.swift */,
+				A94A907A1DF6FE6C0030398F /* StackUsageChartView.swift */,
+				A94A907B1DF6FE6C0030398F /* TasksChartViewController.swift */,
+				A94A907C1DF6FE6C0030398F /* TasksTableViewCell.swift */,
+				A94A907D1DF6FE6C0030398F /* TasksViewController.swift */,
+				A94A907E1DF6FE6C0030398F /* TaskViewController.swift */,
+			);
+			path = tasks;
 			sourceTree = "<group>";
 		};
 		A94F25651DF0448D00F46930 /* CBOR */ = {
@@ -239,17 +271,9 @@
 				A9FACDA81DB2AE0F00061E70 /* DeviceTabBarViewController.swift */,
 				A9FACDAA1DB2AE3000061E70 /* NewtViewController.swift */,
 				A95CE57A1DB68252008C234E /* CommandsViewController.swift */,
-				A9EB79D01DB2FD9A00635A6D /* ImagesViewController.swift */,
-				A94F25941DF1ACC300F46930 /* ImageSlotTableViewCell.swift */,
-				A92CC7451DB52083002124EF /* UploadProgressViewController.swift */,
-				A950EB211DB0534D005FC305 /* TasksViewController.swift */,
-				A991712F1DF5E34B00CB8C5D /* TasksChartViewController.swift */,
-				A991712D1DF5E18B00CB8C5D /* StackUsageChartView.swift */,
-				A99171331DF6041A00CB8C5D /* RuntimeChartView.swift */,
-				A995CDB41DF2511300A5291B /* TasksTableViewCell.swift */,
-				A995CDB61DF25D6600A5291B /* TaskViewController.swift */,
-				A9E707A01DF2D90500E1B1D8 /* StatsViewController.swift */,
-				A9E707A21DF2F55C00E1B1D8 /* StatsDetailViewController.swift */,
+				A94A90711DF6FE6C0030398F /* images */,
+				A94A90751DF6FE6C0030398F /* stats */,
+				A94A90781DF6FE6C0030398F /* tasks */,
 			);
 			path = viewcontrollers;
 			sourceTree = "<group>";
@@ -405,44 +429,44 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A950EB221DB0534D005FC305 /* TasksViewController.swift in Sources */,
 				A94F25841DF0936500F46930 /* Sensor.swift in Sources */,
-				A9E707A11DF2D90500E1B1D8 /* StatsViewController.swift in Sources */,
-				A995CDB71DF25D6600A5291B /* TaskViewController.swift in Sources */,
 				A94A906A1DF64CF90030398F /* AutoRefresh.swift in Sources */,
+				A94A90831DF6FE6C0030398F /* StatsViewController.swift in Sources */,
 				A9E707A51DF335E500E1B1D8 /* NewtHandler+Types.swift in Sources */,
 				A9FACDA91DB2AE0F00061E70 /* DeviceTabBarViewController.swift in Sources */,
 				A94F25801DF0936500F46930 /* BleManager.swift in Sources */,
 				A94F258B1DF0936500F46930 /* LogHelper.swift in Sources */,
-				A995CDB51DF2511300A5291B /* TasksTableViewCell.swift in Sources */,
 				A94F25701DF0452700F46930 /* CBOREncoder.swift in Sources */,
 				A99171321DF5EE6F00CB8C5D /* UIColor+LighterDarker.swift in Sources */,
 				A950EB201DB04C6F005FC305 /* MainNavigationViewController.swift in Sources */,
 				A94F256B1DF0448D00F46930 /* CBORDecoder.swift in Sources */,
-				A991712E1DF5E18B00CB8C5D /* StackUsageChartView.swift in Sources */,
 				A950EB021DB00351005FC305 /* AppDelegate.swift in Sources */,
+				A94A90871DF6FE6C0030398F /* TasksTableViewCell.swift in Sources */,
+				A94A90851DF6FE6C0030398F /* StackUsageChartView.swift in Sources */,
+				A94A907F1DF6FE6C0030398F /* ImageSlotTableViewCell.swift in Sources */,
 				A94F25871DF0936500F46930 /* AlertUtils.swift in Sources */,
-				A99171301DF5E34B00CB8C5D /* TasksChartViewController.swift in Sources */,
+				A94A90861DF6FE6C0030398F /* TasksChartViewController.swift in Sources */,
+				A94A90801DF6FE6C0030398F /* ImagesViewController.swift in Sources */,
+				A94A90811DF6FE6C0030398F /* UploadProgressViewController.swift in Sources */,
 				A94F258A1DF0936500F46930 /* DataConversions.swift in Sources */,
 				A94F25861DF0936500F46930 /* UartManager.swift in Sources */,
 				A94F25851DF0936500F46930 /* UartLogManager.swift in Sources */,
 				A94F256C1DF0448D00F46930 /* CBORInputStream.swift in Sources */,
 				A94F25901DF1A26C00F46930 /* NewtHandler.swift in Sources */,
 				A94F25881DF0936500F46930 /* CommandQueue.swift in Sources */,
+				A94A90891DF6FE6C0030398F /* TaskViewController.swift in Sources */,
 				A94F25821DF0936500F46930 /* BlePeripheral+Uart.swift in Sources */,
 				A94F25891DF0936500F46930 /* Data+ScanValue.swift in Sources */,
 				A94F256A1DF0448D00F46930 /* CBOR.swift in Sources */,
 				A9FACDAB1DB2AE3000061E70 /* NewtViewController.swift in Sources */,
-				A9E707A31DF2F55C00E1B1D8 /* StatsDetailViewController.swift in Sources */,
-				A9EB79D11DB2FD9A00635A6D /* ImagesViewController.swift in Sources */,
 				A94F25811DF0936500F46930 /* BlePeripheral+Newt.swift in Sources */,
-				A94F25951DF1ACC300F46930 /* ImageSlotTableViewCell.swift in Sources */,
+				A94A90881DF6FE6C0030398F /* TasksViewController.swift in Sources */,
 				A94F25831DF0936500F46930 /* BlePeripheral.swift in Sources */,
 				A95CE57B1DB68252008C234E /* CommandsViewController.swift in Sources */,
-				A92CC7461DB52083002124EF /* UploadProgressViewController.swift in Sources */,
+				A94A90841DF6FE6C0030398F /* RuntimeChartView.swift in Sources */,
+				A94A90821DF6FE6C0030398F /* StatsDetailViewController.swift in Sources */,
 				A950EB1C1DB01424005FC305 /* ScannerViewController.swift in Sources */,
 				A94F256D1DF0448D00F46930 /* Util.swift in Sources */,
-				A99171341DF6041A00CB8C5D /* RuntimeChartView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
