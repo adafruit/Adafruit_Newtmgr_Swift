@@ -16,7 +16,7 @@ extension BlePeripheral {
     static let kUartRxCharacteristicUUID =  CBUUID(string: "6e400003-b5a3-f393-e0a9-e50e24dcca9e")
     private static let kUartTxMaxBytes = 20
     private static let kUartReplyDefaultTimeout = 2.0               // seconds
-
+    
     // MARK: - Custom properties
     private struct CustomPropertiesKeys {
         static var uartRxCharacteristic: CBCharacteristic?
@@ -51,7 +51,7 @@ extension BlePeripheral {
         }
         
     }
- 
+    
     // MARK: -
     enum UartError: Error {
         case invalidCharacteristic
@@ -90,8 +90,8 @@ extension BlePeripheral {
                     }
                     
                     uartRxHandler?(value, error)
-                    }, completion: { error in
-                        completion?(error != nil ? error : (characteristic.isNotifying ? nil : UartError.enableNotifyFailed))
+                }, completion: { error in
+                    completion?(error != nil ? error : (characteristic.isNotifying ? nil : UartError.enableNotifyFailed))
                 })
             }
         }
@@ -119,7 +119,7 @@ extension BlePeripheral {
         guard let data = data else {
             return
         }
-
+        
         guard let uartTxCharacteristic = uartTxCharacteristic, let uartTxCharacteristicWriteType = uartTxCharacteristicWriteType else {
             DLog("Command Error: characteristic no longer valid")
             completion?(UartError.invalidCharacteristic)
@@ -143,7 +143,7 @@ extension BlePeripheral {
                     
                     UartLogManager.log(data: chunk, type: .uartTx)
                 }
-
+                
                 if offset >= data.count {
                     completion?(error)
                 }
@@ -156,13 +156,13 @@ extension BlePeripheral {
         guard let data = data else {
             return
         }
-
+        
         guard let uartTxCharacteristic = uartTxCharacteristic, let uartTxCharacteristicWriteType = uartTxCharacteristicWriteType, let uartRxCharacteristic = uartRxCharacteristic else {
             DLog("Command Error: characteristic no longer valid")
             writeCompletion?(UartError.invalidCharacteristic)
             return
         }
-
+        
         // Split data  in txmaxcharacters bytes packets
         var offset = 0
         repeat {
@@ -179,13 +179,13 @@ extension BlePeripheral {
                     DLog("uart tx writeAndWait (dec): \(decimalDescription(data: chunk))")
                     DLog("uart tx writeAndWait (utf8): \(String(data: chunk, encoding: .utf8) ?? "<invalid>")")
                 }
- 
+                
                 if offset >= data.count {
                     writeCompletion?(error)
                 }
-
+                
             }, readCharacteristic: uartRxCharacteristic, readTimeout: readTimeout, readCompletion: readCompletion)
-
+            
         } while offset < data.count
     }
     
@@ -201,7 +201,6 @@ extension BlePeripheral {
     }
 }
 
-
 // MARK: - Data + CRC
 extension Data {
     mutating func appendCrc() {
@@ -213,7 +212,7 @@ extension Data {
             crc = crc &+ i
         }
         crc = ~crc  //invert
-
+        
         append(&crc, count: 1)
     }
 }

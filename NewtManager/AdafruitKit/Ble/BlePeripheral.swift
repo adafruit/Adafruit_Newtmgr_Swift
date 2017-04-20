@@ -11,7 +11,10 @@ import CoreBluetooth
 import MSWeakTimer
 
 class BlePeripheral: NSObject {
+    // Config
+    fileprivate static var kProfileCharacteristicUpdates = true
     
+    // Data
     var peripheral: CBPeripheral!
     var advertisementData: [String: Any]!
     var rssi: Int?
@@ -58,6 +61,10 @@ class BlePeripheral: NSObject {
     fileprivate var captureReadHandlers = [CaptureReadHandler]()
     fileprivate var commandQueue = CommandQueue<BleCommand>()
 
+    // Profiling
+    //fileprivate var profileStartTime: CFTimeInterval = 0
+    
+    
     init(peripheral: CBPeripheral, advertisementData: [String: Any]?, rssi: Int?) {
         super.init()
         
@@ -137,7 +144,7 @@ class BlePeripheral: NSObject {
         let characteristic = service.characteristics?.first(where: {$0.uuid == uuid})
         return characteristic
     }
-
+    
     func characteristic(uuid: CBUUID, service: CBService, completion: ((CBCharacteristic?, Error?) -> Void)?) {
         
         if let discoveredCharacteristic = discoveredCharacteristic(uuid: uuid, service: service) {              // Characteristic was already discovered
@@ -153,7 +160,7 @@ class BlePeripheral: NSObject {
             })
         }
     }
-
+    
     func characteristic(uuid: CBUUID, serviceUuid: CBUUID, completion: ((CBCharacteristic?, Error?) -> Void)?) {
         if let discoveredService = discoveredService(uuid: uuid) {                                              // Service was already discovered
             characteristic(uuid: uuid, service: discoveredService, completion: completion)
@@ -186,10 +193,10 @@ class BlePeripheral: NSObject {
     }
 
     func writeAndCaptureNotify(data: Data, for characteristic: CBCharacteristic, type: CBCharacteristicWriteType, writeCompletion: ((Error?) -> Void)? = nil, readCharacteristic: CBCharacteristic, readTimeout: Double? = nil, readCompletion: CapturedReadCompletionHandler? = nil) {
-        let command = BleCommand(type: .writeCharacteristicAndWaitNofity, parameters: [characteristic, type, data, readCharacteristic, readCompletion as Any, readTimeout as Any], completion: writeCompletion)
+        let command = BleCommand(type: .writeCharacteristicAndWaitNofity, parameters: [characteristic, type, data, readCharacteristic, readCompletion as Any, readTimeout as Any], timeout: readTimeout, completion: writeCompletion)
         commandQueue.append(command)
     }
-
+    
     // MARK: - Command Queue
     fileprivate class BleCommand: Equatable {
         enum CommandType {
@@ -204,18 +211,18 @@ class BlePeripheral: NSObject {
         enum CommandError: Error {
             case invalidService
         }
-
+        
         var type: CommandType
         var parameters: [Any]?
         var completion: ((Error?) -> Void)?
         var isCancelled = false
-
-        init(type: CommandType, parameters: [Any]?, completion: ((Error?) -> Void)?) {
+        
+        init(type: CommandType, parameters: [Any]?, timeout: Double? = nil, completion: ((Error?) -> Void)?) {
             self.type = type
             self.parameters = parameters
             self.completion = completion
         }
-
+        
         func endExecution(withError error: Error?) {
             completion?(error)
         }
@@ -224,7 +231,7 @@ class BlePeripheral: NSObject {
             return left.type == right.type
         }
     }
-
+    
     private func executeCommand(command: BleCommand) {
 
         switch command.type {
@@ -240,7 +247,7 @@ class BlePeripheral: NSObject {
             write(with: command)
         }
     }
-
+ 
     fileprivate func handlerIdentifier(from characteristic: CBCharacteristic) -> String {
         return "\(characteristic.service.uuid.uuidString)-\(characteristic.uuid.uuidString)"
     }
@@ -331,7 +338,7 @@ class BlePeripheral: NSObject {
 
 extension BlePeripheral: CBPeripheralDelegate {
     func peripheralDidUpdateName(_ peripheral: CBPeripheral) {
-         DLog("peripheralDidUpdateName: \(name)")
+         DLog("peripheralDidUpdateName: \(name ?? "")")
     }
     
     func peripheral(_ peripheral: CBPeripheral, didModifyServices invalidatedServices: [CBService]) {
@@ -354,6 +361,14 @@ extension BlePeripheral: CBPeripheralDelegate {
         
         let identifier = handlerIdentifier(from: characteristic)
         
+        /*
+        if (BlePeripheral.kProfileCharacteristicUpdates) {
+            let currentTime = CACurrentMediaTime()
+            let elapsedTime = currentTime - profileStartTime
+            DLog("elapsed: \(String(format: "%.1f", elapsedTime * 1000))")
+            profileStartTime = currentTime
+        }
+ */
         //DLog("didUpdateValueFor \(characteristic.uuid.uuidString): \(String(data: characteristic.value ?? Data(), encoding: .utf8) ?? "<invalid>")")
 
         // Check if waiting to capture this read
@@ -380,7 +395,10 @@ extension BlePeripheral: CBPeripheralDelegate {
         // Notify
         if !isNotifyOmmited {
             if let notifyHandler = notifyHandlers[identifier] {
+                
+                //let currentTime = CACurrentMediaTime()
                 notifyHandler(error)
+                //DLog("elapsed: \(String(format: "%.1f", (CACurrentMediaTime() - currentTime) * 1000))")
             }
         }
     }

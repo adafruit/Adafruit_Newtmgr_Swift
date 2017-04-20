@@ -487,7 +487,7 @@ class NewtHandler {
 
         // Check data
         guard let data = data, error == nil else {
-            DLog("Error reading newt data: \(error)")
+            DLog("Error reading newt data: \(error?.localizedDescription ?? "")")
             responseError(error: error)
             return
         }
@@ -514,6 +514,7 @@ class NewtHandler {
         }
         else {      // Is not the first packet
             newtResponseCache.append(data)
+            DLog("more data: [\(hexDescription(data: data))]")
         }
         
         guard let reponseTotalLenght = reponseTotalLenght else {

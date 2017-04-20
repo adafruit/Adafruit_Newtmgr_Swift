@@ -56,10 +56,10 @@ class CBOREncoder {
             return try encode(array: array)
         case let .map(dictionary):
             return try encode(dicionary: dictionary)
-        case let .tagged(tag, value):
+        case .tagged: // (tag, value):
             // TODO: implement me
             DLog("Error: CBOR tag encoding not implemented")
-        case let .simple(value):
+        case .simple: // (value):
             // TODO: implement me
             DLog("Error: CBOR simple encoding not implemented")
         case let .boolean(value):
@@ -68,13 +68,13 @@ class CBOREncoder {
             return encode(simple: CBOREncoder.kNull)
         case .undefined:
             return encode(simple: CBOREncoder.kUndefined)
-        case let .half(value):
+        case .half: //(value):
             // TODO: implement me
             DLog("Error: CBOR half encoding not implemented")
-        case let .float(value):
+        case .float: //(value):
             // TODO: implement me
             DLog("Error: CBOR half encoding not implemented")
-        case let .double(value):
+        case .double: //(value):
             // TODO: implement me
             DLog("Error: CBOR half encoding not implemented")
         case .break:

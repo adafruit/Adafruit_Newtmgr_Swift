@@ -10,6 +10,8 @@ import Foundation
 
 class UartLogManager {
     
+    private static var kIsEnabled = false
+    
     enum LogType {
         case info
         case uartTx
@@ -30,16 +32,20 @@ class UartLogManager {
     }
     
     static var logItems = [LogItem]()
-
+    
     static func log(data: Data, type: LogType) {
-        let item = LogItem(type: type, data: data)
-        UartLogManager.logItems.append(item)
+        if UartLogManager.kIsEnabled {
+            let item = LogItem(type: type, data: data)
+            UartLogManager.logItems.append(item)
+        }
     }
     
     static func log(message: String, type: LogType = .info) {
-        if let data = message.data(using: .utf8) {
-            let item = LogItem(type: type, data: data)
-            UartLogManager.logItems.append(item)
+        if UartLogManager.kIsEnabled {
+            if let data = message.data(using: .utf8) {
+                let item = LogItem(type: type, data: data)
+                UartLogManager.logItems.append(item)
+            }
         }
     }
     

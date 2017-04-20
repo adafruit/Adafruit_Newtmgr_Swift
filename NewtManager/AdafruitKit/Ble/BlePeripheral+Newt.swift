@@ -1,5 +1,5 @@
 //
-//  NewtHandler.swift
+//  NewtManager.swift
 //  NewtManager
 //
 //  Created by Antonio García on 14/10/2016.

@@ -69,6 +69,9 @@ class UartManager {
         
         // Send data to delegate
         delegate?.onUartRx(data: cachedRxData)
+
+        //DLog("cachedRxData: \(cachedRxData.count)")
+
         cachedRxDataSemaphore.signal()
     }
     
@@ -77,7 +80,12 @@ class UartManager {
     }
     
     func removeRxCacheFirst(n: Int) {
-        cachedRxData.removeFirst(n)
+        if n <= cachedRxData.count {
+            cachedRxData.removeFirst(n)
+        }
+        else {
+            clearRxCache()
+        }
     }
 
     func flushRxCache() {

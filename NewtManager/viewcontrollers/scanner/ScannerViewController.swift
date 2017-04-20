@@ -47,8 +47,8 @@ class ScannerViewController: UIViewController {
         filtersNameTextField.leftView = searchImageView
 
         // Setup table view
-        baseTableView.estimatedRowHeight = 66
-        baseTableView.rowHeight = UITableViewAutomaticDimension
+//        baseTableView.estimatedRowHeight = 66
+//        baseTableView.rowHeight = UITableViewAutomaticDimension
         
         // Setup table refresh
         refreshControl.addTarget(self, action: #selector(onTableRefresh(_:)), for: UIControlEvents.valueChanged)

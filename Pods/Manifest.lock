@@ -1,7 +1,7 @@
 PODS:
-  - Charts (3.0.1):
-    - Charts/Core (= 3.0.1)
-  - Charts/Core (3.0.1)
+  - Charts (3.0.2):
+    - Charts/Core (= 3.0.2)
+  - Charts/Core (3.0.2)
   - MSWeakTimer (1.1.0)
 
 DEPENDENCIES:
@@ -9,9 +9,9 @@ DEPENDENCIES:
   - MSWeakTimer (~> 1.1.0)
 
 SPEC CHECKSUMS:
-  Charts: 0e84f4418e87dad6a9edde221fba37ebb51d3ba7
+  Charts: 236d6ccdd0ce6feae151d89e829a7397381a21fd
   MSWeakTimer: 9426150f933b80ed3acf3f6d228e4b61f0e303c8
 
 PODFILE CHECKSUM: 107585196880e46f7dacebc3980867014bfec831
 
-COCOAPODS: 1.1.1
+COCOAPODS: 1.2.1
