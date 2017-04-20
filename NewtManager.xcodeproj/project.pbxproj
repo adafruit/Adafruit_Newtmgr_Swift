@@ -33,29 +33,28 @@
 		A94F256C1DF0448D00F46930 /* CBORInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F25681DF0448D00F46930 /* CBORInputStream.swift */; };
 		A94F256D1DF0448D00F46930 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F25691DF0448D00F46930 /* Util.swift */; };
 		A94F25701DF0452700F46930 /* CBOREncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F256F1DF0452700F46930 /* CBOREncoder.swift */; };
-		A94F25901DF1A26C00F46930 /* NewtHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F258F1DF1A26C00F46930 /* NewtHandler.swift */; };
 		A950EB021DB00351005FC305 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB011DB00351005FC305 /* AppDelegate.swift */; };
 		A950EB071DB00351005FC305 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A950EB051DB00351005FC305 /* Main.storyboard */; };
 		A950EB091DB00351005FC305 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A950EB081DB00351005FC305 /* Assets.xcassets */; };
 		A950EB0C1DB00351005FC305 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A950EB0A1DB00351005FC305 /* LaunchScreen.storyboard */; };
 		A950EB201DB04C6F005FC305 /* MainNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A950EB1F1DB04C6F005FC305 /* MainNavigationViewController.swift */; };
 		A95CE57B1DB68252008C234E /* CommandsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95CE57A1DB68252008C234E /* CommandsViewController.swift */; };
-		A98101151E40F5AB0072B50D /* BleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A981010E1E40F5AB0072B50D /* BleManager.swift */; };
-		A98101161E40F5AB0072B50D /* BlePeripheral+Newt.swift in Sources */ = {isa = PBXBuildFile; fileRef = A981010F1E40F5AB0072B50D /* BlePeripheral+Newt.swift */; };
-		A98101171E40F5AB0072B50D /* BlePeripheral+Uart.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98101101E40F5AB0072B50D /* BlePeripheral+Uart.swift */; };
-		A98101181E40F5AB0072B50D /* BlePeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98101111E40F5AB0072B50D /* BlePeripheral.swift */; };
-		A98101191E40F5AB0072B50D /* Sensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98101121E40F5AB0072B50D /* Sensor.swift */; };
-		A981011A1E40F5AB0072B50D /* UartLogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98101131E40F5AB0072B50D /* UartLogManager.swift */; };
-		A981011B1E40F5AB0072B50D /* UartManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98101141E40F5AB0072B50D /* UartManager.swift */; };
-		A98101221E40F5E30072B50D /* AlertUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A981011D1E40F5E30072B50D /* AlertUtils.swift */; };
-		A98101231E40F5E30072B50D /* CommandQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A981011E1E40F5E30072B50D /* CommandQueue.swift */; };
-		A98101241E40F5E30072B50D /* Data+ScanValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A981011F1E40F5E30072B50D /* Data+ScanValue.swift */; };
-		A98101251E40F5E30072B50D /* DataConversions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98101201E40F5E30072B50D /* DataConversions.swift */; };
-		A98101261E40F5E30072B50D /* LogHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98101211E40F5E30072B50D /* LogHelper.swift */; };
 		A987B8311DF722510013840F /* RssiUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A987B8301DF722510013840F /* RssiUI.swift */; };
 		A987B8331DF726000013840F /* FilterTextSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A987B8321DF726000013840F /* FilterTextSettingsViewController.swift */; };
 		A99171321DF5EE6F00CB8C5D /* UIColor+LighterDarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99171311DF5EE6F00CB8C5D /* UIColor+LighterDarker.swift */; };
-		A9E707A51DF335E500E1B1D8 /* NewtHandler+Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E707A41DF335E500E1B1D8 /* NewtHandler+Types.swift */; };
+		A9D6EB421EA967190094A27C /* BleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D6EB2E1EA967190094A27C /* BleManager.swift */; };
+		A9D6EB431EA967190094A27C /* BlePeripheral+Newt.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D6EB2F1EA967190094A27C /* BlePeripheral+Newt.swift */; };
+		A9D6EB441EA967190094A27C /* BlePeripheral+Uart.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D6EB301EA967190094A27C /* BlePeripheral+Uart.swift */; };
+		A9D6EB451EA967190094A27C /* BlePeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D6EB311EA967190094A27C /* BlePeripheral.swift */; };
+		A9D6EB481EA967190094A27C /* UartDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D6EB341EA967190094A27C /* UartDataManager.swift */; };
+		A9D6EB491EA967190094A27C /* UartLogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D6EB351EA967190094A27C /* UartLogManager.swift */; };
+		A9D6EB4B1EA967190094A27C /* NewtHandler+Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D6EB381EA967190094A27C /* NewtHandler+Types.swift */; };
+		A9D6EB4C1EA967190094A27C /* NewtHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D6EB391EA967190094A27C /* NewtHandler.swift */; };
+		A9D6EB4D1EA967190094A27C /* AlertHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D6EB3B1EA967190094A27C /* AlertHelper.swift */; };
+		A9D6EB4E1EA967190094A27C /* CommandQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D6EB3C1EA967190094A27C /* CommandQueue.swift */; };
+		A9D6EB4F1EA967190094A27C /* Data+ScanValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D6EB3D1EA967190094A27C /* Data+ScanValue.swift */; };
+		A9D6EB501EA967190094A27C /* DataConversions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D6EB3E1EA967190094A27C /* DataConversions.swift */; };
+		A9D6EB531EA967190094A27C /* LogHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D6EB411EA967190094A27C /* LogHelper.swift */; };
 		A9FACDA91DB2AE0F00061E70 /* DeviceTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FACDA81DB2AE0F00061E70 /* DeviceTabBarViewController.swift */; };
 		A9FACDAB1DB2AE3000061E70 /* NewtViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FACDAA1DB2AE3000061E70 /* NewtViewController.swift */; };
 /* End PBXBuildFile section */
@@ -90,7 +89,6 @@
 		A94F25691DF0448D00F46930 /* Util.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 		A94F256E1DF044B700F46930 /* SwiftCBOR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftCBOR.h; sourceTree = "<group>"; };
 		A94F256F1DF0452700F46930 /* CBOREncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBOREncoder.swift; sourceTree = "<group>"; };
-		A94F258F1DF1A26C00F46930 /* NewtHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewtHandler.swift; sourceTree = "<group>"; };
 		A950EAFE1DB00351005FC305 /* NewtManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewtManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A950EB011DB00351005FC305 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A950EB061DB00351005FC305 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -100,24 +98,24 @@
 		A950EB1F1DB04C6F005FC305 /* MainNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainNavigationViewController.swift; sourceTree = "<group>"; };
 		A95CE57A1DB68252008C234E /* CommandsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandsViewController.swift; sourceTree = "<group>"; };
 		A95CE57E1DB6BB48008C234E /* NewtManager.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NewtManager.entitlements; sourceTree = "<group>"; };
-		A981010E1E40F5AB0072B50D /* BleManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BleManager.swift; sourceTree = "<group>"; };
-		A981010F1E40F5AB0072B50D /* BlePeripheral+Newt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "BlePeripheral+Newt.swift"; sourceTree = "<group>"; };
-		A98101101E40F5AB0072B50D /* BlePeripheral+Uart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "BlePeripheral+Uart.swift"; sourceTree = "<group>"; };
-		A98101111E40F5AB0072B50D /* BlePeripheral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlePeripheral.swift; sourceTree = "<group>"; };
-		A98101121E40F5AB0072B50D /* Sensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sensor.swift; sourceTree = "<group>"; };
-		A98101131E40F5AB0072B50D /* UartLogManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UartLogManager.swift; sourceTree = "<group>"; };
-		A98101141E40F5AB0072B50D /* UartManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UartManager.swift; sourceTree = "<group>"; };
-		A981011D1E40F5E30072B50D /* AlertUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertUtils.swift; sourceTree = "<group>"; };
-		A981011E1E40F5E30072B50D /* CommandQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandQueue.swift; sourceTree = "<group>"; };
-		A981011F1E40F5E30072B50D /* Data+ScanValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+ScanValue.swift"; sourceTree = "<group>"; };
-		A98101201E40F5E30072B50D /* DataConversions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataConversions.swift; sourceTree = "<group>"; };
-		A98101211E40F5E30072B50D /* LogHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogHelper.swift; sourceTree = "<group>"; };
 		A987B8301DF722510013840F /* RssiUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RssiUI.swift; sourceTree = "<group>"; };
 		A987B8321DF726000013840F /* FilterTextSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterTextSettingsViewController.swift; sourceTree = "<group>"; };
 		A98F88FC1DEB4FDC00DD8800 /* NewtManager-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NewtManager-Bridging-Header.h"; sourceTree = "<group>"; };
 		A99171311DF5EE6F00CB8C5D /* UIColor+LighterDarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+LighterDarker.swift"; sourceTree = "<group>"; };
 		A9A5EC551DB1253700566005 /* Synchronize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Synchronize.swift; sourceTree = "<group>"; };
-		A9E707A41DF335E500E1B1D8 /* NewtHandler+Types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NewtHandler+Types.swift"; sourceTree = "<group>"; };
+		A9D6EB2E1EA967190094A27C /* BleManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BleManager.swift; sourceTree = "<group>"; };
+		A9D6EB2F1EA967190094A27C /* BlePeripheral+Newt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "BlePeripheral+Newt.swift"; sourceTree = "<group>"; };
+		A9D6EB301EA967190094A27C /* BlePeripheral+Uart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "BlePeripheral+Uart.swift"; sourceTree = "<group>"; };
+		A9D6EB311EA967190094A27C /* BlePeripheral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlePeripheral.swift; sourceTree = "<group>"; };
+		A9D6EB341EA967190094A27C /* UartDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UartDataManager.swift; sourceTree = "<group>"; };
+		A9D6EB351EA967190094A27C /* UartLogManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UartLogManager.swift; sourceTree = "<group>"; };
+		A9D6EB381EA967190094A27C /* NewtHandler+Types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NewtHandler+Types.swift"; sourceTree = "<group>"; };
+		A9D6EB391EA967190094A27C /* NewtHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewtHandler.swift; sourceTree = "<group>"; };
+		A9D6EB3B1EA967190094A27C /* AlertHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertHelper.swift; sourceTree = "<group>"; };
+		A9D6EB3C1EA967190094A27C /* CommandQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandQueue.swift; sourceTree = "<group>"; };
+		A9D6EB3D1EA967190094A27C /* Data+ScanValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+ScanValue.swift"; sourceTree = "<group>"; };
+		A9D6EB3E1EA967190094A27C /* DataConversions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataConversions.swift; sourceTree = "<group>"; };
+		A9D6EB411EA967190094A27C /* LogHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogHelper.swift; sourceTree = "<group>"; };
 		A9FACDA81DB2AE0F00061E70 /* DeviceTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceTabBarViewController.swift; sourceTree = "<group>"; };
 		A9FACDAA1DB2AE3000061E70 /* NewtViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewtViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -209,25 +207,6 @@
 			path = CBOR;
 			sourceTree = "<group>";
 		};
-		A94F25711DF0936500F46930 /* AdafruitKit */ = {
-			isa = PBXGroup;
-			children = (
-				A981010D1E40F5AB0072B50D /* Ble */,
-				A981011C1E40F5E30072B50D /* Utils */,
-				A94F258C1DF1A0B000F46930 /* MyNewt */,
-			);
-			path = AdafruitKit;
-			sourceTree = "<group>";
-		};
-		A94F258C1DF1A0B000F46930 /* MyNewt */ = {
-			isa = PBXGroup;
-			children = (
-				A94F258F1DF1A26C00F46930 /* NewtHandler.swift */,
-				A9E707A41DF335E500E1B1D8 /* NewtHandler+Types.swift */,
-			);
-			path = MyNewt;
-			sourceTree = "<group>";
-		};
 		A950EAF51DB00350005FC305 = {
 			isa = PBXGroup;
 			children = (
@@ -259,7 +238,7 @@
 				A946D0D21DB31DFB00D731B2 /* resources */,
 				A950EB151DB006A5005FC305 /* viewcontrollers */,
 				A950EB131DB006A5005FC305 /* utils */,
-				A94F25711DF0936500F46930 /* AdafruitKit */,
+				A9D6EB2C1EA967190094A27C /* AdafruitKit */,
 			);
 			path = NewtManager;
 			sourceTree = "<group>";
@@ -292,28 +271,46 @@
 			path = viewcontrollers;
 			sourceTree = "<group>";
 		};
-		A981010D1E40F5AB0072B50D /* Ble */ = {
+		A9D6EB2C1EA967190094A27C /* AdafruitKit */ = {
 			isa = PBXGroup;
 			children = (
-				A981010E1E40F5AB0072B50D /* BleManager.swift */,
-				A981010F1E40F5AB0072B50D /* BlePeripheral+Newt.swift */,
-				A98101101E40F5AB0072B50D /* BlePeripheral+Uart.swift */,
-				A98101111E40F5AB0072B50D /* BlePeripheral.swift */,
-				A98101121E40F5AB0072B50D /* Sensor.swift */,
-				A98101131E40F5AB0072B50D /* UartLogManager.swift */,
-				A98101141E40F5AB0072B50D /* UartManager.swift */,
+				A9D6EB2D1EA967190094A27C /* Ble */,
+				A9D6EB371EA967190094A27C /* MyNewt */,
+				A9D6EB3A1EA967190094A27C /* Utils */,
+			);
+			path = AdafruitKit;
+			sourceTree = "<group>";
+		};
+		A9D6EB2D1EA967190094A27C /* Ble */ = {
+			isa = PBXGroup;
+			children = (
+				A9D6EB2E1EA967190094A27C /* BleManager.swift */,
+				A9D6EB2F1EA967190094A27C /* BlePeripheral+Newt.swift */,
+				A9D6EB301EA967190094A27C /* BlePeripheral+Uart.swift */,
+				A9D6EB311EA967190094A27C /* BlePeripheral.swift */,
+				A9D6EB341EA967190094A27C /* UartDataManager.swift */,
+				A9D6EB351EA967190094A27C /* UartLogManager.swift */,
 			);
 			path = Ble;
 			sourceTree = "<group>";
 		};
-		A981011C1E40F5E30072B50D /* Utils */ = {
+		A9D6EB371EA967190094A27C /* MyNewt */ = {
 			isa = PBXGroup;
 			children = (
-				A981011D1E40F5E30072B50D /* AlertUtils.swift */,
-				A981011E1E40F5E30072B50D /* CommandQueue.swift */,
-				A981011F1E40F5E30072B50D /* Data+ScanValue.swift */,
-				A98101201E40F5E30072B50D /* DataConversions.swift */,
-				A98101211E40F5E30072B50D /* LogHelper.swift */,
+				A9D6EB381EA967190094A27C /* NewtHandler+Types.swift */,
+				A9D6EB391EA967190094A27C /* NewtHandler.swift */,
+			);
+			path = MyNewt;
+			sourceTree = "<group>";
+		};
+		A9D6EB3A1EA967190094A27C /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				A9D6EB3B1EA967190094A27C /* AlertHelper.swift */,
+				A9D6EB3C1EA967190094A27C /* CommandQueue.swift */,
+				A9D6EB3D1EA967190094A27C /* Data+ScanValue.swift */,
+				A9D6EB3E1EA967190094A27C /* DataConversions.swift */,
+				A9D6EB411EA967190094A27C /* LogHelper.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -471,48 +468,47 @@
 			buildActionMask = 2147483647;
 			files = (
 				A94A906A1DF64CF90030398F /* AutoRefresh.swift in Sources */,
-				A98101261E40F5E30072B50D /* LogHelper.swift in Sources */,
-				A98101231E40F5E30072B50D /* CommandQueue.swift in Sources */,
+				A9D6EB4D1EA967190094A27C /* AlertHelper.swift in Sources */,
 				A94A90831DF6FE6C0030398F /* StatsViewController.swift in Sources */,
-				A98101251E40F5E30072B50D /* DataConversions.swift in Sources */,
-				A9E707A51DF335E500E1B1D8 /* NewtHandler+Types.swift in Sources */,
 				A9FACDA91DB2AE0F00061E70 /* DeviceTabBarViewController.swift in Sources */,
+				A9D6EB431EA967190094A27C /* BlePeripheral+Newt.swift in Sources */,
 				A94F25701DF0452700F46930 /* CBOREncoder.swift in Sources */,
 				A99171321DF5EE6F00CB8C5D /* UIColor+LighterDarker.swift in Sources */,
 				A950EB201DB04C6F005FC305 /* MainNavigationViewController.swift in Sources */,
 				A94F256B1DF0448D00F46930 /* CBORDecoder.swift in Sources */,
 				A950EB021DB00351005FC305 /* AppDelegate.swift in Sources */,
 				A94A90871DF6FE6C0030398F /* TasksTableViewCell.swift in Sources */,
-				A98101161E40F5AB0072B50D /* BlePeripheral+Newt.swift in Sources */,
+				A9D6EB491EA967190094A27C /* UartLogManager.swift in Sources */,
 				A94A90911DF7132F0030398F /* PeripheralList.swift in Sources */,
-				A98101181E40F5AB0072B50D /* BlePeripheral.swift in Sources */,
-				A981011B1E40F5AB0072B50D /* UartManager.swift in Sources */,
+				A9D6EB481EA967190094A27C /* UartDataManager.swift in Sources */,
+				A9D6EB501EA967190094A27C /* DataConversions.swift in Sources */,
 				A94A90971DF71BEA0030398F /* StyledSubview.swift in Sources */,
 				A94A90851DF6FE6C0030398F /* StackUsageChartView.swift in Sources */,
-				A981011A1E40F5AB0072B50D /* UartLogManager.swift in Sources */,
+				A9D6EB4C1EA967190094A27C /* NewtHandler.swift in Sources */,
 				A94A907F1DF6FE6C0030398F /* ImageSlotTableViewCell.swift in Sources */,
-				A98101191E40F5AB0072B50D /* Sensor.swift in Sources */,
 				A987B8311DF722510013840F /* RssiUI.swift in Sources */,
 				A94A90861DF6FE6C0030398F /* TasksChartViewController.swift in Sources */,
 				A94A90801DF6FE6C0030398F /* ImagesViewController.swift in Sources */,
 				A94A90811DF6FE6C0030398F /* UploadProgressViewController.swift in Sources */,
 				A94A90921DF7132F0030398F /* ScannerViewController.swift in Sources */,
 				A94F256C1DF0448D00F46930 /* CBORInputStream.swift in Sources */,
-				A98101241E40F5E30072B50D /* Data+ScanValue.swift in Sources */,
-				A94F25901DF1A26C00F46930 /* NewtHandler.swift in Sources */,
-				A98101221E40F5E30072B50D /* AlertUtils.swift in Sources */,
+				A9D6EB4E1EA967190094A27C /* CommandQueue.swift in Sources */,
 				A94A90991DF71D3C0030398F /* PeripheralTableViewCell.swift in Sources */,
+				A9D6EB4B1EA967190094A27C /* NewtHandler+Types.swift in Sources */,
 				A94A90891DF6FE6C0030398F /* TaskViewController.swift in Sources */,
+				A9D6EB4F1EA967190094A27C /* Data+ScanValue.swift in Sources */,
 				A94F256A1DF0448D00F46930 /* CBOR.swift in Sources */,
-				A98101151E40F5AB0072B50D /* BleManager.swift in Sources */,
 				A9FACDAB1DB2AE3000061E70 /* NewtViewController.swift in Sources */,
 				A94A90881DF6FE6C0030398F /* TasksViewController.swift in Sources */,
+				A9D6EB441EA967190094A27C /* BlePeripheral+Uart.swift in Sources */,
 				A987B8331DF726000013840F /* FilterTextSettingsViewController.swift in Sources */,
+				A9D6EB531EA967190094A27C /* LogHelper.swift in Sources */,
+				A9D6EB451EA967190094A27C /* BlePeripheral.swift in Sources */,
+				A9D6EB421EA967190094A27C /* BleManager.swift in Sources */,
 				A95CE57B1DB68252008C234E /* CommandsViewController.swift in Sources */,
 				A94A90841DF6FE6C0030398F /* RuntimeChartView.swift in Sources */,
 				A94A90961DF71BEA0030398F /* StyledButton.swift in Sources */,
 				A94A908B1DF710020030398F /* Preferences.swift in Sources */,
-				A98101171E40F5AB0072B50D /* BlePeripheral+Uart.swift in Sources */,
 				A94A90821DF6FE6C0030398F /* StatsDetailViewController.swift in Sources */,
 				A94F256D1DF0448D00F46930 /* Util.swift in Sources */,
 			);

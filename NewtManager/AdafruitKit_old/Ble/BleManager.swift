@@ -8,16 +8,12 @@
 
 import Foundation
 import CoreBluetooth
-
-#if COMMANDLINE
-#else
-    import MSWeakTimer
-#endif
+import MSWeakTimer
 
 class BleManager: NSObject {
     // Configuration
-    fileprivate static let kStopScanningWhenConnectingToPeripheral = false
-    fileprivate static let kAlwaysAllowDuplicateKeys = true
+    private static let kStopScanningWhenConnectingToPeripheral = false
+    private static let kAlwaysAllowDuplicateKeys = false
 
     // Singleton
     static let sharedInstance = BleManager()
@@ -27,7 +23,7 @@ class BleManager: NSObject {
     fileprivate var centralManagerPoweredOnSemaphore = DispatchSemaphore(value: 1)
     
     // Scanning
-    var isScanning = false
+    fileprivate var isScanning = false
     fileprivate var isScanningWaitingToStart = false
     fileprivate var scanningServicesFilter: [CBUUID]?
     fileprivate var peripheralsFound = [UUID: BlePeripheral]()
@@ -46,50 +42,6 @@ class BleManager: NSObject {
 
         centralManagerPoweredOnSemaphore.wait()
         centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.global(qos: .background), options: [:])
-//        centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main, options: [:])
-    }
-    
-    deinit {
-        scanningServicesFilter?.removeAll()
-        peripheralsFound.removeAll()
-    }
-    
-    func restoreCentralManager() {
-        DLog("Restoring central manager")
-        /*
-        guard centralManager?.delegate !== self else {
-            DLog("No need to restore it. It it still ours")
-            return
-        }*/
-        
-        // Restore peripherals status
-        peripheralsFoundLock.lock()
-        
-        for (_ , blePeripheral) in peripheralsFound {
-            blePeripheral.peripheral.delegate = nil
-        }
-        
-        let knownIdentifiers = Array(peripheralsFound.keys)
-        let knownPeripherals = centralManager?.retrievePeripherals(withIdentifiers: knownIdentifiers)
-        
-        peripheralsFound.removeAll()
-        
-        if let knownPeripherals = knownPeripherals {
-            for peripheral in knownPeripherals {
-                DLog("Adding prediscovered peripheral: \(peripheral.name ?? peripheral.identifier.uuidString)")
-                discovered(peripheral: peripheral)
-            }
-        }
-        
-        peripheralsFoundLock.unlock()
-        
-        // Restore central manager delegate if was changed
-        centralManager?.delegate = self
-        
-        if isScanning {
-            startScan()
-        }
-
     }
     
     // MARK: - Scan
@@ -97,30 +49,24 @@ class BleManager: NSObject {
         centralManagerPoweredOnSemaphore.wait()
         centralManagerPoweredOnSemaphore.signal()
         
-        isScanningWaitingToStart = true
         guard let centralManager = centralManager, centralManager.state != .poweredOff && centralManager.state != .unauthorized && centralManager.state != .unsupported else {
             DLog("startScan failed because central manager is not ready")
             return
         }
         
+        isScanningWaitingToStart = true
         scanningServicesFilter = services
         
         guard centralManager.state == .poweredOn else {
-            DLog("startScan failed because central manager is not powered on")
             return
         }
         
-        // DLog("start scan")
         isScanning = true
         NotificationCenter.default.post(name: .didStartScanning, object: nil)
-        
-        let options = BleManager.kAlwaysAllowDuplicateKeys ? [CBCentralManagerScanOptionAllowDuplicatesKey: true] : nil
-        centralManager.scanForPeripherals(withServices: services, options: options)
-        isScanningWaitingToStart = false
+        centralManager.scanForPeripherals(withServices: services, options: BleManager.kAlwaysAllowDuplicateKeys ? [CBCentralManagerScanOptionAllowDuplicatesKey: true] : nil)
     }
     
     func stopScan() {
-        // DLog("stop scan")
         centralManager?.stopScan()
         isScanning = false
         isScanningWaitingToStart = false
@@ -128,16 +74,8 @@ class BleManager: NSObject {
     }
     
     func peripherals() -> [BlePeripheral] {
-        peripheralsFoundLock.lock(); defer { peripheralsFoundLock.unlock() }
+        peripheralsFoundLock.lock() ; defer { peripheralsFoundLock.unlock() }
         return Array(peripheralsFound.values)
-    }
-    
-    func connectedPeripherals() -> [BlePeripheral] {
-        return peripherals().filter{$0.state == .connected}
-    }
-
-    func connectingPeripherals() -> [BlePeripheral] {
-        return peripherals().filter{$0.state == .connecting}
     }
     
     func refreshPeripherals() {
@@ -152,10 +90,10 @@ class BleManager: NSObject {
         }
         peripheralsFoundLock.unlock()
         
-        //
         NotificationCenter.default.post(name: .didUnDiscoverPeripheral, object: nil)
         startScan(withServices: scanningServicesFilter)
     }
+    
     
     // MARK: - Connection Management
     func connect(to peripheral: BlePeripheral, timeout: TimeInterval? = nil, shouldNotifyOnConnection: Bool = false, shouldNotifyOnDisconnection: Bool = false, shouldNotifyOnNotification: Bool = false) {
@@ -173,13 +111,9 @@ class BleManager: NSObject {
         
         //DLog("connect")
         var options: [String: Bool]?
-        
-        #if os(OSX)
-        #else
-            if shouldNotifyOnConnection || shouldNotifyOnDisconnection || shouldNotifyOnDisconnection {
-                options = [CBConnectPeripheralOptionNotifyOnConnectionKey: shouldNotifyOnConnection, CBConnectPeripheralOptionNotifyOnDisconnectionKey: shouldNotifyOnDisconnection, CBConnectPeripheralOptionNotifyOnNotificationKey: shouldNotifyOnDisconnection]
-            }
-        #endif
+        if shouldNotifyOnConnection || shouldNotifyOnDisconnection || shouldNotifyOnDisconnection {
+            options = [CBConnectPeripheralOptionNotifyOnConnectionKey: shouldNotifyOnConnection, CBConnectPeripheralOptionNotifyOnDisconnectionKey: shouldNotifyOnDisconnection, CBConnectPeripheralOptionNotifyOnNotificationKey: shouldNotifyOnDisconnection]
+        }
         
         if let timeout = timeout {
             connectionTimeoutTimers[peripheral.identifier] = MSWeakTimer.scheduledTimer(withTimeInterval: timeout, target: self, selector: #selector(connectionTimeoutFired), userInfo: peripheral.identifier, repeats: false, dispatchQueue: .global(qos: .background))
@@ -244,18 +178,10 @@ class BleManager: NSObject {
     fileprivate func discovered(peripheral: CBPeripheral, advertisementData: [String: Any]? = nil, rssi: Int? = nil) {
         if let existingPeripheral = peripheralsFound[peripheral.identifier] {
             existingPeripheral.lastSeenTime = CFAbsoluteTimeGetCurrent()
-/*
-            if let name = peripheral.name {
-                DLog("\(name) rssi: \(rssi != nil ? String(rssi!):"<unknown>")")
-            }
-*/
-            if let rssi = rssi {
-                existingPeripheral.rssi = rssi
-            }
-            
+            existingPeripheral.rssi = rssi
             if let advertisementData = advertisementData {
                 for (key, value) in advertisementData {
-                    existingPeripheral.advertisement.advertisementData.updateValue(value, forKey: key);
+                    existingPeripheral.advertisementData.updateValue(value, forKey: key);
                 }
             }
             peripheralsFound[peripheral.identifier] = existingPeripheral
@@ -285,7 +211,6 @@ class BleManager: NSObject {
 extension BleManager: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         
-        DLog("centralManagerDidUpdateState: \(central.state)")
         // Unlock state lock if we have a known state
         if central.state == .poweredOn || central.state == .poweredOff || central.state == .unsupported || central.state == .unauthorized {
             centralManagerPoweredOnSemaphore.signal()
@@ -293,14 +218,12 @@ extension BleManager: CBCentralManagerDelegate {
         
         // Scanning
         if central.state == .poweredOn {
-            if isScanningWaitingToStart {
+
+            if (isScanningWaitingToStart) {
                 startScan(withServices: scanningServicesFilter)        // Continue scanning now that bluetooth is back
             }
         }
         else {
-            if isScanning {
-                isScanningWaitingToStart = true
-            }
             isScanning = false
         }
         
@@ -313,10 +236,8 @@ extension BleManager: CBCentralManagerDelegate {
     }*/
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        // DLog("didDiscover: \(peripheral.name ?? peripheral.identifier.uuidString)")
-        let rssi = RSSI.intValue
-        let realRssi = rssi != 127 ? rssi:nil       // 127 is a special value used by Apple to indicate that thre reading is not available
-        discovered(peripheral: peripheral, advertisementData: advertisementData, rssi: realRssi)
+
+        discovered(peripheral: peripheral, advertisementData: advertisementData, rssi: RSSI.intValue)
         
         NotificationCenter.default.post(name: .didDiscoverPeripheral, object: nil, userInfo: [NotificationUserInfoKey.uuid.rawValue: peripheral.identifier])
     }
@@ -344,7 +265,7 @@ extension BleManager: CBCentralManagerDelegate {
         DLog("didDisconnectPeripheral")
 
         // Clean
-        peripheralsFound[peripheral.identifier]?.reset()
+        peripheralsFound[peripheral.identifier]?.disconnected()
 
         // Notify
         NotificationCenter.default.post(name: .didDisconnectFromPeripheral, object: nil, userInfo: [NotificationUserInfoKey.uuid.rawValue: peripheral.identifier])
