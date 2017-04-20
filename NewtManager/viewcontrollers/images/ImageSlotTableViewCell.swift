@@ -9,14 +9,17 @@
 import UIKit
 
 protocol ImageSlotTableViewCellDelegate: class {
-    func onImageSlotCellHeightChanged(index: Int, isInfoHidden: Bool)
+    func onImageSlotCellHeightChanged(index: Int, isInfoHidden: Bool, height: CGFloat)
     func onClickImageTest(index: Int)
     func onClickImageConfirm(index: Int)
     func onClickImageReset(index: Int)
 }
 
 class ImageSlotTableViewCell: UITableViewCell {
+    // Config
+    static let kDefaultImageCellHeiht: CGFloat = 70
 
+    // UI
     @IBOutlet weak var slotIdLabel: UILabel!
     @IBOutlet weak var versionLabel: UILabel!
     @IBOutlet weak var statusLabel: UILabel!
@@ -25,12 +28,14 @@ class ImageSlotTableViewCell: UITableViewCell {
     @IBOutlet weak var hashView: UIView!
     @IBOutlet weak var hashValueLabel: UILabel!
     @IBOutlet weak var expandInfoButton: UIButton!
+    @IBOutlet weak var expandedStackView: UIStackView!
     
+    // Data
     private var cellIndex: Int = -1
     private var newtImage: NewtHandler.Image?
     private var isInfoHidden = true
     
-    
+    // Params
     weak var delegate: ImageSlotTableViewCellDelegate?
     
     enum Status {
@@ -106,9 +111,12 @@ class ImageSlotTableViewCell: UITableViewCell {
         statusLabel.text = status(image: image).description.uppercased()
         
         self.isInfoHidden = isInfoHidden
+        /*
         infoStackView.isHidden = isInfoHidden
         hashView.isHidden = isInfoHidden
-
+        expandedStackView.isHidden = isInfoHidden
+*/
+        
         // Actions
         let actions = availableActions(image: image)
         actionsStackView.isHidden = actions.count == 0
@@ -187,12 +195,18 @@ class ImageSlotTableViewCell: UITableViewCell {
     private func setInfoVisiblity(isHidden: Bool) {
         isInfoHidden = isHidden
         UIView.animate(withDuration: 0.3, animations: { [unowned self] in
-            self.expandInfoButton.transform = isHidden ? CGAffineTransform.identity:CGAffineTransform.init(rotationAngle: .pi)
+            self.expandInfoButton.transform = isHidden ? CGAffineTransform.identity:CGAffineTransform(rotationAngle: .pi)
         })
         
+/*
         infoStackView.isHidden = isInfoHidden
         hashView.isHidden = isInfoHidden
-        delegate?.onImageSlotCellHeightChanged(index: cellIndex, isInfoHidden: isInfoHidden)
+        expandedStackView.isHidden = isInfoHidden
+        expandedStackView.layoutIfNeeded()
+  */
+        let kBottomMargin: CGFloat = 15
+        let height: CGFloat = isInfoHidden ? ImageSlotTableViewCell.kDefaultImageCellHeiht : expandedStackView.frame.origin.y + expandedStackView.frame.size.height + kBottomMargin
+        delegate?.onImageSlotCellHeightChanged(index: cellIndex, isInfoHidden: isInfoHidden, height: height)
     }
     
     @IBAction func onClickAction(_ sender: UIButton) {

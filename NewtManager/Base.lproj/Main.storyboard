@@ -425,9 +425,6 @@
                                                 <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="252" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FjC-yz-62y">
                                                     <rect key="frame" x="336" y="34" width="24" height="24"/>
                                                     <state key="normal" image="ic_expand_more"/>
-                                                    <connections>
-                                                        <action selector="onClickInfo:" destination="nwd-SB-tOf" eventType="touchUpInside" id="Y6J-gX-TI9"/>
-                                                    </connections>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="STATUS" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S7j-Do-MAR">
                                                     <rect key="frame" x="15" y="35" width="264.5" height="20.5"/>
@@ -436,7 +433,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="E7p-N4-Dws">
-                                                    <rect key="frame" x="15" y="59.5" width="345" height="205.5"/>
+                                                    <rect key="frame" x="15" y="65.5" width="345" height="194"/>
                                                     <subviews>
                                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="7ys-jN-1QW">
                                                             <rect key="frame" x="0.0" y="0.0" width="345" height="84"/>
@@ -529,10 +526,10 @@
                                                             </constraints>
                                                         </view>
                                                         <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="Vdl-ao-7p7">
-                                                            <rect key="frame" x="0.0" y="156" width="345" height="49.5"/>
+                                                            <rect key="frame" x="0.0" y="156" width="345" height="38"/>
                                                             <subviews>
                                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Sbp-7C-Bvh">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="162.5" height="49.5"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="162.5" height="38"/>
                                                                     <inset key="contentEdgeInsets" minX="20" minY="10" maxX="20" maxY="10"/>
                                                                     <state key="normal" title="Action"/>
                                                                     <connections>
@@ -540,7 +537,7 @@
                                                                     </connections>
                                                                 </button>
                                                                 <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yzP-Qe-vsq">
-                                                                    <rect key="frame" x="182.5" y="0.0" width="162.5" height="49.5"/>
+                                                                    <rect key="frame" x="182.5" y="0.0" width="162.5" height="38"/>
                                                                     <inset key="contentEdgeInsets" minX="20" minY="10" maxX="20" maxY="10"/>
                                                                     <state key="normal" title="Action"/>
                                                                     <connections>
@@ -559,7 +556,6 @@
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="bottomMargin" secondItem="E7p-N4-Dws" secondAttribute="bottom" constant="4" id="8Ta-9W-zva"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="E7p-N4-Dws" secondAttribute="trailing" id="8Uy-eI-2EY"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="FjC-yz-62y" secondAttribute="trailing" id="CHv-xf-Gu3"/>
                                                 <constraint firstItem="FjC-yz-62y" firstAttribute="centerY" secondItem="S7j-Do-MAR" secondAttribute="centerY" id="Rn8-f5-A2c"/>
@@ -571,13 +567,14 @@
                                                 <constraint firstItem="E7p-N4-Dws" firstAttribute="leading" secondItem="pkX-Ad-WWQ" secondAttribute="leadingMargin" id="rR5-Og-n6k"/>
                                                 <constraint firstItem="GSM-fo-Hqf" firstAttribute="leading" secondItem="pkX-Ad-WWQ" secondAttribute="leadingMargin" id="rkt-UJ-eAq"/>
                                                 <constraint firstItem="FjC-yz-62y" firstAttribute="leading" secondItem="CSO-JT-8Ow" secondAttribute="trailing" constant="4" id="uyA-NC-rpO"/>
-                                                <constraint firstItem="E7p-N4-Dws" firstAttribute="top" secondItem="S7j-Do-MAR" secondAttribute="bottom" constant="4" id="yZW-N8-Sfr"/>
+                                                <constraint firstItem="E7p-N4-Dws" firstAttribute="top" secondItem="S7j-Do-MAR" secondAttribute="bottom" constant="10" id="yZW-N8-Sfr"/>
                                                 <constraint firstItem="GSM-fo-Hqf" firstAttribute="top" secondItem="pkX-Ad-WWQ" secondAttribute="topMargin" constant="4" id="zCC-mA-dzc"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="actionsStackView" destination="Vdl-ao-7p7" id="tw2-RV-LXj"/>
                                             <outlet property="expandInfoButton" destination="FjC-yz-62y" id="1zj-Xs-ydB"/>
+                                            <outlet property="expandedStackView" destination="E7p-N4-Dws" id="tcu-Gl-nge"/>
                                             <outlet property="hashValueLabel" destination="uge-kN-NI7" id="THf-QA-RdC"/>
                                             <outlet property="hashView" destination="H6z-ea-dQC" id="0d4-4C-V3A"/>
                                             <outlet property="infoStackView" destination="7ys-jN-1QW" id="9x2-5q-TKU"/>

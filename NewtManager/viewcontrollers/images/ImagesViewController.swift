@@ -21,6 +21,7 @@ class ImagesViewController: NewtViewController {
     // Slots
     fileprivate var images: [NewtHandler.Image]?
     fileprivate var isImageInfoHidden = [Bool]()
+    fileprivate var imageSlotHeight = [CGFloat]()
     
     // Image Upload
     fileprivate struct ImageInfo {
@@ -39,8 +40,8 @@ class ImagesViewController: NewtViewController {
         //navigationController?.navigationBar.topItem?.prompt = "Test"
 
         // Table View self-sizing
-        baseTableView.rowHeight = UITableViewAutomaticDimension
-        baseTableView.estimatedRowHeight = 44
+//        baseTableView.rowHeight = UITableViewAutomaticDimension
+//        baseTableView.estimatedRowHeight = 44
 
         // Setup table refresh
         refreshControl.addTarget(self, action: #selector(onTableRefresh(_:)), for: UIControlEvents.valueChanged)
@@ -110,6 +111,7 @@ class ImagesViewController: NewtViewController {
         let sortedImages = newtImages.sorted(by: {$0.slot < $1.slot})
         images = sortedImages
         isImageInfoHidden = [Bool](repeating: true, count: newtImages.count)
+        imageSlotHeight = [CGFloat](repeating: ImageSlotTableViewCell.kDefaultImageCellHeiht, count: newtImages.count)
     }
  
     // MARK: - Image Update
@@ -362,14 +364,14 @@ extension ImagesViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         
-        guard let tableSection = TableSections(rawValue: section) else {return nil}
+        guard let tableSection = TableSections(rawValue: section) else { return nil }
 
         return tableSection.name
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        guard let tableSection = TableSections(rawValue: section) else {return 0}
+        guard let tableSection = TableSections(rawValue: section) else { return 0 }
 
         var count: Int
         switch tableSection {
@@ -390,20 +392,8 @@ extension ImagesViewController: UITableViewDataSource {
             
         case .imageSlots:
             let reuseIdentifier = "ImageSlotCell"
-            cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier)
-            if cell == nil {
-                cell = UITableViewCell(style: .value1, reuseIdentifier: reuseIdentifier)
-            }
-            
-            // Note: this is not done on willDisplay to avoid self-sizing problems
-            if let image = images?[indexPath.row] {
-                let slotCell = cell as! ImageSlotTableViewCell
-                slotCell.set(id: indexPath.row, image: image, isInfoHidden: isImageInfoHidden[indexPath.row])
-                slotCell.delegate = self
-                slotCell.accessoryType = .none
-                slotCell.selectionStyle = .default
-            }
-
+            let imageSlotCell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as? ImageSlotTableViewCell
+            cell = imageSlotCell
             
         default:
             let reuseIdentifier = "ImageCell"
@@ -416,34 +406,53 @@ extension ImagesViewController: UITableViewDataSource {
         return cell!
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        
-        guard let tableSection = TableSections(rawValue: indexPath.section) else {return}
-
-        switch tableSection {
-            
-        case .imageSlots:
-            break
-            
-        case .imageUpdates:
-            let imageInfo: ImageInfo? = indexPath.row < (imagesInternal?.count ?? 0) ? imagesInternal![indexPath.row]:nil
-            cell.accessoryType = .disclosureIndicator
-            cell.textLabel!.text = imageInfo != nil ? imageInfo!.name : "Upload a custom image"
-            cell.detailTextLabel!.text = imageInfo != nil ? imageInfo!.version : nil
-            cell.selectionStyle = .default
-        }
-        
-    }
 }
 
 // MARK: - UITableViewDelegate
 extension ImagesViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        guard let tableSection = TableSections(rawValue: indexPath.section) else { return }
+        
+        switch tableSection {
+            
+        case .imageSlots:
+            if let image = images?[indexPath.row], let slotCell = cell as? ImageSlotTableViewCell {
+                
+                slotCell.set(id: indexPath.row, image: image, isInfoHidden: isImageInfoHidden[indexPath.row])
+                slotCell.delegate = self
+                slotCell.accessoryType = .none
+                slotCell.selectionStyle = .default
+            }
+            
+        case .imageUpdates:
+            let imageInfo: ImageInfo? = indexPath.row < (imagesInternal?.count ?? 0) ? imagesInternal![indexPath.row]:nil
+            cell.accessoryType = .disclosureIndicator
+            cell.textLabel?.text = imageInfo != nil ? imageInfo!.name : "Upload a custom image"
+            cell.detailTextLabel?.text = imageInfo?.version
+            cell.selectionStyle = .default
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        guard let tableSection = TableSections(rawValue: indexPath.section) else { return 44 }
+
+        switch tableSection {
+            
+        case .imageSlots:
+            return imageSlotHeight[indexPath.row]
+        case .imageUpdates:
+            return 44
+        }
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         defer {
             tableView.deselectRow(at: indexPath, animated: true)
         }
         
-        guard let tableSection = TableSections(rawValue: indexPath.section) else {return}
+        guard let tableSection = TableSections(rawValue: indexPath.section) else { return }
         
         switch tableSection {
         case .imageSlots:
@@ -488,14 +497,16 @@ extension ImagesViewController: UIDocumentPickerDelegate {
 
 // MARK: - ImageSlotTableViewCellDelegate
 extension ImagesViewController: ImageSlotTableViewCellDelegate {
-    func onImageSlotCellHeightChanged(index: Int, isInfoHidden: Bool) {
+    func onImageSlotCellHeightChanged(index: Int, isInfoHidden: Bool, height: CGFloat) {
         isImageInfoHidden[index] = isInfoHidden
+        imageSlotHeight[index] = height
 
+        DLog("new image cell height: \(height)")
         // Animate table changes
         baseTableView.beginUpdates()
         baseTableView.endUpdates()
     }
-    
+
     func onClickImageTest(index: Int) {
         
         guard let image = images?[index] else { return }
