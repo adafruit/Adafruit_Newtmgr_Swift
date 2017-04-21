@@ -501,7 +501,7 @@ extension ImagesViewController: ImageSlotTableViewCellDelegate {
         isImageInfoHidden[index] = isInfoHidden
         imageSlotHeight[index] = height
 
-        DLog("new image cell height: \(height)")
+        //DLog("new image cell height: \(height)")
         // Animate table changes
         baseTableView.beginUpdates()
         baseTableView.endUpdates()
