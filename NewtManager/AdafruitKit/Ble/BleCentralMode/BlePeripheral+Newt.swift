@@ -79,7 +79,8 @@ extension BlePeripheral {
                 self.newtCharacteristicWriteType = characteristic.properties.contains(.writeWithoutResponse) ? .withoutResponse:.withResponse
                 
                 // Enable notifications
-                self.setNotify(for: characteristic, enabled: true, handler: { [unowned self] (error) in
+                
+                self.enableNotify(for: characteristic, handler: { [unowned self] (error) in
                     self.newtHandler.newtReceivedData(data: characteristic.value, error: error)
                     }, completion: { error in
                         completion?(error != nil ? error : (characteristic.isNotifying ? nil : NewtError.enableNotifyFailed))
@@ -105,15 +106,15 @@ extension BlePeripheral {
         
         if !wasDisconnected, let characteristic = newtCharacteristic {
             // Disable notify
-            setNotify(for: characteristic, enabled: false)
+            disableNotify(for: characteristic)
         }
     }
     
-    // MARK: - Commands 
+    // MARK: - Commands
     func newtSendRequest(with command: NewtHandler.Command, progress: NewtHandler.RequestProgressHandler? = nil, completion: NewtHandler.RequestCompletionHandler?) {
-            newtHandler.sendRequest(with: command, progress: progress, completion: completion)
+        newtHandler.sendRequest(with: command, progress: progress, completion: completion)
     }
-   
+    
 }
 
 extension BlePeripheral: NewtStateDelegate {

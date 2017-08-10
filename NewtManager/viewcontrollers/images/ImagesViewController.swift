@@ -192,7 +192,6 @@ class ImagesViewController: NewtViewController {
             self.present(self.uploadProgressViewController!, animated: true) { [unowned self] in
                 self.sendUploadRequest(imageData: imageData)
             }
-            
         }
         alertController.addAction(okAction)
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -204,9 +203,7 @@ class ImagesViewController: NewtViewController {
     // MARK: - Requests
 
     fileprivate func sendUploadRequest(imageData: Data) {
-        guard let peripheral = blePeripheral, peripheral.isNewtReady else {
-            return
-        }
+        guard let peripheral = blePeripheral, peripheral.isNewtReady else { return }
         
         isUploadCancelled = false
         
@@ -237,7 +234,6 @@ class ImagesViewController: NewtViewController {
 
                     // Success. Ask if should activate
                     DLog("Upload successful")
-
 
                     // Refresh Image List
                     context.refreshImageList()

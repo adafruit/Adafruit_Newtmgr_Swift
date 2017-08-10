@@ -15,7 +15,7 @@ protocol NewtStateDelegate: class {
 
 class NewtHandler {
     // Config
-    private static let kDefaultRequestTimeout: TimeInterval = 1.0     // in seconds
+    private static let kDefaultRequestTimeout: TimeInterval = 2.0     // in seconds
     
     
     // MARK: - Packet
