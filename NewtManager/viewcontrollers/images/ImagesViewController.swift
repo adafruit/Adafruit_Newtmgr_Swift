@@ -81,9 +81,7 @@ class ImagesViewController: NewtViewController {
         
         // Retrieve list info
         peripheral.newtSendRequest(with: .imageList) { [weak self] (newtImages, error) in
-            guard let context = self else {
-                return
-            }
+            guard let context = self else { return }
             
             if error != nil {
                 DLog("Error ListImages: \(error!)")
@@ -260,9 +258,7 @@ class ImagesViewController: NewtViewController {
         let command: NewtHandler.Command = isTest ? .imageTest(hash: hash!): .imageConfirm(hash: hash)
         
         peripheral.newtSendRequest(with: command) { [weak self]  (newtImages, error) in
-            guard let context = self else {
-                return
-            }
+            guard let context = self else { return }
             
             guard error == nil else {
                 DLog("Set test image error: \(error!)")

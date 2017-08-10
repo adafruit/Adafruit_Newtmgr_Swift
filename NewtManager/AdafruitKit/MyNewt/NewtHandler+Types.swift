@@ -53,7 +53,7 @@ extension NewtHandler {
         case receivedResponseWihtoutHeader
         case receivedResponseIsNotACbor(Error?)
         case receivedResponseMissingFields
-        case receviedResponseInvalidValues
+        case receivedResponseInvalidValues
         case receivedResultNotOk(String)
         case internalError
         case updateImageInvalid
@@ -67,7 +67,7 @@ extension NewtHandler {
             case .receivedResponseWihtoutHeader: return "Received response wihtout header"
             case .receivedResponseIsNotACbor(let error): return "Received invalid response: \(error?.localizedDescription ?? "")"
             case .receivedResponseMissingFields: return "Received response with missing fields"
-            case .receviedResponseInvalidValues: return "Received response with invalid values"
+            case .receivedResponseInvalidValues: return "Received response with invalid values"
             case .receivedResultNotOk(let message): return "Received incorrect result: \(message)"
             case .internalError: return "Internal error"
             case .updateImageInvalid: return "Upload image is invalid"

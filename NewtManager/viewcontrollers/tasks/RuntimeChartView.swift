@@ -10,6 +10,7 @@ import UIKit
 
 class RuntimeChartView: UIView {
 
+    // Data
     var chartColors: [UIColor]? {
         didSet {
             setNeedsDisplay()
@@ -22,6 +23,7 @@ class RuntimeChartView: UIView {
         }
     }
     
+    // MARK: - View Lifecycle
     override func layoutSubviews() {
         super.layoutSubviews()
         

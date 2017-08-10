@@ -13,9 +13,9 @@ struct StackUsage {
     var total: UInt
 }
 
-
 class StackUsageChartView: UIView {
     
+    // Data
     var chartColors: [UIColor]? {
         didSet {
             setNeedsDisplay()
@@ -28,6 +28,7 @@ class StackUsageChartView: UIView {
         }
     }
     
+    // MARK: - View Lifecycle
     override func layoutSubviews() {
         super.layoutSubviews()
         
@@ -41,7 +42,7 @@ class StackUsageChartView: UIView {
         let kItemSeparation: CGFloat = 4
         let viewWidth = rect.size.width - CGFloat(usageData.count - 1) * kItemSeparation
         let sumTotals = usageData.reduce(0, {$0 + $1.total})
-        let font = UIFont.boldSystemFont(ofSize: UIFont.smallSystemFontSize)
+        let font = UIFont.boldSystemFont(ofSize: 10)
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
@@ -89,6 +90,7 @@ class StackUsageChartView: UIView {
                 
                 //DLog(NSStringFromCGRect(rect))
                 text.draw(in: rect, withAttributes: textAttributes)
+                
                 
                 context.restoreGState()
 

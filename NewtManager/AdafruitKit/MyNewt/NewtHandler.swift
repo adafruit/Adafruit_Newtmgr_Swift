@@ -578,6 +578,7 @@ class NewtHandler {
         
         let completionHandler = newtRequestsQueue.first()?.completion
         guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
+            completionHandler?(nil, NewtError.receivedResultNotOk("Invalid response result"));
             return
         }
         
@@ -609,6 +610,7 @@ class NewtHandler {
         
         let completionHandler = newtRequestsQueue.first()?.completion
         guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
+            completionHandler?(nil, NewtError.receivedResultNotOk("Invalid response result"));
             return
         }
         
@@ -624,6 +626,7 @@ class NewtHandler {
         
         let completionHandler = newtRequestsQueue.first()?.completion
         guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
+            completionHandler?(nil, NewtError.receivedResultNotOk("Invalid response result"));
             return
         }
         
@@ -656,6 +659,7 @@ class NewtHandler {
         
         let completionHandler = newtRequestsQueue.first()?.completion
         guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
+            completionHandler?(nil, NewtError.receivedResultNotOk("Invalid response result"));
             return
         }
         
@@ -671,6 +675,7 @@ class NewtHandler {
         
         let completionHandler = newtRequestsQueue.first()?.completion
         guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
+            completionHandler?(nil, NewtError.receivedResultNotOk("Invalid response result"));
             return
         }
         
@@ -693,6 +698,7 @@ class NewtHandler {
         
         let completionHandler = newtRequestsQueue.first()?.completion
         guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
+            completionHandler?(nil, NewtError.receivedResultNotOk("Invalid response result"));
             return
         }
         
@@ -752,7 +758,7 @@ class NewtHandler {
         guard let returnCode = Packet.ReturnCode(rawValue: returnCodeRaw) else {
             if isMandatory {
                 DLog("parseResponse Error: rc invalid value")
-                completionHandler?(nil, NewtError.receviedResponseInvalidValues)
+                completionHandler?(nil, NewtError.receivedResponseInvalidValues)
             }
             return isMandatory
         }

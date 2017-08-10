@@ -10,11 +10,13 @@ import UIKit
 
 class TasksChartViewController: UIViewController {
 
+    // UI
     @IBOutlet weak var stackUsageChartView: StackUsageChartView!
     @IBOutlet weak var runtimeChartView: RuntimeChartView!
     @IBOutlet weak var runtimeDeltaChartView: RuntimeChartView!
     @IBOutlet weak var runtimeDeltaLabel: UILabel!
 
+    // Data
     var stackItems: [StackUsage]? {
         get {
             return stackUsageChartView.items
@@ -62,6 +64,7 @@ class TasksChartViewController: UIViewController {
         }
     }
     
+    // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -74,20 +77,8 @@ class TasksChartViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-    
     func hideRunTimeDelta(_ isHidden: Bool) {
         runtimeDeltaChartView.isHidden = isHidden
         runtimeDeltaLabel.isHidden = isHidden
     }
-
 }

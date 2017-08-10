@@ -109,11 +109,11 @@ extension BlePeripheral {
         }
     }
     
-    // MARK: - Commands 
+    // MARK: - Commands
     func newtSendRequest(with command: NewtHandler.Command, progress: NewtHandler.RequestProgressHandler? = nil, completion: NewtHandler.RequestCompletionHandler?) {
-            newtHandler.sendRequest(with: command, progress: progress, completion: completion)
+        newtHandler.sendRequest(with: command, progress: progress, completion: completion)
     }
-   
+    
 }
 
 extension BlePeripheral: NewtStateDelegate {
