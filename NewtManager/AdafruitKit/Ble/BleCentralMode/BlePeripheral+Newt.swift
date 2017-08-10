@@ -80,7 +80,7 @@ extension BlePeripheral {
                 
                 // Enable notifications
                 
-                self.enableNotify(for: characteristic, handler: { [unowned self] (error) in
+                self.enableNotify(for: characteristic, handler: { [unowned self] error in
                     self.newtHandler.newtReceivedData(data: characteristic.value, error: error)
                     }, completion: { error in
                         completion?(error != nil ? error : (characteristic.isNotifying ? nil : NewtError.enableNotifyFailed))

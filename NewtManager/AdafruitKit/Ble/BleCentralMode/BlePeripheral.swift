@@ -522,7 +522,7 @@ extension BlePeripheral: CBPeripheralDelegate {
             profileStartTime = currentTime
         }
          */
-        //DLog("didUpdateValueFor \(characteristic.uuid.uuidString): \(String(data: characteristic.value ?? Data(), encoding: .utf8) ?? "<invalid>")")
+        DLog("didUpdateValueFor \(characteristic.uuid.uuidString): \(String(data: characteristic.value ?? Data(), encoding: .utf8) ?? "<invalid>")")
 
         // Check if waiting to capture this read
         var isNotifyOmmited = false

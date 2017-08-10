@@ -75,9 +75,7 @@ class ImagesViewController: NewtViewController {
     
     // MARK: - Image List
     private func refreshImageList() {
-        guard let peripheral = blePeripheral, peripheral.isNewtReady else {
-            return
-        }
+        guard let peripheral = blePeripheral, peripheral.isNewtReady else { return }
         
         // Retrieve list info
         peripheral.newtSendRequest(with: .imageList) { [weak self] (newtImages, error) in
@@ -85,7 +83,7 @@ class ImagesViewController: NewtViewController {
             
             if error != nil {
                 DLog("Error ListImages: \(error!)")
-                context.images = nil
+                context.setNewtImages(nil)
 
                 if ImagesViewController.kShowAlertOnListError {
                     DispatchQueue.main.async {
@@ -104,7 +102,15 @@ class ImagesViewController: NewtViewController {
         }
     }
 
-    private func setNewtImages(_ newtImages: [NewtHandler.Image]) {
+    private func setNewtImages(_ newtImages: [NewtHandler.Image]?) {
+        guard let newtImages = newtImages else {
+            // Clear status
+            images = nil
+            isImageInfoHidden.removeAll()
+            imageSlotHeight.removeAll()
+            return
+        }
+        
         // DLog("images: \(newtImages.map({"\($0.slot)-\($0.version)"}).joined(separator: ", ") )")
         let sortedImages = newtImages.sorted(by: {$0.slot < $1.slot})
         images = sortedImages
@@ -162,7 +168,6 @@ class ImagesViewController: NewtViewController {
         
         return data
     }
-    
     
     fileprivate func uploadImage(bundleFileName: String) {
         guard let fileUrl = urlFrom(bundleFileName: bundleFileName, subdirectory: ImagesViewController.kInternalFirmwareSubdirectory) else {
@@ -243,31 +248,28 @@ class ImagesViewController: NewtViewController {
     }
     
     fileprivate func sendImageConfirmRequest(hash: Data?, isTest: Bool) {
-        guard let peripheral = blePeripheral, peripheral.isNewtReady else {
-            return
-        }
-        
-        guard !isTest || (isTest && hash != nil) else {
-            return
-        }
+        guard let peripheral = blePeripheral, peripheral.isNewtReady else { return }
+        guard !isTest || (isTest && hash != nil) else { return }
         
         let command: NewtHandler.Command = isTest ? .imageTest(hash: hash!): .imageConfirm(hash: hash)
         
         peripheral.newtSendRequest(with: command) { [weak self]  (newtImages, error) in
             guard let context = self else { return }
             
+            let commandName = isTest ? "Test":"Confirm"
             guard error == nil else {
-                DLog("Set test image error: \(error!)")
+                DLog("Set \(commandName) image error: \(error!)")
                 
                 DispatchQueue.main.async {
-                    NewtHandler.newtShowErrorAlert(from: context, title: "Set test image failed", error: error!)
-                    context.refreshImageList()
+                    NewtHandler.newtShowErrorAlert(from: context, title: "Set \(commandName) image failed", error: error!) { [weak context] _ in
+                        context?.refreshImageList()
+                    }
                 }
                 return
             }
 
             // Success. Reset device
-            DLog("Set \(isTest ? "test":"confirm") image: successful")
+            DLog("Set \(commandName) image: successful")
             
             if let newtImages = newtImages as? [NewtHandler.Image] {
                 context.setNewtImages(newtImages)
@@ -293,14 +295,10 @@ class ImagesViewController: NewtViewController {
     }
     
     fileprivate func sendResetRequest() {
-        guard let peripheral = blePeripheral, peripheral.isNewtReady else {
-            return
-        }
+        guard let peripheral = blePeripheral, peripheral.isNewtReady else {  return }
         
         peripheral.newtSendRequest(with: .reset) { [weak self]  (_, error) in
-            guard let context = self else {
-                return
-            }
+            guard let context = self else { return }
             
             guard error == nil else {
                 DLog("reset error: \(error!)")

@@ -93,6 +93,7 @@ class ImageSlotTableViewCell: UITableViewCell {
 
     override func prepareForReuse() {
         newtImage = nil
+        expandInfoButton.transform = .identity
         
         super.prepareForReuse()
     }
@@ -195,7 +196,7 @@ class ImageSlotTableViewCell: UITableViewCell {
     private func setInfoVisiblity(isHidden: Bool) {
         isInfoHidden = isHidden
         UIView.animate(withDuration: 0.3, animations: { [unowned self] in
-            self.expandInfoButton.transform = isHidden ? CGAffineTransform.identity:CGAffineTransform(rotationAngle: .pi)
+            self.expandInfoButton.transform = isHidden ? .identity:CGAffineTransform(rotationAngle: .pi)
         })
         
 /*

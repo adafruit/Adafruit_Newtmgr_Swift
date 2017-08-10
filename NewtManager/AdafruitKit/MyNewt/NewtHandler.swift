@@ -578,7 +578,6 @@ class NewtHandler {
         
         let completionHandler = newtRequestsQueue.first()?.completion
         guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
-            completionHandler?(nil, NewtError.receivedResultNotOk("Invalid response result"));
             return
         }
         
@@ -610,7 +609,6 @@ class NewtHandler {
         
         let completionHandler = newtRequestsQueue.first()?.completion
         guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
-            completionHandler?(nil, NewtError.receivedResultNotOk("Invalid response result"));
             return
         }
         
@@ -626,7 +624,6 @@ class NewtHandler {
         
         let completionHandler = newtRequestsQueue.first()?.completion
         guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
-            completionHandler?(nil, NewtError.receivedResultNotOk("Invalid response result"));
             return
         }
         
@@ -659,7 +656,6 @@ class NewtHandler {
         
         let completionHandler = newtRequestsQueue.first()?.completion
         guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
-            completionHandler?(nil, NewtError.receivedResultNotOk("Invalid response result"));
             return
         }
         
@@ -675,7 +671,6 @@ class NewtHandler {
         
         let completionHandler = newtRequestsQueue.first()?.completion
         guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
-            completionHandler?(nil, NewtError.receivedResultNotOk("Invalid response result"));
             return
         }
         
@@ -698,7 +693,6 @@ class NewtHandler {
         
         let completionHandler = newtRequestsQueue.first()?.completion
         guard NewtHandler.verifyResponseCode(cbor: cbor, completionHandler: completionHandler) else {
-            completionHandler?(nil, NewtError.receivedResultNotOk("Invalid response result"));
             return
         }
         
@@ -772,7 +766,7 @@ class NewtHandler {
         return true
     }
     
-    static func newtShowErrorAlert(from controller: UIViewController, title: String? = "Error", error: Error) {
+    static func newtShowErrorAlert(from controller: UIViewController, title: String? = "Error", error: Error, okHandler: ((UIAlertAction) -> Void)? = nil) {
         let message: String?
         if let newtError = error as? NewtError {
             message = newtError.description
@@ -781,7 +775,7 @@ class NewtHandler {
             message = error.localizedDescription
         }
         
-        showErrorAlert(from: controller, title: title, message: message)
+        showErrorAlert(from: controller, title: title, message: message, okHandler: okHandler)
     }
 }
 
