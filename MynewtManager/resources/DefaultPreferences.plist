@@ -16,5 +16,16 @@
 	<true/>
 	<key>ScanFilterIsOnlyWithUartEnabledKey</key>
 	<false/>
+    <key>UartIsDisplayModeTimestamp</key>
+    <false/>
+    <key>UartIsInHexMode</key>
+    <false/>
+    <key>UartIsEchoEnabled</key>
+    <true/>
+    <key>UartIsAutomaticEolEnabled</key>
+    <true/>
+    <key>UartShowInvisibleChars</key>
+    <false/>
+
 </dict>
 </plist>
