@@ -16,7 +16,7 @@ class DeviceTabBarViewController: UITabBarController {
         didSet {
             if let viewControllers = viewControllers {
                 for viewController in viewControllers {
-                    if let newtViewController = viewController as? NewtViewController {
+                    if let newtViewController = viewController as? MynewtViewController {
                         newtViewController.blePeripheral = blePeripheral
                     }
                 }
@@ -52,7 +52,7 @@ class DeviceTabBarViewController: UITabBarController {
                 return
             }
             
-            if let context = self, let newtController = context.selectedViewController as? NewtViewController {
+            if let context = self, let newtController = context.selectedViewController as? MynewtViewController {
                 DispatchQueue.main.async {
                     newtController.newtDidBecomeReady()
                 }

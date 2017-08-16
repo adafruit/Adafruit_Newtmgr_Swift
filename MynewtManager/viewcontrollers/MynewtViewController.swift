@@ -1,5 +1,5 @@
 //
-//  NewtViewController.swift
+//  MynewtViewController.swift
 //  MynewtManager
 //
 //  Created by Antonio García on 15/10/2016.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class NewtViewController: UIViewController {
+class MynewtViewController: UIViewController {
 
     weak var blePeripheral: BlePeripheral?
     
@@ -41,8 +41,8 @@ class NewtViewController: UIViewController {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 
-        // If the segue is for a NewtViewController, propagate the blePeripheral automatically
-        if let newtViewController = segue.destination as? NewtViewController {
+        // If the segue is for a MynewtViewController, propagate the blePeripheral automatically
+        if let newtViewController = segue.destination as? MynewtViewController {
             newtViewController.blePeripheral = blePeripheral
         }
 

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ImagesViewController: NewtViewController {
+class ImagesViewController: MynewtViewController {
     
     // Config
     private static let kInternalFirmwareSubdirectory = "/firmware"

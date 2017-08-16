@@ -24,18 +24,21 @@ class Preferences {
     private static let scanFilterIsUnnamedEnabledKey = "ScanFilterIsUnnamedEnabled"
     private static let scanFilterIsOnlyWithUartEnabledKey = "ScanFilterIsOnlyWithUartEnabled"
     
-    
-    enum PreferencesNotifications: String {
-        case DidUpdatePreferences = "didUpdatePreferences"          // Note: used on some objective-c code, so when changed, update it
-    }
+    // Uart
+    fileprivate static let uartIsDisplayModeTimestampKey = "UartIsDisplayModeTimestamp"
+    fileprivate static let uartIsInHexModeKey = "UartIsInHexMode"
+    fileprivate static let uartIsEchoEnabledKey = "UartIsEchoEnabled"
+    fileprivate static let uartIsAutomaticEolEnabledKey = "UartIsAutomaticEolEnabled"
+    fileprivate static let uartShowInvisibleCharsKey = "UartShowInvisibleChars"
+
     
     // MARK: - Scanning Filters
     static var scanFilterIsPanelOpen: Bool {
         get {
-            return getBoolPreference(key: Preferences.scanFilterIsPanelOpenKey)
+            return getBoolPreference(Preferences.scanFilterIsPanelOpenKey)
         }
         set {
-            setBoolPreference(key: Preferences.scanFilterIsPanelOpenKey, newValue: newValue)
+            setBoolPreference(Preferences.scanFilterIsPanelOpenKey, newValue: newValue)
         }
     }
 
@@ -52,19 +55,19 @@ class Preferences {
     
     static var scanFilterIsNameExact: Bool {
         get {
-            return getBoolPreference(key: Preferences.scanFilterIsNameExactKey)
+            return getBoolPreference(Preferences.scanFilterIsNameExactKey)
         }
         set {
-            setBoolPreference(key: Preferences.scanFilterIsNameExactKey, newValue: newValue)
+            setBoolPreference(Preferences.scanFilterIsNameExactKey, newValue: newValue)
         }
     }
 
     static var scanFilterIsNameCaseInsensitive: Bool {
         get {
-            return getBoolPreference(key: Preferences.scanFilterIsNameCaseInsensitiveKey)
+            return getBoolPreference(Preferences.scanFilterIsNameCaseInsensitiveKey)
         }
         set {
-            setBoolPreference(key: Preferences.scanFilterIsNameCaseInsensitiveKey, newValue: newValue)
+            setBoolPreference(Preferences.scanFilterIsNameCaseInsensitiveKey, newValue: newValue)
         }
     }
 
@@ -82,31 +85,78 @@ class Preferences {
     
     static var scanFilterIsUnnamedEnabled: Bool {
         get {
-            return getBoolPreference(key: Preferences.scanFilterIsUnnamedEnabledKey)
+            return getBoolPreference(Preferences.scanFilterIsUnnamedEnabledKey)
         }
         set {
-            setBoolPreference(key: Preferences.scanFilterIsUnnamedEnabledKey, newValue: newValue)
+            setBoolPreference(Preferences.scanFilterIsUnnamedEnabledKey, newValue: newValue)
         }
     }
     
     static var scanFilterIsOnlyWithUartEnabled: Bool {
         get {
-            return getBoolPreference(key: Preferences.scanFilterIsOnlyWithUartEnabledKey)
+            return getBoolPreference(Preferences.scanFilterIsOnlyWithUartEnabledKey)
         }
         set {
-            setBoolPreference(key: Preferences.scanFilterIsOnlyWithUartEnabledKey, newValue: newValue)
+            setBoolPreference(Preferences.scanFilterIsOnlyWithUartEnabledKey, newValue: newValue)
         }
     }
     
+    // MARK: - Uart
+    static var uartShowInvisibleChars: Bool {
+        get {
+            return getBoolPreference(Preferences.uartShowInvisibleCharsKey)
+        }
+        set {
+            setBoolPreference(Preferences.uartShowInvisibleCharsKey, newValue: newValue)
+        }
+    }
+    
+    static var uartIsDisplayModeTimestamp: Bool {
+        get {
+            return getBoolPreference(Preferences.uartIsDisplayModeTimestampKey)
+        }
+        set {
+            setBoolPreference(Preferences.uartIsDisplayModeTimestampKey, newValue: newValue)
+        }
+    }
+    
+    static var uartIsInHexMode: Bool {
+        get {
+            return getBoolPreference(Preferences.uartIsInHexModeKey)
+        }
+        set {
+            setBoolPreference(Preferences.uartIsInHexModeKey, newValue: newValue)
+        }
+    }
+    
+    static var uartIsEchoEnabled: Bool {
+        get {
+            return getBoolPreference(Preferences.uartIsEchoEnabledKey)
+        }
+        set {
+            setBoolPreference(Preferences.uartIsEchoEnabledKey, newValue: newValue)
+        }
+    }
+    
+    static var uartIsAutomaticEolEnabled: Bool {
+        get {
+            return getBoolPreference(Preferences.uartIsAutomaticEolEnabledKey)
+        }
+        set {
+            setBoolPreference(Preferences.uartIsAutomaticEolEnabledKey, newValue: newValue)
+        }
+    }
+
+    
     // MARK: - Common
-    static func getBoolPreference(key: String) -> Bool {
+    static func getBoolPreference(_ key: String) -> Bool {
         let defaults = UserDefaults.standard
         return defaults.bool(forKey: key)
     }
     
-    static func setBoolPreference(key: String, newValue: Bool) {
+    static func setBoolPreference(_ key: String, newValue: Bool) {
         UserDefaults.standard.set(newValue, forKey: key)
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: PreferencesNotifications.DidUpdatePreferences.rawValue), object: nil);
+        NotificationCenter.default.post(name: .didUpdatePreferences, object: nil)
     }
     
     // MARK: - Defaults
@@ -121,5 +171,13 @@ class Preferences {
         let appDomain = Bundle.main.bundleIdentifier!
         UserDefaults.standard.removePersistentDomain(forName: appDomain)
     }
+}
+
+
+// MARK: - Custom Notifications
+extension Notification.Name {
+    private static let kPrefix = Bundle.main.bundleIdentifier!
+    
+    static let  didUpdatePreferences = Notification.Name(kPrefix+".didUpdatePreferences")
 }
 

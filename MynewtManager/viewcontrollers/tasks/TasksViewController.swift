@@ -10,7 +10,7 @@ import UIKit
 import MSWeakTimer
 import Charts
 
-class TaksViewController: NewtViewController {
+class TaksViewController: MynewtViewController {
 
     // UI
     @IBOutlet weak var baseTableView: UITableView!

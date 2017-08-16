@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CommandsViewController: NewtViewController {
+class CommandsViewController: MynewtViewController {
 
     // UI
     @IBOutlet weak var baseTableView: UITableView!

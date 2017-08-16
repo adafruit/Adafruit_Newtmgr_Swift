@@ -8,7 +8,7 @@
 
 import UIKit
 
-class StatsDetailViewController: NewtViewController {
+class StatsDetailViewController: MynewtViewController {
 
     // UI
     @IBOutlet weak var baseTableView: UITableView!
