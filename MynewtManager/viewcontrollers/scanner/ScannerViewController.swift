@@ -285,6 +285,12 @@ class ScannerViewController: UIViewController {
         performSegue(withIdentifier: "filterNameSettingsSegue", sender: sender)
     }
     
+    @IBAction func onClickInfo(_ sender: Any) {
+        if let infoViewController = storyboard?.instantiateViewController(withIdentifier: "AboutNavigationController") {
+            present(infoViewController, animated: true, completion: nil)
+        }
+    }
+    
     // MARK: - UI
     private func updateScannedPeripherals() {
         

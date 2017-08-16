@@ -75,6 +75,7 @@
 		A9AB06031F43CB9C0070ACB0 /* NSObject+ENHThrottledReloading.m in Sources */ = {isa = PBXBuildFile; fileRef = A9AB06001F43CB9C0070ACB0 /* NSObject+ENHThrottledReloading.m */; };
 		A9AB06061F43CC3D0070ACB0 /* DataFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9AB06051F43CC3D0070ACB0 /* DataFormatter.swift */; };
 		A9AB06081F43CCBF0070ACB0 /* UartDataExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9AB06071F43CCBF0070ACB0 /* UartDataExport.swift */; };
+		A9AB060A1F44054F0070ACB0 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9AB06091F44054F0070ACB0 /* AboutViewController.swift */; };
 		A9FACDA91DB2AE0F00061E70 /* DeviceTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FACDA81DB2AE0F00061E70 /* DeviceTabBarViewController.swift */; };
 		A9FACDAB1DB2AE3000061E70 /* MynewtViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FACDAA1DB2AE3000061E70 /* MynewtViewController.swift */; };
 		FB7A976849D841A77B1D4BBE /* Pods_MynewtManager.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E1A5BE6A5015BA3D09A721B /* Pods_MynewtManager.framework */; };
@@ -158,6 +159,7 @@
 		A9AB06001F43CB9C0070ACB0 /* NSObject+ENHThrottledReloading.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+ENHThrottledReloading.m"; sourceTree = "<group>"; };
 		A9AB06051F43CC3D0070ACB0 /* DataFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataFormatter.swift; path = ../../../../MynewtManager/app/MynewtManager/utils/DataFormatter.swift; sourceTree = "<group>"; };
 		A9AB06071F43CCBF0070ACB0 /* UartDataExport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UartDataExport.swift; path = ../../../../MynewtManager/app/MynewtManager/utils/UartDataExport.swift; sourceTree = "<group>"; };
+		A9AB06091F44054F0070ACB0 /* AboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AboutViewController.swift; path = ../../../../../MynewtManager/app/MynewtManager/viewcontrollers/scanner/AboutViewController.swift; sourceTree = "<group>"; };
 		A9FACDA81DB2AE0F00061E70 /* DeviceTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceTabBarViewController.swift; sourceTree = "<group>"; };
 		A9FACDAA1DB2AE3000061E70 /* MynewtViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MynewtViewController.swift; sourceTree = "<group>"; };
 		C621014BFEFE0567845CC934 /* Pods-MynewtManager.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MynewtManager.release.xcconfig"; path = "Pods/Target Support Files/Pods-MynewtManager/Pods-MynewtManager.release.xcconfig"; sourceTree = "<group>"; };
@@ -237,6 +239,7 @@
 		A94A908E1DF7132F0030398F /* scanner */ = {
 			isa = PBXGroup;
 			children = (
+				A9AB06091F44054F0070ACB0 /* AboutViewController.swift */,
 				A94A90901DF7132F0030398F /* ScannerViewController.swift */,
 				A94A908F1DF7132F0030398F /* PeripheralList.swift */,
 				A94A90981DF71D3C0030398F /* PeripheralTableViewCell.swift */,
@@ -672,6 +675,7 @@
 				A9AB05BD1F43C4B40070ACB0 /* UartBaseViewController.swift in Sources */,
 				A94E9A5A1F3CC9A700B368F9 /* UartDataManager.swift in Sources */,
 				A94A90821DF6FE6C0030398F /* StatsDetailViewController.swift in Sources */,
+				A9AB060A1F44054F0070ACB0 /* AboutViewController.swift in Sources */,
 				A94F256D1DF0448D00F46930 /* Util.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
