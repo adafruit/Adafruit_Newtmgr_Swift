@@ -26,6 +26,7 @@ class ScannerViewController: UIViewController {
     @IBOutlet weak var filtersUnnamedSwitch: UISwitch!
 //    @IBOutlet weak var filtersUartSwitch: UISwitch!
     @IBOutlet weak var scanningWaitView: UIView!
+    @IBOutlet weak var filteredPeriphralsCountLabel: UILabel!
 
     // Data
     private let refreshControl = UIRefreshControl()
@@ -298,9 +299,11 @@ class ScannerViewController: UIViewController {
         baseTableView.reloadData()
         
         // Select the previously selected row
-        let peripherals = peripheralList.filteredPeripherals(forceUpdate: false)
-        scanningWaitView.isHidden = peripherals.count > 0
-        if let selectedPeripheral = selectedPeripheral, let selectedRow = peripherals.index(of: selectedPeripheral) {
+        let filteredPeripherals = peripheralList.filteredPeripherals(forceUpdate: false)
+        scanningWaitView.isHidden = filteredPeripherals.count > 0 || peripheralList.numPeriprehalsFiltered() > 0
+        filteredPeriphralsCountLabel.isHidden = !(filteredPeripherals.count == 0 && peripheralList.numPeriprehalsFiltered() > 0)
+        filteredPeriphralsCountLabel.text = String(format: "%ld peripherals filtered out", peripheralList.numPeriprehalsFiltered())
+        if let selectedPeripheral = selectedPeripheral, let selectedRow = filteredPeripherals.index(of: selectedPeripheral) {
             baseTableView.selectRow(at: IndexPath(row: selectedRow, section: 0), animated: false, scrollPosition: .none)
         }
     }

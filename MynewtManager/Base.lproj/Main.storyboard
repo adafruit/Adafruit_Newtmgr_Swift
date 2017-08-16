@@ -1349,6 +1349,12 @@
                                     <outlet property="delegate" destination="tmV-ux-96y" id="RD4-cn-pKC"/>
                                 </connections>
                             </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10 peripherals filtered out" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4st-aH-dmj">
+                                <rect key="frame" x="16" y="218" width="343" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="9Kc-Tp-jFB">
                                 <rect key="frame" x="169" y="208" width="37" height="37"/>
                                 <color key="color" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
@@ -1356,10 +1362,13 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="4st-aH-dmj" firstAttribute="leading" secondItem="cxJ-tC-tt4" secondAttribute="leadingMargin" id="3Ih-3C-cfj"/>
                             <constraint firstAttribute="trailing" secondItem="ssm-nh-2zH" secondAttribute="trailing" id="9JV-V0-Bsi"/>
                             <constraint firstItem="TSh-Dq-ZT3" firstAttribute="top" secondItem="ssm-nh-2zH" secondAttribute="bottom" id="Dgs-el-I8c"/>
                             <constraint firstItem="3iA-5t-kSF" firstAttribute="leading" secondItem="cxJ-tC-tt4" secondAttribute="leading" id="EJO-Uf-Why"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="4st-aH-dmj" secondAttribute="trailing" id="F4L-tv-wh3"/>
                             <constraint firstItem="9Kc-Tp-jFB" firstAttribute="centerX" secondItem="ssm-nh-2zH" secondAttribute="centerX" id="Thj-uW-F23"/>
+                            <constraint firstItem="4st-aH-dmj" firstAttribute="top" secondItem="ssm-nh-2zH" secondAttribute="top" constant="30" id="VT1-pD-NCA"/>
                             <constraint firstItem="9Kc-Tp-jFB" firstAttribute="top" secondItem="ssm-nh-2zH" secondAttribute="top" constant="20" id="YEf-RJ-05z"/>
                             <constraint firstItem="ssm-nh-2zH" firstAttribute="top" secondItem="3iA-5t-kSF" secondAttribute="bottom" constant="8" id="nue-lV-NEh"/>
                             <constraint firstItem="ssm-nh-2zH" firstAttribute="leading" secondItem="cxJ-tC-tt4" secondAttribute="leading" id="ovs-5E-OYF"/>
@@ -1379,6 +1388,7 @@
                     <connections>
                         <outlet property="baseTableView" destination="ssm-nh-2zH" id="Deq-nd-bHQ"/>
                         <outlet property="filterRssiValueLabel" destination="o1h-jP-HgR" id="w3c-Sl-YID"/>
+                        <outlet property="filteredPeriphralsCountLabel" destination="4st-aH-dmj" id="4BH-5u-MHU"/>
                         <outlet property="filtersClearButton" destination="AVs-IQ-G1l" id="lVc-7f-QAJ"/>
                         <outlet property="filtersDisclosureButton" destination="UIr-Tj-a6c" id="Se7-u1-nnM"/>
                         <outlet property="filtersNameTextField" destination="ycr-ER-mIg" id="Kt5-Z5-LG3"/>
@@ -1889,7 +1899,7 @@
         <!--About-->
         <scene sceneID="sVM-r5-dWX">
             <objects>
-                <viewController automaticallyAdjustsScrollViewInsets="NO" id="DWw-rp-EEw" customClass="AboutViewController" customModule="iOS" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController automaticallyAdjustsScrollViewInsets="NO" id="DWw-rp-EEw" customClass="AboutViewController" customModule="MynewtManager" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="iOs-nV-8Nf"/>
                         <viewControllerLayoutGuide type="bottom" id="3zH-tQ-lri"/>
