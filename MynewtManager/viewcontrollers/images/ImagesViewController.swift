@@ -328,7 +328,7 @@ class ImagesViewController: MynewtViewController {
         baseTableView.reloadData()
     }
     
-    func onTableRefresh(_ sender: AnyObject) {
+    @objc func onTableRefresh(_ sender: AnyObject) {
         refreshImageList()
         refreshControl.endRefreshing()
     }

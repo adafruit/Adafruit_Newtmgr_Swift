@@ -114,7 +114,7 @@ class StatsDetailViewController: MynewtViewController {
     }
     
     // MARK: - UI
-    func onTableRefresh(_ sender: AnyObject) {
+    @objc func onTableRefresh(_ sender: AnyObject) {
         
         refreshStat()
         refreshControl.endRefreshing()

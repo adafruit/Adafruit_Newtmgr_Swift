@@ -251,7 +251,7 @@ class TaksViewController: MynewtViewController {
    */
     
     // MARK: - UI
-    func onTableRefresh(_ sender: AnyObject) {
+    @objc func onTableRefresh(_ sender: AnyObject) {
         refreshTasks()
         refreshControl.endRefreshing()
     }

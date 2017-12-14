@@ -46,7 +46,7 @@ class StackUsageChartView: UIView {
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
-        let textAttributes = [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.black, NSParagraphStyleAttributeName: paragraphStyle] as [String : Any]
+        let textAttributes = [NSAttributedStringKey.font: font, NSAttributedStringKey.foregroundColor: UIColor.black, NSAttributedStringKey.paragraphStyle: paragraphStyle] as! [NSAttributedStringKey : Any]
 
         var offsetX: CGFloat = 0
         for (i, item) in usageData.enumerated() {

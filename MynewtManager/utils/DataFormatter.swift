@@ -40,7 +40,7 @@ func attributedStringFromData(_ data: Data, useHexMode: Bool, color: UIColor, fo
 
     guard let string = stringFromData(data, useHexMode: useHexMode) else { return nil }
 
-    let textAttributes: [String: AnyObject] = [NSFontAttributeName: font, NSForegroundColorAttributeName: color]
+    let textAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.font: font, NSAttributedStringKey.foregroundColor: color]
     let attributedString = NSAttributedString(string: string, attributes: textAttributes)
     return attributedString
 }

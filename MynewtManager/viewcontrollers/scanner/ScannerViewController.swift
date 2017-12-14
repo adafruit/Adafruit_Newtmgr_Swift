@@ -239,7 +239,7 @@ class ScannerViewController: UIViewController {
     }
     
     // MARK: - Actions
-    func onTableRefresh(_ sender: AnyObject) {
+    @objc func onTableRefresh(_ sender: AnyObject) {
         BleManager.sharedInstance.refreshPeripherals()
         refreshControl.endRefreshing()
     }
